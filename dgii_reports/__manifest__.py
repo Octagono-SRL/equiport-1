@@ -33,4 +33,7 @@
         'views/dgii_report_templates.xml',
         'wizard/dgii_report_regenerate_wizard_views.xml',
     ],
+    'external_dependencies': {
+        'python': ['pycountry']
+    },
 }
