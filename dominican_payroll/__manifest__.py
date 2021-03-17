@@ -47,6 +47,6 @@
         'wizard/ministry_of_labour_report_wizard_view.xml',
     ],
     'external_dependencies': {
-      'python': ['xlsxwriter', 'numpy', 'dateutil', 'numpy_financial']
+      'python': ['xlsxwriter', 'numpy', 'dateutil', 'numpy-financial']
     },
 }
