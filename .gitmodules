@@ -2,3 +2,8 @@
 	path = WanderFeliz-Octagono/equiport_custom
 	url = git@github.com:WanderFeliz-Octagono/equiport_custom.git
 	branch = 14.0
+
+[submodule "OCA/purchase-workflow"]
+	path = OCA/purchase-workflow
+	url = git@github.com:OCA/purchase-workflow.git
+	branch = 14.0
