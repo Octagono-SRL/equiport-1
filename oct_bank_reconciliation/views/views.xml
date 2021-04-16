@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+ <!--Form view-->
+  <record id="oct_bank_reconciliation_form_view" model="ir.ui.view">
+        <field name="name">bank.reconciliation.form.view</field>
+        <field name="model">oct.bank.reconciliation</field>
+        <field name="arch" type="xml">
+          <form string="Form Bank Reconciliation">
+              <header>
+                  <button name="generate_reconciliation" type="object" string="Generar Conciliación" class="oe_highlight" states="draft"/>
+                  <button name="validate_reconciliation" type="object" string="Validar Conciliación" class="oe_highlight" states="generated"/>
+                  <button name="return_draft" type="object" string="Cambiar a Borrador" class="oe_highlight" states="canceled"/>
+                  <button name="cancel_reconciliation" type="object" string="Cancelar Conciliación" class="oe_highlight" states="generated,validated" groups="oct_bank_reconciliation.group_oct_bank_reconciliation_manager"/>
+                  <field name="state" readonly="1" widget="statusbar"/>
+              </header>
+              <sheet>
+                <group>
+                      <group>
+                        <field name="date" required="1" attrs="{'readonly': [('state','in', ['validated', 'canceled'])]}"/>
+                      </group>
+                      <group>
+                          <field name="company_id"
+                                 groups="base.group_multi_company"
+                                 attrs="{'readonly': [('state','in', ['validated', 'canceled'])]}"/>
+                          <field name="account_id"
+                                 domain="[('company_id', '=', company_id), '|', ('internal_type','=','liquidity'), ('user_type_id','in',[4,9])]"
+                                 required="1"
+                                 attrs="{'readonly': [('state','in', ['validated', 'canceled'])]}"/>
+                      </group>
+                      <group string="Balance según banco">
+                          <field name="current_balance1" attrs="{'readonly': [('state','in', ['validated', 'canceled'])]}"/>
+                          <field name="current_checks1"/>
+                          <field name="final_balance1"/>
+                      </group>
+                      <group string="Balance según libro">
+                          <field name="able_to_modify_previous_balance" invisible="1"/>
+                          <field name="previous_balance" attrs="{'readonly': ['|',('able_to_modify_previous_balance','=',False),('state', 'in', ['validated', 'canceled'])]}"/>
+                          <field name="issued_deposits"/>
+                          <field name="current_checks2"/>
+                          <separator colspan="2" string="Resumen"/>
+                          <field name="total"/>
+                          <field name="difference"/>
+                      </group>
+                </group>
+                   <notebook>
+                      <page string="Datos de conciliación">
+                          <field name="payment_ids" attrs="{'readonly': [('state', 'in', ['validated','canceled'])]}" default_order="date, asc">
+                              <tree string="New Tree Bank Reconciliation" editable="bottom" create="false" delete="false">
+                                <field name="date" readonly="1"/>
+                                <field name="ref" readonly="1"/>
+                                <field name="account_id" readonly="1"/>
+                                <field name="partner_id" readonly="1"/>
+                                <field name="debit" sum="Total Débitos" readonly="1"/>
+                                <field name="credit" sum="Total Créditos" readonly="1"/>
+                                <field name="bank_reconciliated"/>
+                            </tree>
+                          </field>
+                      </page>
+                   </notebook>
+              </sheet>
+          </form>
+        </field>
+  </record>
+
+  <!--Action-->
+  <record id="action_oct_bank_reconciliation" model="ir.actions.act_window">
+    <field name="name">Conciliación bancaria</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">oct.bank.reconciliation</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <!--Menus-->
+  <menuitem id="bank_reconciliation_menu" name="Conciliación bancaria" parent="account.menu_finance_entries_actions"
+            sequence="3" action="action_oct_bank_reconciliation"/>
+
+</odoo>
+

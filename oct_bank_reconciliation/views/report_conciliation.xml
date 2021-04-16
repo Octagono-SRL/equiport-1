@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+ <report
+            string="Reporte Conciliacion"
+            id="action_reconciliation_report"
+            model="oct.bank.reconciliation"
+            report_type="qweb-pdf"
+            name="oct_bank_reconciliation.reconciliation_bank_doc"
+            file="oct_bank_reconciliation.reconciliation_bank_doc"
+        />
+
+
+        <template id="reconciliation_bank_doc">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="oct_bank_reconciliation.reconciliation_bank_document" />
+                </t>
+            </t>
+        </template>
+
+     <template id="reconciliation_bank_document">
+<!--                      <t t-call="report.external_layout_header"/>-->
+<!--         -->
+                 <t t-call="web.external_layout">
+
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                    <strong>Fecha: </strong>
+                                    <span t-field="o.date"/>
+                            </div>
+
+                            <div class="col-xs-6">
+                                <strong>Cuenta: </strong>
+                                 <span t-field="o.account_id"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6">
+                                    <h1><strong>Balance según banco </strong></h1>
+                                    <div>
+                                        <strong>Balance disponible según banco:</strong>
+                                        <span t-field="o.current_balance1"/>
+                                    </div>
+                                    <div>
+                                        <strong>Cheques en transito: </strong>
+                                        <span t-field="o.current_checks1"/>
+                                    </div>
+                                    <div>
+                                        <strong>Balance al corte del mes: </strong>
+                                        <span t-field="o.final_balance1"/>
+                                    </div>
+                            </div>
+
+                            <div class="col-xs-6">
+                                <div>
+                                    <h1><strong>Balance según libro </strong></h1>
+                                    <div>
+                                        <strong>Balance anterior: </strong>
+                                        <span t-field="o.previous_balance"/>
+                                    </div>
+                                    <div>
+                                        <strong>Depositos emitidos: </strong>
+                                        <span t-field="o.issued_deposits"/>
+                                    </div>
+                                    <div>
+                                        <strong>Cheques emitidos: </strong>
+                                        <span t-field="o.current_checks2"/>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h1><strong>Resumen </strong></h1>
+                                    <div>
+                                        <strong>Total de conciliación del mes: </strong>
+                                        <span t-field="o.total"/>
+                                    </div>
+                                    <div>
+                                        <strong>Diferencia: </strong>
+                                        <span t-field="o.difference"/>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <br/><br/><br/><br/>
+
+                        <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th><strong>Fecha</strong></th>
+                        <th><strong>Referencia</strong></th>
+                        <th class="text-center"><strong>Cuenta</strong></th>
+                        <th class="text-right"><strong>Empresa</strong></th>
+                        <th class="text-right"><strong>Debito</strong></th>
+                        <th class="text-right"><strong>Credito</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.payment_ids" t-as="line">
+                        <td>
+                            <span t-field="line.date"/>
+                        </td>
+                        <td>
+                            <span t-field="line.ref"/>
+                        </td>
+                        <td class="text-center">
+                            <span t-field="line.account_id"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-field="line.partner_id"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-field="line.debit"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-field="line.credit"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+                    </div>
+                 </t>
+        </template>
+
+
+</odoo>
+
