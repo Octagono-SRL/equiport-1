@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <!-- Mail template are declared in a NOUPDATE block
+         so users can freely customize/delete them -->
+    <data noupdate="0">
+        <!--Email template request cancel purchase order -->
+        <record id="email_template_request_purchase_order_cancel" model="mail.template">
+            <field name="name">Equiport: Enviar solicitud de aprobación de cancelación</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="email_from">${(object.env.user.email_formatted or user.email_formatted) |safe}</field>
+            <field name="partner_to">${object.get_responsible_cancel()}</field>
+            <field name="subject">${object.company_id.name} Orden (Ref ${object.name or 'n/a'})</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Saludos,
+                        <br/><br/>
+                        Aqui el documento a la espera de aprobación de cancelación
+                        % if object.name:
+                        orden <strong>${object.name}</strong>
+                        % if object.cancel_reason:
+                        por el motivo de <strong>${object.cancel_reason}</strong>.
+                        % endif
+                        % endif
+                        <br/>
+                        % if object.env.user.signature:
+                        <br/>
+                        ${object.env.user.signature | safe}
+                        % endif
+                    </p>
+                </div>
+            </field>
+
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="email_template_request_purchase_order_confirm" model="mail.template">
+            <field name="name">Equiport: Enviar solicitud de aprobación de orden</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="email_from">${(object.env.user.email_formatted or user.email_formatted) |safe}</field>
+            <field name="partner_to">${object.get_responsible()}</field>
+            <field name="subject">${object.company_id.name} Orden (Ref ${object.name or 'n/a'})</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Saludos
+                        ${object.get_responsible(partner_only=True).name},
+                        <br/><br/>
+                        Aqui el documento a la espera de aprobación para proceder con la compra.
+                        <br/>
+                        Referencia:
+                        % if object.name:
+                        orden <strong>${object.name}.</strong>
+                        % endif
+                        <br/>
+                        % if object.env.user.signature:
+                        ${object.env.user.signature | safe}
+                        % endif
+                    </p>
+                </div>
+            </field>
+
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="email_template_request_picking_access" model="mail.template">
+            <field name="name">Equiport: Enviar solicitud de autorización de conduce</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="email_from">${(object.env.user.email_formatted or user.email_formatted) |safe}</field>
+            <field name="partner_to">${object.get_responsible()}</field>
+            <field name="subject">${object.company_id.name} Conduce (Ref ${object.name or 'n/a'})</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Saludos,
+                        <br/><br/>
+                        Aqui el documento a la espera de aprobación para proceder con la entrega.
+                        <br/>
+                        Referencia:
+                        % if object.name:
+                        conduce <strong>${object.name}.</strong>
+                        % endif
+                        <br/>
+                        % if object.env.user.signature:
+                        ${object.env.user.signature | safe}
+                        % endif
+                    </p>
+                </div>
+            </field>
+
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

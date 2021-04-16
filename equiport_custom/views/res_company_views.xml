@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_company_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">res.company.form.equiport.inherit</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook/page[@name='general_info']" position="after">
+                    <page name="op_approvals" string="Pedidos">
+                        <div>
+                            <label for="active_op_approval"/>
+                            <field name="active_op_approval"/>
+                        </div>
+                        <group string="Niveles de aprobación" attrs="{'invisible':[('active_op_approval', '=', False)]}">
+                            <group string="Nivel 1">
+                                <field name="op_ini_level" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_ini_user_id" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                            </group>
+                            <group string="Nivel 2">
+                                <field name="op_mid_level" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_mid_user_id" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                            </group>
+                            <group string="Nivel 3">
+                                <field name="op_top_level" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_top_user_id" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                            </group>
+                        </group>
+                        <group string="Responsables solicitudes de cancelación">
+                            <group>
+                                <field name="user_po_allow_cancel" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page name="sp_access" string="Conduces">
+                        <group>
+                            <group string="Encargados">
+                                <field name="user_sp_access" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wizard_purchase_order_cancel,access_wizard_purchase_order_cancel,model_wizard_purchase_order_cancel,purchase.group_purchase_user,1,1,1,1
+access_comparison_report_wizard,access_comparison_report_wizard,model_comparison_report_wizard,purchase.group_purchase_user,1,1,1,1
+access_comparison_report_view,access_comparison_report_view,model_comparison_report_view,purchase.group_purchase_user,1,1,1,1

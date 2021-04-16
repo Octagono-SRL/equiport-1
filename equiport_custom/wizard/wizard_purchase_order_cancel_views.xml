@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="purchase_order_cancel_wizard_view_form" model="ir.ui.view">
+            <field name="name">purchase_order_cancel_wizard_view_form</field>
+            <field name="model">wizard.purchase.order.cancel</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <group string="Razón de cancelacion">
+                                <field name="reason" nolabel="1" attrs="{'required':True}"/>
+                            </group>
+                            <group>
+                                <field name="purchase_order_id" attrs="{'readonly':True}"/>
+                                <field name="user_id" attrs="{'readonly':True}"/>
+                            </group>
+                        </group>
+
+                        <footer>
+                            <button name="send_cancel_request" string="Solicitar aprobación" type="object"
+                                    class="btn-primary"/>
+                            <button string="Cancel" class="btn-default" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

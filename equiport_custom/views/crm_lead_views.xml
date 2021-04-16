@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="crm_case_form_view_oppor_repair_equiport_inherit" model="ir.ui.view">
+            <field name="name">crm.lead.oppor.repair.equiport.inherited.crm</field>
+            <field name="model">crm.lead</field>
+            <field name="priority">21</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_set_won_rainbowman']" position="before">
+                    <button string="Nueva Reparación" name="action_repair_quotations_new" type="object" class="oe_highlight"
+                            attrs="{'invisible': ['|', ('type', '=', 'lead'), '&amp;', ('probability', '=', 0), ('active', '=', False)]}"/>
+                </xpath>
+                <button name="action_schedule_meeting" position="after">
+                    <button class="oe_stat_button" type="object" name="action_view_repair_quotation"
+                            icon="fa-pencil-square-o"
+                            attrs="{'invisible': ['|', ('repair_quotation_count', '=', 0), ('type', '=', 'lead')]}">
+                        <field name="repair_quotation_count" widget="statinfo" string="Reparaciones"/>
+                    </button>
+                    <button class="oe_stat_button" type="object"
+                            attrs="{'invisible': ['|', ('repair_order_count', '=', 0), ('type', '=', 'lead')]}"
+                            name="action_view_repair_quotation" icon="fa-usd" context="{'is_repair_order': True}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="repair_amount_total" widget="monetary"
+                                       options="{'currency_field': 'company_currency'}"/>
+                            </span>
+                            <span class="o_stat_text">Ordenes de Reparación</span>
+                            <field name="repair_order_count" invisible="1"/>
+                        </div>
+                    </button>
+                </button>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

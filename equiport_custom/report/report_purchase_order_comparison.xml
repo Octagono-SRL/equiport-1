@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="comparison_report_pivot_view" model="ir.ui.view">
+        <field name="name">comparison.report.pivot.view</field>
+        <field name="model">comparison.report.view</field>
+        <field name="arch" type="xml">
+            <pivot string="Comparativo" disable_linking="True">
+                <field name="partner_id" type="row"/>
+                <field name="order_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="last_price" type="measure"/>
+                <field name="last_discount" type="measure"/>
+                <field name="last_date_approve"/>
+                <field name="recent_price" type="measure"/>
+                <field name="recent_discount" type="measure"/>
+                <field name="recent_date_approve"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="comparison_report_graph_view" model="ir.ui.view">
+        <field name="name">comparison.report.graph.view</field>
+        <field name="model">comparison.report.view</field>
+        <field name="arch" type="xml">
+            <graph string="Comparativo" stacked="True" sample="1" disable_linking="1">
+                <field name="partner_id" type="col"/>
+                <field name="order_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="last_price"/>
+                <field name="last_discount"/>
+                <field name="last_date_approve" interval="day" type="row"/>
+                <field name="recent_price"/>
+                <field name="recent_discount"/>
+                <field name="recent_date_approve" interval="day" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="comparison_report_tree_view" model="ir.ui.view">
+        <field name="name">comparison.report.tree.view</field>
+        <field name="model">comparison.report.view</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="partner_id"/>
+                <field name="order_id" optional="hide"/>
+                <field name="product_id"/>
+                <field name="last_price"/>
+                <field name="last_discount"/>
+                <field name="last_date_approve"/>
+                <field name="recent_price"/>
+                <field name="recent_discount"/>
+                <field name="recent_date_approve"/>
+                <field name="discount_variation" optional="show"/>
+                <field name="variation" optional="show"/>
+                <field name="percent_variation" optional="hide"/>
+                <field name="total" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+
+</odoo>

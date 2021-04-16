@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="purchase_report_menu" name="Informes" parent="purchase.menu_purchase_root" sequence="99" groups="purchase.group_purchase_manager"/>
+        <menuitem id="purchase.purchase_report" name="Generales" parent="purchase_report_menu" sequence="99" groups="purchase.group_purchase_manager" action="purchase.action_purchase_order_report_all"/>
+
+    </data>
+</odoo>

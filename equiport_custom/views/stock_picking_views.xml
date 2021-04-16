@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_picking_form_view_equiport_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form.equiport.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="access_granted" invisible="1"/>
+                    <field name="access_requested" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//notebook/page[@name='extra']/group/group[@name='other_infos']" position="before">
+                    <group string="Datos del cliente" name="other_partner_infos"
+                           attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}">
+                        <field name="partner_drive"
+                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')], 'required':[('picking_type_code', '=', 'outgoing')]}"/>
+                        <field name="vat_drive"
+                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')], 'required':[('picking_type_code', '=', 'outgoing')]}"/>
+                        <field name="partner_truck"
+                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')], 'required':[('picking_type_code', '=', 'outgoing')]}"/>
+                    </group>
+                </xpath>
+
+                <header position="after">
+                    <header attrs="{'invisible': [('access_granted', '=', True), ('picking_type_code', '!=', 'outgoing')]}">
+                        <button name="request_access" string="Solicitar autorización" type="object"
+                                class="oe_highlight"
+                                groups="base.group_user"
+                                attrs="{'invisible': [('access_requested', '=', True)]}"/>
+
+                        <button name="grant_access" string="Conceder autorización" type="object"
+                                class="oe_highlight"
+                                groups="stock.group_stock_manager"
+                                attrs="{'invisible': ['|', ('access_requested', '=', False),('access_granted', '=', True) ]}"/>
+                    </header>
+                </header>
+
+                <header position="attributes">
+                    <attribute name="attrs">{'invisible': [('access_granted', '=', False), ('picking_type_code', '=', 'outgoing')]}</attribute>
+                </header>
+
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_partner_inherit_equiport_custom" model="ir.ui.view">
+            <field name="name">res.partner.inherit.equiport.custom</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <field name="vat" position="attributes">
+                    <attribute name="string">
+                        Número de documento
+                    </attribute>
+
+                </field>
+
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="vat_type" attrs="{'required':True}"/>
+                    <field name="partner_type"/>
+                </xpath>
+
+                <xpath expr="//page[@name='internal_notes']" position="after">
+                    <page name="rent_data" string="Documentos de alquiler">
+                        <group>
+
+                            <group>
+                                <field name="leasing_contract" widget="pdf_viewer"/>
+                            </group>
+                            <group>
+                                <field name="commercial_register" widget="pdf_viewer"/>
+                            </group>
+
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <data>
+
+        <record id="allowed_transfer" model="res.groups">
+            <field name="name">Permitir transferencias, ajustes de inventario, desecho y costes en destino.</field>
+        </record>
+
+        <record id="request_cancel_purchase_order" model="res.groups">
+            <field name="name">Solicita aprobación de cancelación de las ordenes de compra.</field>
+        </record>
+
+        <record id="allowed_to_delete_leads" model="res.groups">
+            <field name="name">Puede eliminar iniciativas y oportunidades.</field>
+        </record>
+
+
+        <!-- User group-->
+<!--        <record id="group_oct_bank_reconciliation_user" model="res.groups">-->
+<!--            <field name="category_id" ref=""/>-->
+<!--            <field name="name">Usuario</field>-->
+<!--            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>-->
+<!--        </record>-->
+
+
+     <!-- Manager group-->
+
+<!--    <record id="group_oct_bank_reconciliation_manager" model="res.groups">-->
+<!--        <field name="category_id" ref=""/>-->
+<!--        <field name="name">Responsable</field>-->
+<!--        <field name="implied_ids" eval="[(4, ref('group_oct_bank_reconciliation_user'))]"/>-->
+<!--        <field name="users" eval="[(4, ref('base.user_root'))]"/>-->
+<!--    </record>-->
+
+    </data>
+
+</odoo>
+

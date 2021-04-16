@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        <record id="rental_order_form_equiport_inherit" model="ir.ui.view">-->
+<!--            <field name="name">rental.order.form.equiport.inherit</field>-->
+<!--            <field name="model">sale.order</field>-->
+<!--            <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>-->
+<!--            <field name="arch" type="xml">-->
+
+<!--                <header position="inside">-->
+<!--                    <button name="test_button" type="object" string="ObjectButton"/>-->
+
+<!--                </header>-->
+
+
+<!--            </field>-->
+<!--        </record>-->
+
+
+    </data>
+</odoo>

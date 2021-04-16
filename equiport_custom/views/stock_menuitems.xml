@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="stock.all_picking" parent="stock.menu_stock_warehouse_mgmt" sequence="5" groups="equiport_custom.allowed_transfer"/>
+
+        <menuitem id="stock.menu_action_inventory_form" parent="stock.menu_stock_warehouse_mgmt" sequence="30" groups="equiport_custom.allowed_transfer"/>
+
+        <menuitem id="stock.menu_stock_scrap" parent="stock.menu_stock_warehouse_mgmt" sequence="99" groups="equiport_custom.allowed_transfer"/>
+
+        <menuitem id="stock_landed_costs.menu_stock_landed_cost" parent="stock.menu_stock_warehouse_mgmt" sequence="115" groups="equiport_custom.allowed_transfer"/>
+    </data>
+</odoo>
