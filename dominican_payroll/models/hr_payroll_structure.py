@@ -7,6 +7,11 @@ class PayrollStructure(models.Model):
 
     @api.model
     def default_get(self, fields_list):
+        res = super(PayrollStructure, self).default_get(fields_list)
+        res['rule_ids'] = []
+        return res
+
+    def fill_rule_structure(self):
 
         struct_f_id = self.env.ref('dominican_payroll.structure_permanent_employees').id
         struct_c_id = self.env.ref('dominican_payroll.christmas_salary_structure').id
@@ -15,17 +20,44 @@ class PayrollStructure(models.Model):
         double_rules = self.env['hr.salary.rule'].search([('struct_id', '=', struct_c_id)])
         foreign_rules = self.env['hr.salary.rule'].search([('struct_id', '=', struct_ex_id)])
 
-        res = super(PayrollStructure, self).default_get(fields_list)
-        res['rule_ids'] = []
         rules = []
-        if employee_rules:
-            rules.extend(employee_rules.ids)
-        if foreign_rules:
-            rules.extend(foreign_rules.ids)
-        if double_rules:
-            rules.extend(double_rules.ids)
 
-        res['rule_ids'].append((6, 0, rules))
+        if employee_rules and self.country_id.code == 'DO' and self.schedule_pay == 'bi-weekly':
+            for rule in employee_rules:
+                rules.append((0, 0, {
+                    'name': rule.name,
+                    'sequence': rule.sequence,
+                    'code': rule.code,
+                    'category_id': rule.category_id.id,
+                    'condition_select': rule.condition_select,
+                    'condition_python': rule.condition_python,
+                    'amount_select': rule.amount_select,
+                    'amount_python_compute': rule.amount_python_compute,
+                }))
+        elif double_rules and self.schedule_pay == 'annually':
+            for rule in double_rules:
+                rules.append((0, 0, {
+                    'name': rule.name,
+                    'sequence': rule.sequence,
+                    'code': rule.code,
+                    'category_id': rule.category_id.id,
+                    'condition_select': rule.condition_select,
+                    'condition_python': rule.condition_python,
+                    'amount_select': rule.amount_select,
+                    'amount_python_compute': rule.amount_python_compute,
+                }))
 
-        return res
+        elif foreign_rules and not self.country_id and self.schedule_pay == 'bi-weekly':
+            for rule in foreign_rules:
+                rules.append((0, 0, {
+                    'name': rule.name,
+                    'sequence': rule.sequence,
+                    'code': rule.code,
+                    'category_id': rule.category_id.id,
+                    'condition_select': rule.condition_select,
+                    'condition_python': rule.condition_python,
+                    'amount_select': rule.amount_select,
+                    'amount_python_compute': rule.amount_python_compute,
+                }))
 
+        self.rule_ids = rules
