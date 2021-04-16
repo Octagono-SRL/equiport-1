@@ -10,3 +10,4 @@ from . import employee_loan
 from . import hr_employee
 from . import working_hours_import
 from . import hr_salary_rule
+from . import hr_payroll_structure
