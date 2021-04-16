@@ -5,6 +5,16 @@ from odoo import api, fields, models
 class PayrollStructure(models.Model):
     _inherit = 'hr.payroll.structure'
 
+    rules_generated = fields.Boolean(string="Generadas Reglas", compute='_check_count')
+
+    @api.depends('rule_ids')
+    def _check_count(self):
+        for rec in self:
+            if len(rec.rule_ids) > 0:
+                rec.rules_generated = True
+            else:
+                rec.rules_generated = False
+
     @api.model
     def default_get(self, fields_list):
         res = super(PayrollStructure, self).default_get(fields_list)

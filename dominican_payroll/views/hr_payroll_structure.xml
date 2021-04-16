@@ -9,7 +9,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//notebook/page[@name='salary_rules']" position="inside">
-                    <div class="footer-buttons" name="footer_btn">
+                    <field name="rules_generated" invisible="1"/>
+                    <div class="footer-buttons" name="footer_btn" attrs="{'invisible':[('rules_generated','=',True)]}">
                         <button name="fill_rule_structure" type="object" string="Agregar Reglas Salariales"/>
                     </div>
                 </xpath>
