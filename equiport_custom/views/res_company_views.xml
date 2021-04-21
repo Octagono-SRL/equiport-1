@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//notebook/page[@name='general_info']" position="after">
-                    <page name="op_approvals" string="Pedidos">
+                    <page name="po_page" string="Pedidos de compras">
                         <div>
                             <label for="active_op_approval"/>
                             <field name="active_op_approval"/>
@@ -34,7 +34,15 @@
                             </group>
                         </group>
                     </page>
-                    <page name="sp_access" string="Conduces">
+                    <page name="so_page" string="Pedidos de ventas">
+                        <group>
+                            <group>
+                                <field name="default_gate_service" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="default_stock" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page name="sp_page" string="Conduces">
                         <group>
                             <group string="Encargados">
                                 <field name="user_sp_access" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>

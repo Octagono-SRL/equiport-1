@@ -23,8 +23,10 @@ class ProductTemplate(models.Model):
     gate_in_date = fields.Date(string="Fecha de entrada")
     gate_out_date = fields.Date(string="Fecha de salida")
     storage_rate = fields.Monetary(string="Tasa de estadia")
+    is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
+    booking = fields.Char(string="Número de reserva")
 
     # Campos para manejo de inventario
 
     is_tool = fields.Boolean(string="Es herramienta")
-    assign_user_id = fields.Many2one(comodel_name='res.users', string="Asignado a")
+    assign_user_id = fields.Many2one(comodel_name='hr.employee', string="Asignado a")

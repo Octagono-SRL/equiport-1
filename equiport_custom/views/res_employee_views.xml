@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="hr_employee_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">hr.employee.form.equiport.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook/page[@name='public']/div[@id='o_work_employee_container']" position="after">
+                    <div name="o_work_employee_tools">
+                        <group string="Herramientas asignadas">
+                            <field name="tool_ids" nolabel="1">
+                                <tree create="false" edit="false">
+                                    <field name="name"/>
+                                    <field name="default_code"/>
+                                    <field name="barcode" optional="hide"/>
+                                    <field name="responsible_id"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </div>
+                    <!-- Add your fields or attributes here -->
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -137,3 +137,15 @@ class StockPicking(models.Model):
             attachment_id.unlink()
 
         return res
+
+
+class StockWarehouse(models.Model):
+    _inherit = 'stock.warehouse'
+
+    is_gate_stock = fields.Boolean(string="Almacen Gate In / Gate Out")
+
+
+class StockLocation(models.Model):
+    _inherit = 'stock.location'
+
+    is_gate_location = fields.Boolean(string="Ubicacion Gate In / Gate Out")

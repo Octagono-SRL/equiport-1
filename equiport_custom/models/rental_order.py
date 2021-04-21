@@ -67,3 +67,20 @@ class SaleOrder(models.Model):
                     return {'value': {}, 'warning': {'title': 'Contacto sin documentos',
                                                      'message': 'El contacto seleccionado no posee los siguientes documentos: '
                                                                 '\n**Contrato de arrendamiento**'}}
+
+    def open_pickup(self):
+        self = self.with_company(self.company_id)
+        deposit_product = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
+        if deposit_product:
+            deposit_product = self.env['product.product'].browse(int(deposit_product))
+            verification_list = [(inv.payment_state in ['paid', 'in_payment']) for inv in self.invoice_ids if
+                        inv.invoice_line_ids.filtered(lambda l: l.product_id == deposit_product)]
+            if not any(verification_list):
+                raise ValidationError("No se puede despachar sin depósito o pago registrado.")
+
+        if len(self.invoice_ids) > 0:
+            if not self.invoice_ids.filtered(lambda inv: inv.payment_state in ['paid', 'in_payment']):
+                raise ValidationError("No se puede despachar sin depósito o pago registrado.")
+
+        res = super(SaleOrder, self).open_pickup()
+        return res

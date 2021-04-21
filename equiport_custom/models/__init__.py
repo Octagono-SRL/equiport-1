@@ -1,5 +1,6 @@
 from . import res_partner
 from . import res_company
+from . import res_employee
 from . import stock
 from . import product_template
 from . import purchase_order
