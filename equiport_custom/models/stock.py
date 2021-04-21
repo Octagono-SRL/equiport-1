@@ -29,8 +29,8 @@ class StockPicking(models.Model):
     partner_drive = fields.Char(string="Conductor")
     vat_drive = fields.Char(string="Identificación conductor")
     partner_truck = fields.Char(string="Camión")
-    access_granted = fields.Boolean(string="Acceso permitido", track_visibility='onchange')
-    access_requested = fields.Boolean(string="Acceso Solicitado", track_visibility='onchange')
+    access_granted = fields.Boolean(string="Acceso permitido", tracking=True)
+    access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
 
     def button_validate(self):
         sale_id = self.sale_id

@@ -3,7 +3,7 @@
     <data>
         <template id="report_purchaseorder_document_equiport_inherit"
                   inherit_id="purchase.report_purchaseorder_document">
-            <xpath expr="//t/t/div[@class='page']/p[@t-field='o.notes']" position="inside">
+            <xpath expr="//t/t/div[hasclass('page')]/p[@t-field='o.notes']" position="inside">
                 <br/>
                 <div class="text-muted">
                     <style>
@@ -29,7 +29,7 @@
 
         <template id="report_purchasequotation_document_equiport_inherit"
                   inherit_id="purchase.report_purchasequotation_document">
-            <xpath expr="//t/t/div[@class='page']/p[@t-field='o.notes']" position="inside">
+            <xpath expr="//t/t/div[hasclass('page')]/p[@t-field='o.notes']" position="inside">
                 <br/>
                 <div class="text-muted">
                     <style>

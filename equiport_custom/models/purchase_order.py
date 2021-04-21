@@ -8,12 +8,12 @@ from odoo.exceptions import ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    allowed_cancel = fields.Boolean(string="Cancelación aprobada", track_visibility='onchange')
-    allowed_confirm = fields.Boolean(string="Confirmación aprobada", track_visibility='onchange')
-    request_approval = fields.Boolean(string="Solicitó aprobación", track_visibility='onchange')
+    allowed_cancel = fields.Boolean(string="Cancelación aprobada", tracking=True)
+    allowed_confirm = fields.Boolean(string="Confirmación aprobada", tracking=True)
+    request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
     approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
-    requested_cancel = fields.Boolean(string="Solicitó cancelación", track_visibility='onchange')
-    cancel_reason = fields.Selection([('test', 'Prueba'), ('test2', 'Prueba2')], track_visibility='onchange' , string="Razón de Cancelación")
+    requested_cancel = fields.Boolean(string="Solicitó cancelación", tracking=True)
+    cancel_reason = fields.Selection([('test', 'Prueba'), ('test2', 'Prueba2')], tracking=True , string="Razón de Cancelación")
 
     @api.depends('amount_total', 'company_id.active_op_approval')
     def _check_approval_need(self):
