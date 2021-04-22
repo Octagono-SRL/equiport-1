@@ -63,7 +63,7 @@ class DgiiReport(models.Model):
     state = fields.Selection([('draft', 'New'), ('error', 'With error'),
                               ('generated', 'Generated'), ('sent', 'Sent')],
                              default='draft',
-                             track_visibility='onchange',
+                             tracking=True,
                              copy=False)
     previous_balance = fields.Float('Previous balance', copy=False)
     currency_id = fields.Many2one(
