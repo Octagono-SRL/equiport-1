@@ -7,6 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class ComparisonReportWizard(models.TransientModel):
     _name = "comparison.report.wizard"
+    _description = "Modelo para generar comparacion entre ordenes de compras confirmadas"
 
     date_start = fields.Date(string="Desde")
     date_end = fields.Date(string="Hasta")

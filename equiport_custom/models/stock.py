@@ -32,6 +32,8 @@ class StockPicking(models.Model):
     access_granted = fields.Boolean(string="Acceso permitido", tracking=True)
     access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
 
+    is_rental = fields.Boolean(string="Proviene de una orden de alquiler", default=False)
+
     def button_validate(self):
         sale_id = self.sale_id
         if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
@@ -63,6 +65,9 @@ class StockPicking(models.Model):
 
     def grant_access(self):
         self.access_granted = True
+
+    def button_confirm(self):
+        self.state = 'done'
 
     def request_access(self):
 

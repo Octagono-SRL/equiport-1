@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Form View to Modify it -->
+        <record id="purchase_requisition_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">purchase.requisition.form.equiport.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+            <field name="arch" type="xml">
+
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <button name="generate_order_comparison" type="object" class="oe_stat_button" icon="fa-list-alt" attrs="{'invisible': [('order_count', '&lt;', 2)]}" string="PO/Comparación"/>
+                </div>
+            </field>
+        </record>
+
+
+
+    </data>
+</odoo>

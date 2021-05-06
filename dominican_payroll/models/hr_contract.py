@@ -6,13 +6,13 @@ from odoo import models, fields
 class HrContract(models.Model):
     _inherit = 'hr.contract'
 
-    schedule_pay = fields.Selection([
-        ('hourly', 'Por hora'),
-        ('weekly', 'Weekly'),
-        ('bi-weekly', 'Quincenal'),
-        ('monthly', 'Monthly'),
-    ], string='Scheduled Pay', index=True, default='bi-weekly',
-        help="Defines the frequency of the wage payment.")
+    # schedule_pay = fields.Selection([
+    #     ('hourly', 'Por hora'),
+    #     ('weekly', 'Weekly'),
+    #     ('bi-weekly', 'Quincenal'),
+    #     ('monthly', 'Monthly'),
+    # ], string='Scheduled Pay', index=True, default='bi-weekly',
+    #     help="Defines the frequency of the wage payment.")
 
     codependants = fields.Selection([('none', 'Ninguno'), ('1', 'Uno'), ('2', 'Dos'), ('3', 'Tres')],
                                     default='none', string="Dependientes")

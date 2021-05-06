@@ -9,12 +9,15 @@ class ProductTemplate(models.Model):
     # Campos para definir Contenedores, Gen set, Chasis
     unit_type = fields.Selection([('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')],
                                  string="Tipo de unidad")
-    unit_brand = fields.Many2one(comodel_name='fleet.vehicle.model.brand',
+    unit_brand = fields.Many2one(comodel_name='unit.model.brand',
                                  string="Marca de unidad")
-    unit_model = fields.Many2one(comodel_name='fleet.vehicle.model',
+    unit_model = fields.Many2one(comodel_name='unit.model',
                                  string="Modelo de unidad")
     unit_year = fields.Char(string="Año de unidad")
     container_type = fields.Selection([('dry', 'Seco'), ('cooled', 'Refrigerado')], string="Tipo de contenedor")
+
+    unit_state_id = fields.Many2one(comodel_name='product.state', string='Estado')
+    unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
 
     # Campos servicio (Get In/Get Out) para definir a quien pertenece la unidad y su tiempo en el patio
 

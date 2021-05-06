@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.0.1',
+    'version': '14.0.0.0.2',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -27,6 +27,7 @@
         'fleet',
         'repair',
         'sale_renting',
+        'sale_stock_renting',
         'purchase_discount',
         'crm',
     ],
@@ -42,18 +43,21 @@
         'views/stock_orderpoint_views.xml',
         'views/stock_menuitems.xml',
         'views/stock_picking_views.xml',
+        'views/unit_model_views.xml',
         'views/purchase_order_menuitems.xml',
         'views/product_template_views.xml',
         'views/purchase_order_views.xml',
+        'views/purchase_requisition_views.xml',
         'views/sale_order_views.xml',
         'views/rental_order_views.xml',
         'views/crm_lead_views.xml',
         'views/repair_views.xml',
+        'views/product_unit_view.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
+        'report/report_purchase_requisition_order_comparison.xml',
         'wizard/wizard_purchase_order_cancel_views.xml',
         'wizard/wizard_purchase_order_comparison_report_view.xml',
         # 'views/',
     ],
-
 }

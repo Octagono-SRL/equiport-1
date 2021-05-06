@@ -5,6 +5,7 @@ from odoo import fields, models
 
 class PayrollDiscountConfig(models.Model):
     _name = 'payroll.discount.config'
+    _description = "Modelo para configurar los codigos de los descuentos en la nomina de empleados"
     _sql_constraints = [('unique_input_rel', 'UNIQUE(code_rel)', 'Solo puede tener una configuración por descuento!')]
     _rec_name = 'name'
 
@@ -16,6 +17,7 @@ class PayrollDiscountConfig(models.Model):
 
 class PayrollDiscountImport(models.Model):
     _name = 'payroll.discount.import'
+    _description = "Modelo para cargar los descuentos de nomina a los empleados"
     _sql_constraints = [('amount_check', 'CHECK(amount > 0)', 'El monto debe ser mayor a 0!')]
 
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)

@@ -13,6 +13,9 @@
                         Número de documento
                     </attribute>
 
+                    <attribute name="attrs">
+                        {'required': True}
+                    </attribute>
                 </field>
 
                 <xpath expr="//field[@name='vat']" position="after">
@@ -20,20 +23,47 @@
                     <field name="partner_type"/>
                 </xpath>
 
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <field name="allowed_credit" invisible="1"/>
+                    <field name="allowed_rental" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']/group[@name='sale']" position="inside">
+                    <field name="credit_limit" attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
+                    <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
+                </xpath>
+
+                <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']" position="inside">
+                    <div name="credit_button_box" groups="equiport_custom.allowed_adm_credit">
+                        <button class="oe_highlight" name="allow_credit" type="object" string="Habilitar Crédito"
+                                attrs="{'invisible':[('allowed_credit', '=', True)]}"/>
+                        <button class="oe_highlight" name="block_credit" type="object" string="Bloquear Crédito"
+                                attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
+                    </div>
+                </xpath>
+
                 <xpath expr="//page[@name='internal_notes']" position="after">
                     <page name="rent_data" string="Documentos de alquiler">
                         <group>
-
                             <group>
                                 <field name="leasing_contract" widget="pdf_viewer"/>
                             </group>
                             <group>
                                 <field name="commercial_register" widget="pdf_viewer"/>
                             </group>
-
                         </group>
+                        <div name="rental_buttons">
+                            <button name="allow_rental" type="object" string="Permitir alquiler sin documentos"
+                                    attrs="{'invisible': [('allowed_rental', '=', True)]}"/>
+                            <button name="block_rental" type="object" string="No permitir alquiler sin documentos"
+                                    attrs="{'invisible': [('allowed_rental', '=', False)]}"/>
+                        </div>
                     </page>
+                    
                 </xpath>
+
+                <field name="subscription_count" position="attributes">
+                    <attribute name="string">Renta</attribute>
+                </field>
 
             </field>
         </record>

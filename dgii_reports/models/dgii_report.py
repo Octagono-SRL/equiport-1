@@ -252,7 +252,7 @@ class DgiiReport(models.Model):
     bond = fields.Monetary('Gift certificates or vouchers', copy=False)
     swap = fields.Monetary('Swap', copy=False)
     others = fields.Monetary('Other Sale Forms', copy=False)
-    sale_type_total = fields.Monetary('Total', copy=False)
+    sale_type_total = fields.Monetary('Total venta', copy=False)
 
     opr_income = fields.Monetary('Operations Income (No-Financial)',
                                  copy=False)
@@ -261,7 +261,7 @@ class DgiiReport(models.Model):
     lea_income = fields.Monetary('Lease Income', copy=False)
     ast_income = fields.Monetary('Depreciable Assets Income', copy=False)
     otr_income = fields.Monetary('Others Income', copy=False)
-    income_type_total = fields.Monetary('Total', copy=False)
+    income_type_total = fields.Monetary('Total ingresos', copy=False)
 
     # General Summary of Consumer Invoices
     csmr_ncf_qty = fields.Integer('Issued Consumer NCF Qty', copy=False)
@@ -466,7 +466,7 @@ class DgiiReport(models.Model):
         New reported invoices should not include any
         withholding amount nor payment date
         if payment was made after current period.
-        :param invoice: account.invoice object
+        :param invoice: account.move object
         :return: boolean
         """
         if not invoice.payment_date:

@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 
 class PurchaseOrderCancel(models.TransientModel):
     _name = 'wizard.purchase.order.cancel'
+    _description = "Modelo para cancelar las ordenes de compra"
 
     reason = fields.Selection([('test', 'Prueba'), ('test2', 'Prueba2')], string="Razón de cancelacion", default=lambda s: s._context.get('cancel_reason'))
     purchase_order_id = fields.Many2one(comodel_name='purchase.order', string="Orden de compra",

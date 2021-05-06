@@ -14,23 +14,32 @@
 
                 <xpath expr="//sheet/notebook/page[@name='general_information']/group" position="after">
                     <group attrs="{'invisible':[('type', '!=', 'product')]}">
-                        <group name="tool_details" string="Detalles de Herramienta" attrs="{'invisible':[('is_tool', '=', False)]}">
+                        <group name="tool_details" string="Detalles de Herramienta"
+                               attrs="{'invisible':[('is_tool', '=', False)]}">
                             <field name="assign_user_id"/>
                         </group>
 
-                        <group name="unit_details" string="Detalles de Unidad" attrs="{'invisible':[('is_tool', '=', True)]}">
+                        <group name="unit_details" string="Detalles de Unidad"
+                               attrs="{'invisible':[('is_tool', '=', True)]}">
                             <field name="unit_type"/>
                             <field name="container_type"
                                    attrs="{'invisible':[('unit_type', '!=', 'container')], 'required':[('unit_type', '=', 'container')]}"/>
-                            <field name="unit_brand" attrs="{'required':[('unit_type', '!=', False)]}"/>
-                            <field name="unit_model" attrs="{'required':[('unit_type', '!=', False)]}"/>
+                            <field name="unit_brand" attrs="{'required':[('unit_type', '!=', False)]}"
+                                   options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"
+                                   domain="[('unit_type', '=', unit_type)]"/>
+                            <field name="unit_model" attrs="{'required':[('unit_type', '!=', False)]}"
+                                   options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"
+                                   domain="[('brand_id', '=', unit_brand)]"/>
                             <field name="unit_year" attrs="{'required':[('unit_type', '!=', False)]}"/>
+                            <field name="unit_state_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                            <field name="unit_grade_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                         </group>
                     </group>
                 </xpath>
 
                 <xpath expr="//sheet/notebook" position="inside">
-                    <page string="Gate In/Gate Out" name="gate_in_out" attrs="{'invisible':['|', ('type', '!=', 'product'), '|', ('sale_ok', '=',True), '|',('purchase_ok', '=',True), ('rent_ok', '=',True)]}">
+                    <page string="Gate In/Gate Out" name="gate_in_out"
+                          attrs="{'invisible':['|', ('type', '!=', 'product'), '|', ('sale_ok', '=',True), '|',('purchase_ok', '=',True), ('rent_ok', '=',True)]}">
                         <group>
                             <group name="owner_info" string="Información de propietario">
                                 <field name="external_owner" readonly="1"/>

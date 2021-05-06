@@ -15,6 +15,10 @@
             <field name="name">Puede eliminar iniciativas y oportunidades.</field>
         </record>
 
+        <record id="allowed_adm_credit" model="res.groups">
+            <field name="name">Manejo de crédito en los contactos.</field>
+        </record>
+
 
         <!-- User group-->
 <!--        <record id="group_oct_bank_reconciliation_user" model="res.groups">-->

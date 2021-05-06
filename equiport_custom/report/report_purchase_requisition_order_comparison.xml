@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="report_order_comparison_tree_view" model="ir.ui.view">
+            <field name="name">report.order.comparison.tree.view</field>
+            <field name="model">report.order.comparison</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="partner_id"/>
+                    <field name="order_id" optional="show"/>
+                    <field name="date_approve"/>
+                    <field name="product_id"/>
+                    <field name="product_qty"/>
+                    <field name="price_unit"/>
+                    <field name="discount"/>
+                    <field name="subtotal" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

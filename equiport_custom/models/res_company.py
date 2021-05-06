@@ -13,14 +13,14 @@ class ResCompany(models.Model):
                                         help="Solicitar a administradores que aprueben pedidos superiores a un importe mínimo")
 
     # Amount by levels
-    op_ini_level = fields.Monetary(string="Monto minimo", default=5000)
-    op_mid_level = fields.Monetary(string="Monto minimo", default=10000)
-    op_top_level = fields.Monetary(string="Monto minimo", default=20000)
+    op_ini_level = fields.Monetary(default=5000)
+    op_mid_level = fields.Monetary(default=10000)
+    op_top_level = fields.Monetary(default=20000)
 
     # Responsible by levels
-    op_ini_user_id = fields.Many2one(comodel_name='res.users', string="Responsable")
-    op_mid_user_id = fields.Many2one(comodel_name='res.users', string="Responsable")
-    op_top_user_id = fields.Many2one(comodel_name='res.users', string="Responsable")
+    op_ini_user_id = fields.Many2one(comodel_name='res.users')
+    op_mid_user_id = fields.Many2one(comodel_name='res.users')
+    op_top_user_id = fields.Many2one(comodel_name='res.users')
 
     # Functions
     @api.onchange('active_op_approval')
@@ -39,8 +39,7 @@ class ResCompany(models.Model):
     #   endregion
 
     # region PO Allow Cancel
-    user_po_allow_cancel = fields.Many2many(comodel_name='res.users', relation='op_allow_cancel_users_rel',
-                                            string="Usuarios")
+    user_po_allow_cancel = fields.Many2many(comodel_name='res.users', relation='op_allow_cancel_users_rel')
     # endregion
     # region SL services
 
@@ -96,5 +95,5 @@ class ResCompany(models.Model):
     # endregion
 
     # region SP Access
-    user_sp_access = fields.Many2many(comodel_name='res.users', relation='sp_access_users_rel', string="Usuarios")
+    user_sp_access = fields.Many2many(comodel_name='res.users', relation='sp_access_users_rel')
     # endregion
