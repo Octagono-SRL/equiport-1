@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class UnitModel(models.Model):
     _name = 'unit.model'
-    _description = ""
+    _description = "Modelo para registrar el modelo de las unidades"
 
     name = fields.Char('Nombre de modelo', required=True)
     brand_id = fields.Many2one('unit.model.brand', 'Marca', required=True,
@@ -27,7 +27,7 @@ class UnitModel(models.Model):
 
 class UnitModelBrand(models.Model):
     _name = 'unit.model.brand'
-    _description = ""
+    _description = "Modelo para registrar las marcas de las unidades"
 
     name = fields.Char(required=True, string="Marca")
     unit_type = fields.Selection([('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')], default='container', required=True, string="Tipo de unidad")

@@ -6,3 +6,6 @@ access_report_order_comparison,access_report_order_comparison,model_report_order
 access_product_state,access_product_state,model_product_state,stock.group_stock_manager,1,1,1,1
 access_product_grade,access_product_grade,model_product_grade,stock.group_stock_manager,1,1,1,1
 access_unit_model,access_unit_model,model_unit_model,stock.group_stock_manager,1,1,1,1
+access_unit_model_brand,access_unit_model_brand,model_unit_model_brand,stock.group_stock_manager,1,1,1,1
+access_unit_model_brand,access_unit_model_brand,model_unit_model_brand,stock.group_stock_user,1,0,0,0
+access_unit_model,access_unit_model,model_unit_model,stock.group_stock_user,1,0,0,0
