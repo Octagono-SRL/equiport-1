@@ -22,7 +22,6 @@ class SaleOrder(models.Model):
                 for sale in confirm_sale_order.filtered(lambda s: len(s.invoice_ids) < 1 or s.invoice_ids.filtered(lambda inv: inv.payment_state not in ['in_payment', 'paid'])):
                     amount_total += sale.amount_total
                 if amount_total + self.amount_total > partner.credit_limit:
-                    print(amount_total, partner.credit_limit, amount_total + self.amount_total)
                     if not partner.over_credit:
                         msg = 'El crédito disponible' \
                               ' Monto = %s \nVerifique "%s" Cuentas o Limites de ' \

@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.0.3',
+    'version': '14.0.0.0.4',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -42,7 +42,10 @@
         'views/res_employee_views.xml',
         'views/stock_orderpoint_views.xml',
         'views/stock_menuitems.xml',
+        # 'views/stock_move_views.xml',
         'views/stock_picking_views.xml',
+        'views/stock_production_lot_views.xml',
+        'views/product_pricelist_views.xml',
         'views/unit_model_views.xml',
         'views/purchase_order_menuitems.xml',
         'views/product_template_views.xml',

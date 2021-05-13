@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-<!--        <record id="rental_order_form_equiport_inherit" model="ir.ui.view">-->
-<!--            <field name="name">rental.order.form.equiport.inherit</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>-->
-<!--            <field name="arch" type="xml">-->
+        <record id="rental_order_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">rental.order.form.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
+            <field name="arch" type="xml">
 
-<!--                <header position="inside">-->
-<!--                    <button name="test_button" type="object" string="ObjectButton"/>-->
+                <field name="partner_id" position="after">
+                    <field name="access_granted" invisible="1"/>
+                    <field name="access_requested" invisible="1"/>
+                </field>
 
-<!--                </header>-->
+                <header position="inside">
+                    <button name="request_access" type="object" string="Solicitar Aprobación"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"/>
+                    <button name="grant_access" type="object" string="Conceder Aprobación"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
+                            groups="sales_team.group_sale_manager"/>
+                </header>
 
 
-<!--            </field>-->
-<!--        </record>-->
+            </field>
+        </record>
 
 
     </data>

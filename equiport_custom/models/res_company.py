@@ -97,3 +97,7 @@ class ResCompany(models.Model):
     # region SP Access
     user_sp_access = fields.Many2many(comodel_name='res.users', relation='sp_access_users_rel')
     # endregion
+
+    # region Rental Pickup Access
+    user_rental_access = fields.Many2many(comodel_name='res.users', relation='rental_access_users_rel')
+    # endregion

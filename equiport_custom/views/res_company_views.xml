@@ -49,6 +49,14 @@
                             </group>
                         </group>
                     </page>
+
+                    <page name="rental_page" string="Alquiler">
+                        <group>
+                            <group string="Encargados">
+                                <field name="user_rental_access" string="Usuarios" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
 
             </field>

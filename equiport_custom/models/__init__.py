@@ -1,6 +1,7 @@
 from . import unit_model
 from . import stock
 from . import product_template
+from . import product_pricelist
 from . import purchase_order
 from . import purchase_requisition
 from . import sale_order

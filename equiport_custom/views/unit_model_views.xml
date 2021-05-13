@@ -8,7 +8,6 @@
                 <tree string="Marca de unidad">
                     <field name="brand_id"/>
                     <field name="name"/>
-                    <!--                    <field name="unit_type"/>-->
                 </tree>
             </field>
         </record>
@@ -35,7 +34,6 @@
                         <group>
                             <group>
                                 <field name="active" invisible="1"/>
-                                <!--                                <field name="unit_type"/>-->
                             </group>
                         </group>
                     </sheet>
@@ -55,6 +53,7 @@
             <field name="arch" type="xml">
                 <tree string="Marca de unidad" editable="bottom">
                     <field name="name"/>
+                    <field name="unit_type"/>
                 </tree>
             </field>
         </record>
@@ -71,6 +70,7 @@
                                 <label for="name" class="oe_edit_only"/>
                                 <h1>
                                     <field name="name"/>
+                                    <field name="unit_type"/>
                                 </h1>
                             </div>
                         </group>
