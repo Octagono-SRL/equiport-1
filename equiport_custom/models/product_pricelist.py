@@ -9,18 +9,10 @@ from odoo.tools import float_repr
 from odoo.tools.misc import get_lang
 
 
-class PriceList(models.Model):
-    _inherit = "product.pricelist"
-
-
 class PriceListItem(models.Model):
-    _inherit = "product.pricelist.item"
+    _inherit = ['product.pricelist.item']
 
-    compute_price = fields.Selection([
-        ('fixed', 'Fixed Price'),
-        ('fixed_discount', 'Descuento fijo'),
-        ('percentage', 'Percentage (discount)'),
-        ('formula', 'Formula')], index=True, default='fixed', required=True)
+    compute_price = fields.Selection(selection_add=[('fixed_discount', 'Descuento fijo')], ondelete={'fixed_discount': 'cascade'})
 
     fixed_discount = fields.Float('Descuento fijo', digits='Discount Price')
 

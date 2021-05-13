@@ -42,7 +42,6 @@
         'views/res_employee_views.xml',
         'views/stock_orderpoint_views.xml',
         'views/stock_menuitems.xml',
-        # 'views/stock_move_views.xml',
         'views/stock_picking_views.xml',
         'views/stock_production_lot_views.xml',
         'views/product_pricelist_views.xml',
