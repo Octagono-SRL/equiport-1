@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_category_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">product.category.form.equiport.inherit</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <label for="description"/>
+                    <field name="description" required="1" placeholder="Ej. Colocadas en la pared"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

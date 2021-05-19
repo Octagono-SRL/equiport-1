@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="report_holding_tax" model="ir.actions.report">
+            <field name="name">Carta de reteneción</field>
+            <field name="model">account.payment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">equiport_custom.report_holding_tax_view</field>
+            <field name="report_file">equiport_custom.report_holding_tax_view</field>
+            <field name="binding_model_id" ref="account.model_account_payment"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="report_holding_tax_view">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div name="date_place" align="left">
+                                <p>
+                                    <span t-field="o.date" t-field-options='{"format": "d MMMM y"}'/><br/><span>
+                                    Santo Domingo, República Dominicana</span>
+                                    <!--                                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d de %B de %Y')"/><br/>  way to put the actual date automatically-->
+                                </p>
+                            </div>
+
+                            <br/> <br/>
+
+                            <div name="attention_call" align="center">
+                                <p><strong>A QUIEN PUEDA INTERESAR</strong></p>
+                            </div>
+
+                            <br/> <br/> <br/> <br/>
+
+                            <div name="subj_destination" align="right">
+                                <p>
+                                    <strong>Asunto:</strong> Solicitud de certificado de retenciones<br/>
+                                    <span t-field="o.ref"/>
+                                </p>
+
+                            </div>
+
+                            <br/>
+
+                            <div class="body">
+                                <div name="greeting" align="left">Estimados,</div>
+                                <br/>
+                                <div name="message" align="justify">
+                                    <p>
+                                        Por medio de la presente, nos dirigimos a ustedes para solicitarle que
+                                        expida Certificado de retenciones correspondiente al circular <strong><span
+                                            t-esc="','.join(o.reconciled_invoice_ids.mapped('name'))"/></strong>, de la
+                                        fecha <span
+                                            t-field="o.date"
+                                            t-field-options='{"format": "d MMMM y"}'/>.
+                                    </p>
+                                </div>
+                                <br/><br/><br/>
+
+                                <div name="farewells"> Atentamente,</div>
+
+                                <br/><br/><br/>
+
+                                <div name="signature">
+                                    <span t-esc="o.user_id.name"/> <br/>
+                                    <span t-field="o.user_id.employee_id.job_id.name"/>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

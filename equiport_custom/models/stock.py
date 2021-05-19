@@ -67,9 +67,35 @@ class StockPicking(models.Model):
         self.access_granted = True
 
     def button_confirm(self):
+        if self.picking_type_code == 'incoming':
+            for line in self.move_ids_without_package:
+                if line.rent_state:
+                    for lot in line.lot_ids:
+                        lot.rent_state = line.rent_state
+                else:
+                    raise ValidationError("Debe colocar el estado de devolucion de la unidad.")
         self.state = 'done'
 
     def request_access(self):
+        sale_id = self.sale_id
+        if self.picking_type_code == 'outgoing' and sale_id:
+            if sale_id.partner_id.allowed_credit:
+                raise ValidationError(f"El documento de origen no ha sido facturado. "
+                                      f"Documento de referencia **{sale_id.name}**.")
+            else:
+                if len(sale_id.invoice_ids) < 1:
+                    raise ValidationError(f"El documento de origen no ha sido facturado. "
+                                          f"Documento de referencia **{sale_id.name}**.")
+                else:
+                    checks = []
+                    for inv in sale_id.invoice_ids:
+                        if inv.state != 'posted':
+                            checks.append(True)
+                        else:
+                            checks.append(False)
+                    if all(checks):
+                        raise ValidationError(f"El documento de origen no tiene facturas confirmadas. "
+                                              f"Documento de referencia **{sale_id.name}**.")
 
         report_binary = self.generate_report_file(self.id)
         attachment_name = "SA_" + self.name
@@ -154,3 +180,33 @@ class StockLocation(models.Model):
     _inherit = 'stock.location'
 
     is_gate_location = fields.Boolean(string="Ubicacion Gate In / Gate Out")
+
+
+class StockProductionLot(models.Model):
+    _inherit = 'stock.production.lot'
+
+    rent_ok = fields.Boolean(related='product_id.rent_ok')
+
+    # Campos relacionados actividad Alquiler
+    rent_state = fields.Selection(
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+        string="Estado", default="available")
+
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    rent_state = fields.Selection(
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+        string="Estado", default="available")
+
+
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    rent_state = fields.Selection(
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+        string="Estado", default="available")

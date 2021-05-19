@@ -21,6 +21,7 @@ class ResPartner(models.Model):
 
     # Credito
     allowed_credit = fields.Boolean(string="Permitir crédito", default=False, tracking=True)
+    credit_warning = fields.Float(string="Alerta en (%)", default=75)
     over_credit = fields.Boolean(string="Permitir extra crédito")
 
     @api.constrains("vat_type", "vat")

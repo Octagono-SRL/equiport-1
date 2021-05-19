@@ -29,6 +29,7 @@
                 </xpath>
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']/group[@name='sale']" position="inside">
                     <field name="credit_limit" attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
+                    <field name="credit_warning" attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
                     <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
                 </xpath>
 

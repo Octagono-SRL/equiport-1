@@ -40,6 +40,7 @@ class ResCompany(models.Model):
 
     # region PO Allow Cancel
     user_po_allow_cancel = fields.Many2many(comodel_name='res.users', relation='op_allow_cancel_users_rel')
+
     # endregion
     # region SL services
 
@@ -65,35 +66,25 @@ class ResCompany(models.Model):
         else:
             return default_gate_service.id
 
-    @api.model
-    def _prepare_stock(self):
-        default_location = self.env['stock.location'].search([('is_gate_location', '=', True)])
-        if not default_location:
-            default_location = self.env['stock.location'].create({
-                'name': 'Clientes',
-                'usage': 'internal',
-                'is_gate_location': True,
-            })
+    default_gate_service = fields.Many2one(comodel_name='product.product', domain=[('is_gate_service', '=', True)],
+                                           string="Servicio Gate In / Gate Out", ondelete='restrict')
 
-        default_stock = self.env['stock.warehouse'].search([('is_gate_stock', '=', True)])
-        if not default_stock:
-            default_stock = self.env['stock.warehouse'].create({
-                'name': 'Clientes',
-                'code': 'WG',
-                'partner_id': self.partner_id.id,
-                'lot_stock_id': default_location.id
-            })
-            return default_stock.id
-        else:
-            return default_stock.id
-
-    default_gate_service = fields.Many2one(comodel_name='product.product', domain=[('type', '=', 'service')],
-                                           string="Servicio Gate In / Gate Out", default=_prepare_gate_service)
-
-    default_stock = fields.Many2one(comodel_name='stock.warehouse', string="Almancen", default=_prepare_stock)
+    default_stock = fields.Many2one(comodel_name='stock.warehouse', string="Almancen",
+                                    domain=[('is_gate_stock', '=', True)], ondelete='restrict')
 
     # endregion
 
     # region SP Access
     user_sp_access = fields.Many2many(comodel_name='res.users', relation='sp_access_users_rel')
+    # endregion
+
+    # region Rental Pickup Access
+    user_rental_access = fields.Many2many(comodel_name='res.users', relation='rental_access_users_rel')
+
+    # endregion
+
+    # region Deposit Rental
+
+    # default_deposit_account_id = fields.Many2one(comodel_name='account.account', string="Cuenta",
+    #                                              domain=[('to_deposit', '=', True)], ondelete='restrict')
     # endregion

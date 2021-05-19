@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_production_lot_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">stock.production.lot.form.equiport.inherit</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <field name="rent_state" widget="statusbar"
+                               statusbar_visible="available,to_check,to_repair,to_wash"
+                               attrs="{'invisible': [('rent_ok','=',False)]}"/>
+                    </header>
+                </xpath>
+                <div class="oe_button_box" name="button_box" position="before">
+                    <field name="rent_ok" invisible="1"/>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

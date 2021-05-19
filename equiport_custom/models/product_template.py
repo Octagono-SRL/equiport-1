@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, tools, fields, models
 
 
 class ProductTemplate(models.Model):
@@ -14,6 +14,7 @@ class ProductTemplate(models.Model):
     unit_model = fields.Many2one(comodel_name='unit.model',
                                  string="Modelo de unidad")
     unit_year = fields.Char(string="Año de unidad")
+    unit_size = fields.Char(string="Tamaño de unidad")
     container_type = fields.Selection([('dry', 'Seco'), ('cooled', 'Refrigerado')], string="Tipo de contenedor")
 
     unit_state_id = fields.Many2one(comodel_name='product.state', string='Estado')

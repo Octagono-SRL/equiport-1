@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="rental_out_deposit_account" model="account.account">
+        <field name="code">23010100</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="reconcile" eval="1"/>
+        <field name="name">Depositos de Renta (a pagar)</field>
+        <field name="to_deposit">1</field>
+        <field name="user_type_id" ref="account.data_account_type_payable"/>
+        <field name="group_id">45</field>
+    </record>
+
+    <record id="rental_in_deposit_account" model="account.account">
+        <field name="code">13010100</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="reconcile" eval="1"/>
+        <field name="name">Depositos de Renta (a cobrar)</field>
+        <field name="to_deposit">1</field>
+        <field name="user_type_id" ref="account.data_account_type_receivable"/>
+        <field name="group_id">45</field>
+    </record>
+</odoo>
