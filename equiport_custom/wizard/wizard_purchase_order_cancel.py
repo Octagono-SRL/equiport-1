@@ -6,7 +6,12 @@ class PurchaseOrderCancel(models.TransientModel):
     _name = 'wizard.purchase.order.cancel'
     _description = "Modelo para cancelar las ordenes de compra"
 
-    reason = fields.Selection([('test', 'Prueba'), ('test2', 'Prueba2')], string="Razón de cancelacion", default=lambda s: s._context.get('cancel_reason'))
+    reason = fields.Selection([
+        ('supplier_no_fulfill', 'El suplidor no cumplió con una o varias de las especificaciones del pedido'),
+        ('no_need', 'Los materiales ya no son necesarios'),
+        ('order_has_errors', 'Se realizó una orden con error identificado luego de la impresión'),
+        ('change_info', 'Cambios en la informacion de la orden'),
+    ], string="Razón de cancelacion", default=lambda s: s._context.get('cancel_reason'))
     purchase_order_id = fields.Many2one(comodel_name='purchase.order', string="Orden de compra",
                                         default=lambda s: s._context.get('order_id'))
     user_id = fields.Many2one(comodel_name='res.users', string="Solicitante de permiso",
