@@ -13,7 +13,12 @@ class PurchaseOrder(models.Model):
     request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
     approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
     requested_cancel = fields.Boolean(string="Solicitó cancelación", tracking=True)
-    cancel_reason = fields.Selection([('test', 'Prueba'), ('test2', 'Prueba2')], tracking=True , string="Razón de Cancelación")
+    cancel_reason = fields.Selection([
+        ('supplier_no_fulfill', 'El suplidor no cumplió con una o varias de las especificaciones del pedido'),
+        ('no_need', 'Los materiales ya no son necesarios'),
+        ('order_has_errors', 'Se realizó una orden con error identificado luego de la impresión'),
+        ('change_info', 'Cambios en la informacion de la orden'),
+    ], tracking=True, string="Razón de Cancelación")
 
     @api.depends('amount_total', 'company_id.active_op_approval')
     def _check_approval_need(self):
