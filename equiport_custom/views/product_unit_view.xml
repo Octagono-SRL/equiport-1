@@ -47,14 +47,14 @@
             </field>
         </record>
 
-        <menuitem id="product_state_id"
-                  action="action_grade_unit"
-                  parent="stock.menu_product_in_config_stock"
-                  groups="stock.group_stock_manager"
-                  sequence="50"/>
+<!--        <menuitem id="product_state_id"-->
+<!--                  action="action_state_unit"-->
+<!--                  parent="stock.menu_product_in_config_stock"-->
+<!--                  groups="stock.group_stock_manager"-->
+<!--                  sequence="50"/>-->
 
         <menuitem id="product_grade_id"
-                  action="action_state_unit"
+                  action="action_grade_unit"
                   parent="stock.menu_product_in_config_stock"
                   groups="stock.group_stock_manager"
                   sequence="49"/>

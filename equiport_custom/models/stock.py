@@ -67,6 +67,13 @@ class StockPicking(models.Model):
         self.access_granted = True
 
     def button_confirm(self):
+        if self.picking_type_code == 'incoming':
+            for line in self.move_ids_without_package:
+                if line.rent_state:
+                    for lot in line.lot_ids:
+                        lot.rent_state = line.rent_state
+                else:
+                    raise ValidationError("Debe colocar el estado de devolucion de la unidad.")
         self.state = 'done'
 
     def request_access(self):
@@ -182,8 +189,8 @@ class StockProductionLot(models.Model):
 
     # Campos relacionados actividad Alquiler
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado')],
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado", default="available")
 
 
@@ -191,15 +198,15 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado')],
-        string="Estado")
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+        string="Estado", default="available")
 
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado')],
-        string="Estado")
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+        string="Estado", default="available")

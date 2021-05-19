@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="client_equiport_stock_warehouse" model="stock.warehouse">
+            <field name="name">Clientes</field>
+            <field name="code">WG</field>
+            <field name="is_gate_stock">1</field>
+            <field name="partner_id" ref="base.main_company"/>
+            <field name="lot_stock_id" ref="equiport_custom.client_equiport_stock_location"/>
+        </record>
+    </data>
+</odoo>

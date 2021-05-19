@@ -9,8 +9,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                     <header>
-                        <field name="rent_state" widget="statusbar" statusbar_visible="available,to_check,to_repair,to_wash"
-                               options="{'clickable': '1'}" attrs="{'invisible': [('rent_ok','=',False)]}"/>
+                        <field name="rent_state" widget="statusbar"
+                               statusbar_visible="available,to_check,to_repair,to_wash"
+                               attrs="{'invisible': [('rent_ok','=',False)]}"/>
                     </header>
                 </xpath>
                 <div class="oe_button_box" name="button_box" position="before">

@@ -55,6 +55,10 @@
                             <group string="Encargados">
                                 <field name="user_rental_access" string="Usuarios" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                             </group>
+
+<!--                            <group string="Depositos">-->
+<!--                                <field name="default_deposit_account_id" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>-->
+<!--                            </group>-->
                         </group>
                     </page>
                 </xpath>

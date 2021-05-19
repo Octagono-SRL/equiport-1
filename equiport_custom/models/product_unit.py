@@ -8,7 +8,7 @@ class ProductState(models.Model):
     _description = 'Product State'
 
     name = fields.Char(string='Nombre', required=True)
-    active = fields.Boolean(string='Activo')
+    active = fields.Boolean(string='Activo', default=True)
 
 
 class ProductGrade(models.Model):
@@ -16,4 +16,4 @@ class ProductGrade(models.Model):
     _description = 'Product Grade'
 
     name = fields.Char(string='Nombre', required=True)
-    active = fields.Boolean(string='Activo')
+    active = fields.Boolean(string='Activo', default=True)

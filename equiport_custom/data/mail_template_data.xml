@@ -3,7 +3,7 @@
 
     <!-- Mail template are declared in a NOUPDATE block
          so users can freely customize/delete them -->
-    <data noupdate="0">
+    <data noupdate="1">
         <!--Email template request cancel purchase order -->
         <record id="email_template_request_purchase_order_cancel" model="mail.template">
             <field name="name">Equiport: Enviar solicitud de aprobación de cancelación</field>

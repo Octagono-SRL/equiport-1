@@ -10,6 +10,73 @@ class SaleOrder(models.Model):
 
     access_granted = fields.Boolean(string="Acceso permitido", tracking=True)
     access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
+    deposit_status = fields.Selection([('added', 'Agregado'), ('returned', 'Devuelto')], string="Estado de deposito")
+    payment_ids = fields.One2many('account.payment', 'rental_order_id', string="Depositos")
+
+    def action_view_deposits(self):
+        payments = self.payment_ids
+        self.ensure_one()
+
+        action = {
+            'name': _('Payments'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.payment',
+            'context': {'create': False},
+        }
+        if len(payments) == 1:
+            action.update({
+                'view_mode': 'form',
+                'res_id': payments.id,
+            })
+        else:
+            action.update({
+                'view_mode': 'tree,form',
+                'domain': [('id', 'in', payments.ids)],
+            })
+
+        return action
+
+    def add_deposit(self):
+        # self.deposit_status = 'added'
+
+        return {
+            'name': _('Register Payment'),
+            'res_model': 'rental.payment.register',
+            'view_mode': 'form',
+            'context': {
+                'active_model': 'sale.order',
+                'active_ids': self.ids,
+                'payment_type': 'inbound',
+                'deposit_status': 'added',
+            },
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+        }
+
+    def remove_deposit(self):
+        if self.rental_status not in ['returned', 'cancel']:
+            raise ValidationError(
+                "No puede devolverse el deposito hasta que se retorne la unidad. O cancelada la orden de alquiler.")
+        if len(self.picking_ids) > 0:
+            for picking in self.picking_ids.filtered(lambda p: p.picking_type_code == 'incoming'):
+                if picking.state != 'done':
+                    raise ValidationError(
+                        "No puede devolverse el deposito hasta confirmarse la entrega.")
+
+        return {
+            'name': _('Register Payment'),
+            'res_model': 'rental.payment.register',
+            'view_mode': 'form',
+            'context': {
+                'active_model': 'sale.order',
+                'active_ids': self.ids,
+                'payment_type': 'outbound',
+                'deposit_status': 'returned',
+            },
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+        }
+        # self.deposit_status = 'returned'
 
     def get_responsible(self):
         partners = self.env['res.partner']
@@ -33,7 +100,6 @@ class SaleOrder(models.Model):
         self.access_granted = True
 
     def request_access(self):
-
         report_binary = self.generate_report_file(self.id)
         attachment_name = "SA_rental_" + self.name
         attachment_id = self.env['ir.attachment'].create({
@@ -51,7 +117,8 @@ class SaleOrder(models.Model):
         self.ensure_one()
         ir_model_data = self.env['ir.model.data']
         try:
-            template_id = ir_model_data.get_object_reference('equiport_custom', 'email_template_request_rental_pickup')[1]
+            template_id = ir_model_data.get_object_reference('equiport_custom', 'email_template_request_rental_pickup')[
+                1]
         except ValueError:
             template_id = False
         try:
@@ -99,7 +166,8 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
         # TODO find a better way to no create extra attachment
-        attachment_id = self.env['ir.attachment'].search([('res_model', '=', 'mail.compose.message'), ('name', '=', f"SA_rental_{self.name}.pdf")])
+        attachment_id = self.env['ir.attachment'].search(
+            [('res_model', '=', 'mail.compose.message'), ('name', '=', f"SA_rental_{self.name}.pdf")])
 
         if attachment_id:
             attachment_id.unlink()
@@ -173,6 +241,7 @@ class SaleOrder(models.Model):
             self = self.with_company(self.company_id)
             deposit_product = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
             partner = self.partner_id
+            deposit_status = self.deposit_status
             if partner.allowed_credit:
                 user_id = self.env['res.users'].search([
                     ('partner_id', '=', partner.id)], limit=1)
@@ -194,16 +263,21 @@ class SaleOrder(models.Model):
                                                 self.partner_id.name)
                             raise UserError('No se puede despachar '
                                             'Orden. \n' + msg)
-            elif deposit_product:
-                deposit_product = self.env['product.product'].browse(int(deposit_product))
-                verification_list = [(inv.payment_state in ['paid', 'in_payment']) for inv in self.invoice_ids if
-                            inv.invoice_line_ids.filtered(lambda l: l.product_id == deposit_product)]
-                if not any(verification_list):
-                    raise ValidationError("No se puede despachar sin depósito o pago registrado.")
 
-            if len(self.invoice_ids) >= 0:
-                if not self.invoice_ids.filtered(lambda inv: inv.payment_state in ['paid', 'in_payment']):
-                    raise ValidationError("No se puede despachar sin depósito o pago registrado.")
+            elif deposit_status != 'added' or len(self.invoice_ids) >= 0:
+
+                if not self.payment_ids.filtered(lambda pay: pay.is_rental_deposit and pay.payment_type == 'inbound' and pay.state == 'posted'):
+                    raise ValidationError("No se puede despachar sin depósito o pago sin registrar.")
+                elif len(self.invoice_ids) > 0:
+                    # raise ValidationError("No se puede despachar sin depósito o pago sin registrar.")
+                    deposit_product = self.env['product.product'].browse(int(deposit_product))
+                    verification_list = [(inv.payment_state in ['paid', 'in_payment']) for inv in self.invoice_ids if
+                                inv.invoice_line_ids.filtered(lambda l: l.product_id == deposit_product)]
+                    if not any(verification_list):
+                        raise ValidationError("No se puede despachar con factura de depósito sin pagar.")
+
+                    if not self.invoice_ids.filtered(lambda inv: inv.payment_state in ['paid', 'in_payment']):
+                        raise ValidationError("No se puede despachar con facturas sin pagar.")
 
         res = super(SaleOrder, self).open_pickup()
         return res

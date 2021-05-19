@@ -10,15 +10,29 @@
                 <field name="partner_id" position="after">
                     <field name="access_granted" invisible="1"/>
                     <field name="access_requested" invisible="1"/>
+                    <field name="deposit_status" invisible="1"/>
                 </field>
 
                 <header position="inside">
+                    <button name="add_deposit" type="object" string="Agregar deposito" class="oe_highlight"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']),('deposit_status','in',['added', 'returned'])]}"/>
+                    <button name="remove_deposit" type="object" string="Devolver deposito" class="oe_highlight"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"/>
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
                             groups="sales_team.group_sale_manager"/>
                 </header>
+
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <button name="action_view_deposits" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('deposit_status', 'not in', ['added', 'returned'])]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Depositos</span>
+                            <!--                                <span class="o_stat_text">Preview</span>-->
+                        </div>
+                    </button>
+                </div>
 
 
             </field>

@@ -15,13 +15,13 @@
 
                 <xpath expr="//notebook/page[@name='extra']/group/group[@name='other_infos']" position="before">
                     <group string="Datos del cliente" name="other_partner_infos"
-                           attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}">
+                           attrs="{'invisible': [('is_rental', '=', False)]}">
                         <field name="partner_drive"
-                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')], 'required':[('picking_type_code', '=', 'outgoing')]}"/>
+                               attrs="{'invisible': [('is_rental', '=', False)], 'required':[('is_rental', '=', True)]}"/>
                         <field name="vat_drive"
-                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')], 'required':[('picking_type_code', '=', 'outgoing')]}"/>
+                               attrs="{'invisible': [('is_rental', '=', False)], 'required':[('is_rental', '=', True)]}"/>
                         <field name="partner_truck"
-                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')], 'required':[('picking_type_code', '=', 'outgoing')]}"/>
+                               attrs="{'invisible': [('is_rental', '=', False)], 'required':[('is_rental', '=', True)]}"/>
                     </group>
                 </xpath>
 
@@ -75,7 +75,7 @@
 
                 <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='lot_ids']" position="after">
                     <field name="rent_state"
-                           attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')], 'invisible': [('lot_ids', '=', False),('parent.is_rental', '=', False)]}"/>
+                           attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')], 'invisible': [('lot_ids', '=', False),('parent.is_rental', '=', False)], 'required': [('lot_ids', '!=', False),('parent.is_rental', '=', True)]}"/>
                 </xpath>
 
 
