@@ -11,8 +11,10 @@ class RentalProcessing(models.TransientModel):
         res = super(RentalProcessing, self).apply()
 
         if self.status == 'pickup':
-            if not any(self.rental_wizard_line_ids.mapped('pickedup_lot_ids')):
-                raise ValidationError("Coloque un serial para la unidad a recoger")
+            for line in self.rental_wizard_line_ids:
+                if line.product_id.tracking == 'serial':
+                    if not any(self.rental_wizard_line_ids.mapped('pickedup_lot_ids')):
+                        raise ValidationError("Coloque un serial para la unidad a recoger")
             lines = []
             pick_output = self.env['stock.picking'].create({
                 'name': f'Movimiento de Alquiler: Entrega {self.order_id.name}',
@@ -58,5 +60,6 @@ class RentalProcessing(models.TransientModel):
                     pick_input.move_lines += move_line_id.move_id
             self.order_id.picking_ids += pick_input
             pick_input.state = 'assigned'
+            self.order_id.rental_subscription_id.set_close()
 
         return res

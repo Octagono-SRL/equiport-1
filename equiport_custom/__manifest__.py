@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.0.5',
+    'version': '14.0.0.0.6',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -26,6 +26,7 @@
         'hr',
         'fleet',
         'repair',
+        'sale_subscription',
         'sale_renting',
         'sale_stock_renting',
         'purchase_discount',

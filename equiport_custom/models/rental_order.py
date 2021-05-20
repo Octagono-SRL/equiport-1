@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
@@ -12,6 +13,112 @@ class SaleOrder(models.Model):
     access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
     deposit_status = fields.Selection([('added', 'Agregado'), ('returned', 'Devuelto')], string="Estado de deposito")
     payment_ids = fields.One2many('account.payment', 'rental_order_id', string="Depositos")
+    rental_subscription_id = fields.Many2one(comodel_name='sale.subscription', string="Suscripción")
+    rental_template_id = fields.Many2one(comodel_name='sale.subscription.template', string="Plantilla de suscripción")
+    rental_sub_state = fields.Selection(related='rental_subscription_id.stage_id.category')
+
+    def update_existing_rental_subscriptions(self):
+        """
+        Update subscriptions already linked to the order by updating or creating lines.
+
+        :rtype: list(integer)
+        :return: ids of modified subscriptions
+        """
+        for order in self:
+            lines = self.order_line.filtered(lambda l: l.product_id.rent_ok)
+            subscription = order.rental_subscription_id
+            if lines:
+                subscription.recurring_invoice_line_ids.unlink()
+                # Asignando fecha de subcripcion
+                sub_lines = lines._prepare_subscription_line_data()
+                subscription.sudo().write({
+                 'recurring_invoice_line_ids': sub_lines,
+                })
+
+                # Asignando fecha de subcripcion
+                for line in lines:
+                    next_date = datetime.datetime.combine(subscription.recurring_next_date, line.return_date.time())
+                    line.write({
+                        'return_date': next_date,
+                    })
+                    line.product_id_change()
+                    # actualizando lineas de subscripcion
+                    sub_line = subscription.recurring_invoice_line_ids.filtered(
+                        lambda l: (l.product_id, l.uom_id, l.price_unit) == (
+                            line.product_id, line.product_uom, line.price_unit)
+                    )
+                    if sub_line:
+                        sub_line[0].name = line.name
+                        sub_line[0].quantity = line.product_uom_qty
+
+    def create_rental_subscriptions(self):
+
+        """
+        Create subscriptions based on the products' subscription template.
+
+        Create subscriptions based on the templates found on order lines' products. Note that only
+        lines not already linked to a subscription are processed; one subscription is created per
+        distinct subscription template found.
+
+        :rtype: list(integer)
+        :return: ids of newly create subscriptions
+        """
+        res = []
+        for order in self:
+            lines = self.order_line.filtered(lambda l: l.product_id.rent_ok)
+            # create a subscription for each template with all the necessary lines
+            if lines:
+                template = self.rental_template_id
+                # for template in to_create:
+                values = order._prepare_subscription_data(template)
+                values['recurring_invoice_line_ids'] = lines._prepare_subscription_line_data()
+                subscription = self.env['sale.subscription'].sudo().create(values)
+                subscription.onchange_date_start()
+                subscription.rental_order_id = order.id
+                order.rental_subscription_id = subscription.id
+                res.append(subscription.id)
+                lines.write({
+                    'subscription_id': subscription.id
+                })
+                # Asignando fecha de subcripcion
+                for line in lines:
+                    next_date = datetime.datetime.combine(subscription.recurring_next_date, line.return_date.time())
+                    line.write({
+                        'return_date': next_date,
+                    })
+                    line.product_id_change()
+                    # actualizando lineas de subscripcion
+                    sub_line = subscription.recurring_invoice_line_ids.filtered(
+                        lambda l: (l.product_id, l.uom_id, l.price_unit) == (
+                            line.product_id, line.product_uom, line.price_unit)
+                    )
+                    if sub_line:
+                        sub_line[0].name = line.name
+                        sub_line[0].quantity = line.product_uom_qty
+
+                subscription.message_post_with_view(
+                    'mail.message_origin_link', values={'self': subscription, 'origin': order},
+                    subtype_id=self.env.ref('mail.mt_note').id, author_id=self.env.user.partner_id.id
+                )
+                self.env['sale.subscription.log'].sudo().create({
+                    'subscription_id': subscription.id,
+                    'event_date': fields.Date.context_today(self),
+                    'event_type': '0_creation',
+                    'amount_signed': subscription.recurring_monthly,
+                    'recurring_monthly': subscription.recurring_monthly,
+                    'currency_id': subscription.currency_id.id,
+                    'category': subscription.stage_category,
+                    'user_id': order.user_id.id,
+                    'team_id': order.team_id.id,
+                })
+        return res
+
+    def action_confirm(self):
+        if self.is_rental_order and self.rental_template_id:
+            if not self.rental_subscription_id:
+                self.create_rental_subscriptions()
+        res = super(SaleOrder, self).action_confirm()
+        return res
 
     def action_view_deposits(self):
         payments = self.payment_ids
