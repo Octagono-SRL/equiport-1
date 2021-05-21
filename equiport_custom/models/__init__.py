@@ -9,6 +9,7 @@ from . import purchase_order
 from . import purchase_requisition
 from . import sale_order
 from . import rental_order
+from . import sale_subscription
 from . import repair_order
 from . import crm_lead
 from . import res_partner

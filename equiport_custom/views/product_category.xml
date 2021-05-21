@@ -7,8 +7,19 @@
             <field name="model">product.category</field>
             <field name="inherit_id" ref="product.product_category_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='name']" position="after">
-                    <label for="description"/>
+                <xpath expr="//field[@name='parent_id']" position="before">
+<!--                    <label for="description"/>-->
+                    <field name="description" required="1" placeholder="Ej. Colocadas en la pared"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_category_tree_equiport_inherit" model="ir.ui.view">
+            <field name="name">product.category.tree.equiport.inherit</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_list_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='display_name']" position="after">
                     <field name="description" required="1" placeholder="Ej. Colocadas en la pared"/>
                 </xpath>
             </field>

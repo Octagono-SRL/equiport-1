@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, tools, fields, models
+from odoo import api, tools, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class ProductTemplate(models.Model):
@@ -34,3 +35,26 @@ class ProductTemplate(models.Model):
 
     is_tool = fields.Boolean(string="Es herramienta")
     assign_user_id = fields.Many2one(comodel_name='hr.employee', string="Asignado a")
+
+    # Ajustes para la subcripcion de alquileres
+
+    @api.onchange('type')
+    def _onchange_product_type(self):
+        res = False
+        if not self.rent_ok:
+            res = super(ProductTemplate, self)._onchange_product_type()
+        return res
+
+    @api.onchange('recurring_invoice')
+    def _onchange_recurring_invoice(self):
+        res = False
+        if not self.rent_ok:
+            res = super(ProductTemplate, self)._onchange_recurring_invoice()
+        return res
+
+    @api.constrains('recurring_invoice', 'type')
+    def _check_subscription_product(self):
+        res = False
+        if not self.rent_ok:
+            res = super(ProductTemplate, self)._check_subscription_product()
+        return res

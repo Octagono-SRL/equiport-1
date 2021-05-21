@@ -36,11 +36,14 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         sale_id = self.sale_id
-        if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
-            for inv in sale_id.invoice_ids.filtered(lambda i: i.state == 'posted'):
-                if inv.payment_state not in ['in_payment', 'paid']:
-                    raise ValidationError(f"Posee facturas sin pago, no puede validar este despacho. "
-                                          f"Documento de referencia **{inv.name}**.")
+        if not self.sale_id.partner_id.allowed_credit:
+            if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
+                for inv in sale_id.invoice_ids.filtered(lambda i: i.state == 'posted'):
+                    if inv.payment_state not in ['in_payment', 'paid']:
+                        raise ValidationError(f"Posee facturas sin pago, no puede validar este despacho. "
+                                              f"Documento de referencia **{inv.name}**.")
+            elif self.picking_type_code == 'outgoing' and sale_id.state == 'sale' and not sale_id.invoice_ids:
+                raise ValidationError(f"Se debe facturar y pagar la orden, no puede validar este despacho. ")
 
         res = super(StockPicking, self).button_validate()
         return res
@@ -200,7 +203,7 @@ class StockMoveLine(models.Model):
     rent_state = fields.Selection(
         [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
-        string="Estado", default="available")
+        string="Estado")
 
 
 class StockMove(models.Model):
@@ -209,4 +212,4 @@ class StockMove(models.Model):
     rent_state = fields.Selection(
         [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'), ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
-        string="Estado", default="available")
+        string="Estado")
