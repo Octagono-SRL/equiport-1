@@ -32,7 +32,7 @@ class AccountMoveCancel(models.TransientModel):
                         "already in 'Cancelled' state."
                     )
                 )
-            if invoice.invoice_payment_state != "not_paid":
+            if invoice.payment_state != "not_paid": # invoice_payment_state cambiado a payment_state
                 raise UserError(
                     _(
                         "Selected invoice(s) cannot be cancelled as they are "
