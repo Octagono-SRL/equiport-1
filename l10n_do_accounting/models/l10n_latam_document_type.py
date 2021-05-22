@@ -43,6 +43,13 @@ class L10nLatamDocumentType(models.Model):
         " operation type, the responsibility of both the issuer and the"
         " receptor of the document",
     )
+    l10n_do_ncf_expiration_date = fields.Date(
+        string="NCF Expiration date",
+        required=True,
+        default=fields.Date.end_of(
+            fields.Date.today().replace(year=fields.Date.today().year + 1), "year"
+        ),
+    )
     internal_type = fields.Selection(
         selection_add=[
             ("in_invoice", "Supplier Invoices"),
@@ -89,12 +96,16 @@ class L10nLatamDocumentType(models.Model):
             return False
 
         # NCF/ECF validation regex
-        regex = r"^((P?(?=.{11})B)|(?=.{13})E)(?!2)([0-4][1-7])(\d{8}|\d{10})$"
+        regex = (
+            r"^((P?(?=.{11})B)|(?=.{13})E)%s(\d{8}|\d{10})$"
+            % dict(self._get_l10n_do_ncf_types())[self.l10n_do_ncf_type]
+        )
         pattern = compile(regex)
 
         if not bool(pattern.match(document_number)):
             raise ValidationError(
-                _("Document number %s doesn't match expected pattern" % document_number)
+                _("NCF %s doesn't have the correct structure")
+                % document_number
             )
 
         return document_number
