@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
 
                 <field name="partner_id" position="after">
-                    <field name="is_gate_service" invisible="0"/>
+                    <field name="is_gate_service" invisible="1"/>
                 </field>
 
                 <field name="currency_id" position="attributes">
