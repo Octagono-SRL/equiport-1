@@ -7,6 +7,14 @@
             <field name="name">Permitir transferencias, ajustes de inventario, desecho y costes en destino.</field>
         </record>
 
+        <record id="set_security_group_for_costumer_invoices" model="res.groups">
+            <field name="name">Encargado creacion de facturas sin documento de origen.</field>
+        </record>
+
+        <record id="create_customer_invoices" model="res.groups">
+            <field name="name">Crear facturas sin documento de origen definido.</field>
+        </record>
+
         <record id="request_cancel_purchase_order" model="res.groups">
             <field name="name">Solicita aprobación de cancelación de las ordenes de compra.</field>
         </record>

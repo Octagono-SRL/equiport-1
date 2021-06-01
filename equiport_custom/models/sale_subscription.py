@@ -41,11 +41,20 @@ class SaleSubscription(models.Model):
                     })
                     line.product_id_change()
 
-                # actualizando lineas de subscripcion
+                    # actualizando lineas de subscripcion
                     sub_line = self.recurring_invoice_line_ids.filtered(
-                        lambda l: (l.product_id, l.uom_id, l.price_unit) == (
-                        line.product_id, line.product_uom, line.price_unit)
+                        lambda l: l.rental_order_line_id == line
                     )
                     if sub_line:
                         sub_line[0].name = line.name
                         sub_line[0].quantity = line.product_uom_qty
+
+                    # Actualizando precio de lineas nuevas
+                    if line.new_rental_addition:
+                        sub_line[0].price_unit = line.price_unit
+
+
+class SaleSubscriptionLine(models.Model):
+    _inherit = ['sale.subscription.line']
+
+    rental_order_line_id = fields.Many2one('sale.order.line', string="Linea de alquiler")

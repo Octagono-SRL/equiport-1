@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_rental_report_tree_equiport" model="ir.ui.view">
+        <field name="name">sale.rental.report.tree.equiport</field>
+        <field name="model">sale.rental.report</field>
+        <field name="arch" type="xml">
+            <tree string="Análisis de renta">
+                <field name="order_id" optional="hide"/>
+                <field name="rental_subscription_id" optional="hide"/>
+                <field name="partner_id"/>
+<!--                <field name="date"/>-->
+                <field name="recurring_interval" optional="show"/>
+                <field name="recurring_rule_type" optional="show"/>
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="product_tmpl_id" invisible="1"/>
+                <field name="categ_id" optional="hide"/>
+                <field name="product_uom" optional="hide"/>
+                <field name="pickup_date" optional="show"/>
+                <field name="return_date" optional="show"/>
+                <field name="warehouse_id" optional="show"/>
+                <field name="quantity"/>
+                <field name="qty_delivered" optional="hide"/>
+                <field name="qty_returned" optional="hide"/>
+                <field name="company_id" invisible="1"/>
+                <field name="price"/>
+                <field name="currency_id"/>
+                <field name="currency_rate" optional="hide"/>
+                <field name="state" invisible="1"/>
+                <field name="rental_status"/>
+            </tree>
+        </field>
+    </record>
+
+      <record id="sale_renting.action_rental_report" model="ir.actions.act_window">
+          <field name="view_mode">tree,graph,pivot</field>
+          <field name="context">{
+            'search_default_confirmed_orders': 1,
+            'group_by_no_leaf': 0,
+            'group_by': [],
+            'search_default_filter_date': 1}</field>
+      </record>
+
+</odoo>

@@ -6,7 +6,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 
 
-class SaleOrder(models.Model):
+class RentalOrder(models.Model):
     _inherit = 'sale.order'
 
     access_granted = fields.Boolean(string="Acceso permitido", tracking=True)
@@ -29,10 +29,22 @@ class SaleOrder(models.Model):
             subscription = order.rental_subscription_id
             if lines:
                 subscription.recurring_invoice_line_ids.unlink()
-                # Asignando fecha de subcripcion
-                sub_lines = lines._prepare_subscription_line_data()
+                # Asignando lineas de subcripcion
+                # sub_lines = lines._prepare_subscription_line_data()
+                recurring_lines = []
+                for rent_line in lines:
+                    recurring_lines.append((0, False, {
+                        'rental_order_line_id': rent_line.id,
+                        'product_id': rent_line.product_id.id,
+                        'name': rent_line.name,
+                        'quantity': rent_line.product_uom_qty,
+                        'uom_id': rent_line.product_uom.id,
+                        'price_unit': rent_line.price_unit,
+                        'discount': rent_line.discount if rent_line.order_id.subscription_management != 'upsell' else False,
+                    }))
+
                 subscription.sudo().write({
-                 'recurring_invoice_line_ids': sub_lines,
+                    'recurring_invoice_line_ids': recurring_lines,
                 })
 
                 # Asignando fecha de subcripcion
@@ -44,10 +56,12 @@ class SaleOrder(models.Model):
                     line.product_id_change()
                     # actualizando lineas de subscripcion
                     sub_line = subscription.recurring_invoice_line_ids.filtered(
-                        lambda l: (l.product_id, l.uom_id, l.price_unit) == (
-                            line.product_id, line.product_uom, line.price_unit)
+                        lambda l: l.rental_order_line_id == line
                     )
                     if sub_line:
+                        if line.new_rental_addition and (line.start_rent_price > 0) and not line.new_rental_added:
+                            sub_line[0].price_unit = line.start_rent_price
+                            line.new_rental_added = True
                         sub_line[0].name = line.name
                         sub_line[0].quantity = line.product_uom_qty
 
@@ -71,7 +85,20 @@ class SaleOrder(models.Model):
                 template = self.rental_template_id
                 # for template in to_create:
                 values = order._prepare_subscription_data(template)
-                values['recurring_invoice_line_ids'] = lines._prepare_subscription_line_data()
+                recurring_lines = []
+                for rent_line in lines:
+                    recurring_lines.append((0, False, {
+                        'rental_order_line_id': rent_line.id,
+                        'product_id': rent_line.product_id.id,
+                        'name': rent_line.name,
+                        'quantity': rent_line.product_uom_qty,
+                        'uom_id': rent_line.product_uom.id,
+                        'price_unit': rent_line.price_unit,
+                        'discount': rent_line.discount if rent_line.order_id.subscription_management != 'upsell' else False,
+                    }))
+
+                values['recurring_invoice_line_ids'] = recurring_lines
+                # values['recurring_invoice_line_ids'] = lines._prepare_subscription_line_data()
                 subscription = self.env['sale.subscription'].sudo().create(values)
                 subscription.onchange_date_start()
                 subscription.rental_order_id = order.id
@@ -89,8 +116,7 @@ class SaleOrder(models.Model):
                     line.product_id_change()
                     # actualizando lineas de subscripcion
                     sub_line = subscription.recurring_invoice_line_ids.filtered(
-                        lambda l: (l.product_id, l.uom_id, l.price_unit) == (
-                            line.product_id, line.product_uom, line.price_unit)
+                        lambda l: l.rental_order_line_id == line
                     )
                     if sub_line:
                         sub_line[0].name = line.name
@@ -117,7 +143,7 @@ class SaleOrder(models.Model):
         if self.is_rental_order and self.rental_template_id:
             if not self.rental_subscription_id:
                 self.create_rental_subscriptions()
-        res = super(SaleOrder, self).action_confirm()
+        res = super(RentalOrder, self).action_confirm()
         return res
 
     def action_view_deposits(self):
@@ -271,7 +297,7 @@ class SaleOrder(models.Model):
             self.write({'access_requested': True})
             kwargs['attachment_ids'] = self.env.context.get('attachment_ids')
 
-        res = super(SaleOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
+        res = super(RentalOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
         # TODO find a better way to no create extra attachment
         attachment_id = self.env['ir.attachment'].search(
             [('res_model', '=', 'mail.compose.message'), ('name', '=', f"SA_rental_{self.name}.pdf")])
@@ -290,7 +316,7 @@ class SaleOrder(models.Model):
                     if not partner_id.commercial_register or not partner_id.leasing_contract:
                         raise ValidationError("El contacto no tiene los documentos necesarios para continuar.")
 
-        return super(SaleOrder, self).create(vals)
+        return super(RentalOrder, self).create(vals)
 
     def write(self, values):
         if self.is_rental_order:
@@ -300,7 +326,7 @@ class SaleOrder(models.Model):
                     if not partner_id.commercial_register or not partner_id.leasing_contract:
                         raise ValidationError("El contacto no tiene los documentos necesarios para continuar.")
 
-        res = super(SaleOrder, self).write(values)
+        res = super(RentalOrder, self).write(values)
 
         return res
 
@@ -373,18 +399,56 @@ class SaleOrder(models.Model):
 
             elif deposit_status != 'added' or len(self.invoice_ids) >= 0:
 
-                if not self.payment_ids.filtered(lambda pay: pay.is_rental_deposit and pay.payment_type == 'inbound' and pay.state == 'posted'):
+                if not self.payment_ids.filtered(
+                        lambda pay: pay.is_rental_deposit and pay.payment_type == 'inbound' and pay.state == 'posted'):
                     raise ValidationError("No se puede despachar sin depósito o pago sin registrar.")
                 elif len(self.invoice_ids) > 0:
-                    # raise ValidationError("No se puede despachar sin depósito o pago sin registrar.")
                     deposit_product = self.env['product.product'].browse(int(deposit_product))
                     verification_list = [(inv.payment_state in ['paid', 'in_payment']) for inv in self.invoice_ids if
-                                inv.invoice_line_ids.filtered(lambda l: l.product_id == deposit_product)]
-                    if not any(verification_list):
+                                         inv.invoice_line_ids.filtered(lambda l: l.product_id == deposit_product)]
+
+                    if len(verification_list) > 0 and not any(verification_list):
                         raise ValidationError("No se puede despachar con factura de depósito sin pagar.")
 
                     if not self.invoice_ids.filtered(lambda inv: inv.payment_state in ['paid', 'in_payment']):
                         raise ValidationError("No se puede despachar con facturas sin pagar.")
 
-        res = super(SaleOrder, self).open_pickup()
+        res = super(RentalOrder, self).open_pickup()
         return res
+
+
+class RentalOrderLine(models.Model):
+    _inherit = ['sale.order.line']
+
+    new_rental_addition = fields.Boolean(string="Adición a renta", compute='_check_rental_lines', copy=False)
+    new_rental_added = fields.Boolean(string="Agregado", copy=False)
+    start_rent_price = fields.Float(string="Cargo inicial")
+
+    @api.onchange('name')
+    def set_domain_for_rental_product(self):
+        res = {}
+        domain = [('sale_ok', '=', True), '|', ('company_id', '=', False),
+                  ('company_id', '=', self.order_id.company_id)]
+        rent_domain = [('rent_ok', '=', True), '|', ('company_id', '=', False),
+                       ('company_id', '=', self.order_id.company_id)]
+        if self.order_id.is_rental_order:
+            res['domain'] = {'product_id': rent_domain}
+        else:
+            res['domain'] = {'product_id': domain}
+        return res
+
+    @api.depends('product_id', 'create_date')
+    def _check_rental_lines(self):
+        for rec in self:
+            if rec.order_id.is_rental_order and rec.order_id.rental_subscription_id:
+
+                if rec.create_date:
+                    if rec.order_id.create_date <= rec.create_date <= rec.order_id.rental_subscription_id.create_date:
+                        rec.new_rental_addition = False
+                    else:
+                        rec.new_rental_addition = True
+                else:
+                    rec.new_rental_addition = False
+            else:
+                rec.new_rental_addition = False
+

@@ -23,13 +23,15 @@ class ProductTemplate(models.Model):
 
     # Campos servicio (Get In/Get Out) para definir a quien pertenece la unidad y su tiempo en el patio
 
-    external_owner = fields.Boolean(string="Unidad Externa")
-    owner_partner_id = fields.Many2one(comodel_name='res.partner', string="Propietario")
-    gate_in_date = fields.Date(string="Fecha de entrada")
-    gate_out_date = fields.Date(string="Fecha de salida")
-    storage_rate = fields.Monetary(string="Tasa de estadia")
+    # external_owner = fields.Boolean(string="Unidad Externa")
+    # owner_partner_id = fields.Many2one(comodel_name='res.partner', string="Propietario")
+    # gate_in_date = fields.Datetime(string="Fecha de entrada")
+    # gate_out_date = fields.Datetime(string="Fecha de salida")
+    # storage_rate = fields.Float(string="Tasa de estadia")
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
-    booking = fields.Char(string="Número de reserva")
+    # booking = fields.Char(string="Número de reserva")
+    # stamp = fields.Char(string="Sello")
+    # boat = fields.Char(string="Barco")
 
     # Campos para manejo de inventario
 

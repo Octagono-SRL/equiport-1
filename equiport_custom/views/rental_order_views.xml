@@ -22,8 +22,11 @@
                            attrs="{'invisible':[('is_rental_order', '=', False)], 'required':[('rental_subscription_id', '!=', False)]}"/>
                 </xpath>
 
-                <!--                <field name="payment_term_id" position="after">-->
-                <!--                    </field>-->
+                <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
+                       position="before">
+                    <field name="new_rental_addition" invisible="0"/>
+                    <field name="start_rent_price" attrs="{'invisible':[('new_rental_addition', '=', False)],'column_invisible':[('parent.is_rental_order', '=',False)], 'required':[('new_rental_addition', '=', True)]}"/>
+                </xpath>
 
                 <header position="inside">
                     <button name="add_deposit" type="object" string="Agregar deposito" class="oe_highlight"
