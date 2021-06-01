@@ -16,7 +16,7 @@
                 </xpath>
                 <div class="oe_button_box" name="button_box" position="before">
                     <field name="rent_ok" invisible="1"/>
-                    <field name="is_gate_product" invisible="0"/>
+                    <field name="is_gate_product" invisible="1"/>
                 </div>
 
                 <xpath expr="//sheet/notebook" position="inside">

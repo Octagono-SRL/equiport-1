@@ -11,7 +11,7 @@
                     <field name="reserved_lot_ids" widget="many2many_tags" optional="show" attrs="{'readonly': True}"/>
                 </xpath>
                 <field name="partner_id" position="after">
-                    <field name="is_gate_service" invisible="0"/>
+                    <field name="is_gate_service" invisible="1"/>
                 </field>
 
                 <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="before">

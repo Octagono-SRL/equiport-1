@@ -24,7 +24,7 @@
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="before">
-                    <field name="new_rental_addition" invisible="0"/>
+                    <field name="new_rental_addition" invisible="1"/>
                     <field name="start_rent_price" attrs="{'invisible':[('new_rental_addition', '=', False)],'column_invisible':[('parent.is_rental_order', '=',False)], 'required':[('new_rental_addition', '=', True)]}"/>
                 </xpath>
 

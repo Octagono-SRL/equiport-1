@@ -13,6 +13,15 @@ class ResPartner(models.Model):
                                 default='vat_nif',
                                 string="Tipo de Documento")
 
+    # Gate In/Out
+    lot_unit_count = fields.Integer(compute="_compute_lot_unit_count", string="Cantidad de unidades")
+    lot_unit_ids = fields.One2many(comodel_name='stock.production.lot', inverse_name='owner_partner_id', string="Unidades")
+
+    @api.depends('lot_unit_ids')
+    def _compute_lot_unit_count(self):
+        for rec in self:
+            rec.lot_unit_count = len(rec.lot_unit_ids)
+
     # Alquileres
     leasing_contract = fields.Binary(string="Contrato de arrendamiento")
     commercial_register = fields.Binary(string="Registro mercantil")

@@ -26,6 +26,7 @@
                 <xpath expr="//field[@name='category_id']" position="after">
                     <field name="allowed_credit" invisible="1"/>
                     <field name="allowed_rental" invisible="1"/>
+                    <field name="lot_unit_count" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']/group[@name='sale']" position="inside">
                     <field name="credit_limit" attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
@@ -58,6 +59,10 @@
                             <button name="block_rental" type="object" string="No permitir alquiler sin documentos"
                                     attrs="{'invisible': [('allowed_rental', '=', False)]}"/>
                         </div>
+                    </page>
+
+                    <page name="gate_data" string="Gate In / Gate Out" attrs="{'invisible':[('lot_unit_count', '&lt;', 1)]}">
+                        <field name="lot_unit_ids" readonly="1"/>
                     </page>
                     
                 </xpath>
