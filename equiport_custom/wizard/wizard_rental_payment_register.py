@@ -439,8 +439,8 @@ class RentalPaymentRegister(models.TransientModel):
     # -------------------------------------------------------------------------
 
     def _create_payment_vals_from_wizard(self):
-        if self.amount > self.order_id.amount_total:
-            raise UserError("El monto no puede superar el total de la cotización")
+        # if self.amount > self.order_id.amount_total:
+        #     raise UserError("El monto no puede superar el total de la cotización")
 
         if self._context.get('payment_type') == 'inbound':
             account_id = self.env.ref('equiport_custom.rental_in_deposit_account')

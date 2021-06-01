@@ -1,6 +1,7 @@
 from . import unit_model
 from . import product_category
 from . import account_account
+from . import account_move
 from . import account_payment
 from . import stock
 from . import product_template

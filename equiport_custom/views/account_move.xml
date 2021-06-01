@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="account_move_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.equiport.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+                    <field name="reserved_lot_ids" widget="many2many_tags" optional="show" attrs="{'readonly': True}"/>
+                </xpath>
+                <field name="partner_id" position="after">
+                    <field name="is_gate_service" invisible="0"/>
+                </field>
+
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="before">
+                    <field name="stamp" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                    <field name="boat" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                    <field name="booking" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                    <field name="storage_rate" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="account_invoice_filter_view_equiport_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.select.equiport.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//filter[@name='duedate']" position="after">
+                    <separator/>
+                    <filter string="Documento de origen" name="origin_invoice" context="{'group_by': 'invoice_origin'}"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

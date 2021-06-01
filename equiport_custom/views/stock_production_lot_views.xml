@@ -16,7 +16,31 @@
                 </xpath>
                 <div class="oe_button_box" name="button_box" position="before">
                     <field name="rent_ok" invisible="1"/>
+                    <field name="is_gate_product" invisible="0"/>
                 </div>
+
+                <xpath expr="//sheet/notebook" position="inside">
+                    <page string="Gate In/Gate Out" name="gate_in_out"
+                          attrs="{'invisible':[('is_gate_product', '=',False)]}">
+                        <group>
+                            <group name="owner_info" string="Información de propietario">
+                                <field name="external_owner" readonly="1"/>
+                                <field name="owner_partner_id" readonly="1"/>
+                                <field name="booking" readonly="1"/>
+                                <field name="boat" readonly="1"/>
+                                <field name="stamp" readonly="1"/>
+                            </group>
+
+                            <group name="gate_info" string="Información del servicio">
+                                <field name="gate_in_date" readonly="1"/>
+                                <field name="gate_out_date" readonly="1"/>
+                                <field name="storage_rate" readonly="1"/>
+                            </group>
+                        </group>
+
+                    </page>
+
+                </xpath>
             </field>
         </record>
     </data>

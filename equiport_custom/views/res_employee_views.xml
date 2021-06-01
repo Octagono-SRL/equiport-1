@@ -9,6 +9,16 @@
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
 
+                <header position="inside">
+                    <field name="create_invoice_access" invisible="1"/>
+                    <button name="allow_user_to_create_invoices" string="Permitir crear facturas sueltas" type="object"
+                            groups="equiport_custom.set_security_group_for_costumer_invoices"
+                            attrs="{'invisible': [('create_invoice_access', '=',True)]}"/>
+                    <button name="block_user_to_create_invoices" string="Bloquear crear facturas sueltas" type="object"
+                            groups="equiport_custom.set_security_group_for_costumer_invoices"
+                            attrs="{'invisible': [('create_invoice_access', '=', False)]}"/>
+                </header>
+
                 <xpath expr="//notebook/page[@name='public']/div[@id='o_work_employee_container']" position="after">
                     <div name="o_work_employee_tools">
                         <group string="Herramientas asignadas">

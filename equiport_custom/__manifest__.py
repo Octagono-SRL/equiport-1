@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.0.6',
+    'version': '14.0.0.0.7',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -41,6 +41,7 @@
         'data/stock_location_data.xml',
         'data/stock_warehouse_data.xml',
         'data/account_account_data.xml',
+        'data/product_product_data.xml',
         'views/res_partner_views.xml',
         'views/res_company_views.xml',
         'views/res_employee_views.xml',
@@ -60,10 +61,12 @@
         'views/crm_lead_views.xml',
         'views/repair_views.xml',
         'views/product_unit_view.xml',
+        'views/account_move.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
         'report/report_purchase_requisition_order_comparison.xml',
         'report/report_holding_tax_view.xml',
+        'report/rental_report_views.xml',
         'wizard/wizard_purchase_order_cancel_views.xml',
         'wizard/wizard_purchase_order_comparison_report_view.xml',
         'wizard/wizard_rental_payment_register_views.xml',
