@@ -44,28 +44,6 @@ class ResCompany(models.Model):
     # endregion
     # region SL services
 
-    @api.model
-    def _prepare_gate_service(self):
-        default_gate_service = self.env['product.product'].search([('is_gate_service', '=', True)])
-        if not default_gate_service:
-            property_account_income_val = self.env['ir.property']._get_default_property(
-                name='property_account_income_categ_id', model='product.category')
-
-            vals = {
-                'name': 'Gate In / Gate Out',
-                'type': 'service',
-                'is_gate_service': True,
-                'invoice_policy': 'order',
-                'uom_id': self.env.ref('uom.product_uom_unit').id,
-                'property_account_income_id': int(property_account_income_val[1][1]),
-                'taxes_id': [(6, 0, [])],
-                'company_id': False,
-            }
-            default_gate_service = self.env['product.product'].create(vals)
-            return default_gate_service.id
-        else:
-            return default_gate_service.id
-
     default_gate_service = fields.Many2one(comodel_name='product.product', domain=[('is_gate_service', '=', True)],
                                            string="Servicio Gate In / Gate Out", ondelete='restrict')
 
@@ -83,8 +61,9 @@ class ResCompany(models.Model):
 
     # endregion
 
-    # region Deposit Rental
+    # region Fleet Alerts
 
-    # default_deposit_account_id = fields.Many2one(comodel_name='account.account', string="Cuenta",
-    #                                              domain=[('to_deposit', '=', True)], ondelete='restrict')
+    user_fleet_notify = fields.Many2many(comodel_name='res.users', relation='fleet_notify_users_rel')
+    fuel_services_fleet = fields.Many2many(comodel_name='fleet.service.type', relation='fuel_services_fleet_rel')
+
     # endregion

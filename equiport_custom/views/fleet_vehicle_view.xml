@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="fleet_vehicle_view_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">fleet.vehicle.form.equiport.inherit</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//sheet" position="replace">
+                    <sheet>
+                        <field name="currency_id" invisible="1"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="open_assignation_logs" type="object" class="oe_stat_button" icon="fa-history"
+                                    attrs="{'invisible':[('unit_type', '!=', 'vehicle')]}">
+                                <field name="history_count" widget="statinfo" string="Drivers History"/>
+                            </button>
+                            <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-book"
+                                    context="{'xml_id':'fleet_vehicle_log_contract_action'}"
+                                    help="show the contract for this vehicle">
+                                <field name="contract_count" widget="statinfo" string="Contracts"/>
+                            </button>
+                            <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-wrench"
+                                    context="{'xml_id':'fleet_vehicle_log_services_action'}"
+                                    help="show the services logs for this vehicle">
+                                <field name="service_count" widget="statinfo" string="Services"/>
+                            </button>
+                            <button name="return_action_to_open" type="object" class="oe_stat_button"
+                                    icon="fa-tachometer" context="{'xml_id':'fleet_vehicle_odometer_action'}"
+                                    help="show the odometer logs for this vehicle"
+                                    attrs="{'invisible': ['|', ('vehicle_type', '!=', 'car'), ('unit_type', '!=', 'vehicle')]}">
+                                <field name="odometer_count" widget="statinfo" string="Odometer"/>
+                            </button>
+                            <button name="return_action_to_open" type="object" class="oe_stat_button"
+                                    icon="fa-tachometer"
+                                    context="{'xml_id':'fleet_unit_hourmeter_action', 'xml_origin': 'hourmeter'}"
+                                    help="Muestra los registros de Horometro de la unidad"
+                                    attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
+                                <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                                attrs="{'invisible': [('active', '=', True)]}"/>
+
+                        <!--                        Modificacion imagen del registro -->
+
+                        <field name="unit_image_128" widget="image" class="oe_avatar"
+                               attrs="{'invisible': [('unit_type', '=', 'vehicle')]}"/>
+                        <field name="image_128" widget="image" class="oe_avatar"
+                               attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}"/>
+
+                        <!--                        Modificacion modelo y registro unidad-->
+
+                        <field name="company_id" invisible="1"/>
+                        <div class="oe_title" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                            <label for="model_id" class="oe_edit_only" options="{'no_create': 1, 'no_edit': 1}"/>
+                            <h1>
+                                <field name="model_id" placeholder="e.g. Model S"
+                                       attrs="{'required': [('unit_type', '=', 'vehicle')]}"/>
+                            </h1>
+                            <label for="license_plate" class="oe_edit_only"/>
+                            <h2>
+                                <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
+                            </h2>
+                            <label for="tag_ids" class="oe_edit_only"/>
+                            <field name="tag_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color', 'no_create_edit': True, 'no_create': 1, 'no_edit': 1}"/>
+
+                            <group>
+                                <field name="unit_type" required="1"/>
+                            </group>
+                        </div>
+
+                        <div class="oe_title" attrs="{'invisible': [('unit_type', '=', 'vehicle')]}">
+                            <label for="unit_model_id" class="oe_edit_only"/>
+                            <h1>
+                                <field name="unit_model_id" placeholder="e.g. Model S"
+                                       attrs="{'required': [('unit_type', '!=', 'vehicle')]}"
+                                       options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                            </h1>
+                            <label for="product_unit_id" class="oe_edit_only"/>
+                            <h2>
+                                <field name="product_unit_id"
+                                       options="{'color_field': 'color', 'no_create': 1, 'no_edit': 1, 'no_open': 1}"
+                                       class="oe_inline" attrs="{'required': [('unit_type', '!=', 'vehicle')]}"/>
+                            </h2>
+                            <group>
+                                <field name="unit_type" required="1"/>
+                                <field name="unit_lot_id"
+                                       options="{'color_field': 'color','no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+
+                            </group>
+
+                            <label for="tag_ids" class="oe_edit_only"/>
+                            <field name="tag_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color', 'no_create_edit': True, 'no_create': 1, 'no_edit': 1}"/>
+
+
+                        </div>
+                        <group col="2">
+                            <group string="Conductor" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                                <field name="active" invisible="1"/>
+                                <field name="vehicle_type" invisible="1"/>
+                                <field name="driver_id"
+                                       domain="['|', ('company_id', '=', False ), ('company_id', '=', company_id)]"/>
+                                <label for="future_driver_id"/>
+                                <div class="o_row">
+                                    <field name="future_driver_id"/>
+                                    <button string="Apply Change" class="btn btn-primary" type="object"
+                                            name="action_accept_driver_change"
+                                            attrs="{'invisible': [('future_driver_id', '=', False)]}"/>
+                                </div>
+                                <field name="plan_to_change_car" groups="fleet.fleet_group_manager"/>
+                                <field name="next_assignation_date"/>
+                                <field name="location"/>
+                            </group>
+                            <group string="Vehiculo" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                                <label for="odometer" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
+                                <div class="o_row" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                                    <field name="odometer"/>
+                                    <field name="odometer_unit"/>
+                                </div>
+                                <field name="odometer_km_cost" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
+                                <field name="acquisition_date" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
+                                <field name="vehicle_token"/>
+                                <field name="custom_type"/>
+                                <field name="vin_sn"/>
+                                <field name="car_value" widget="monetary"/>
+                                <field name="net_car_value" widget="monetary"/>
+                                <field name="residual_value" widget="monetary"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+
+                            <group string="Unidad" attrs="{'invisible': [('unit_type', '=', 'vehicle')]}">
+                                <label for="hourmeter" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}"/>
+                                <div class="o_row" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
+                                    <field name="hourmeter"/>
+                                    <field name="hourmeter_unit"/>
+                                </div>
+                                <field name="hourmeter_hr_cost" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}"/>
+                                <field name="acquisition_date"/>
+                                <field name="vin_sn" string="Número de parte"/>
+                                <field name="car_value" widget="monetary"/>
+                                <field name="net_car_value" widget="monetary"/>
+                                <field name="residual_value" widget="monetary"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group string="Contrato" name="contract">
+                                <field name="manager_id" domain="[('share', '=', False)]"/>
+                                <field name="first_contract_date"/>
+                            </group>
+                            <group string="Modelo">
+                                <field name="seats"
+                                       attrs="{'invisible': ['|', ('vehicle_type', '!=', 'car'), ('unit_type', '!=', 'vehicle')]}"/>
+                                <field name="doors"
+                                       attrs="{'invisible': ['|', ('vehicle_type', '!=', 'car'), ('unit_type', '!=', 'vehicle')]}"/>
+                                <field name="color"/>
+                                <field name="container_type"
+                                       attrs="{'invisible':[('unit_type', '!=', 'container')]}"/>
+                                <field name="unit_size" widget="selection_badge"
+                                       attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])]}"/>
+                                <field name="model_year"/>
+                            </group>
+                            <group string="Motor"
+                                   attrs="{'invisible': ['|',('unit_type', '!=', 'gen_set'), '&amp;',('vehicle_type', '!=', 'car'), ('unit_type', '=', 'vehicle')]}">
+                                <field name="transmission" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}"/>
+                                <field name="fuel_type"/>
+                                <label for="co2"/>
+                                <div class="o_row" name="co2">
+                                    <field name="co2"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                                    g/km</span><span attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">g/Hr</span>
+                                </div>
+                                <field name="horsepower"/>
+                                <field name="horsepower_tax" widget="monetary"/>
+                                <label for="power"/>
+                                <div class="o_row">
+                                    <field name="power"/><span>kW</span>
+                                </div>
+                            </group>
+                            <group string="Descripción">
+                                <field name="description" nolabel="1"
+                                       placeholder="Escribe cualquier otra información relacionada a esta unidad."/>
+                            </group>
+                        </group>
+                    </sheet>
+                </xpath>
+
+
+            </field>
+        </record>
+
+        <record id="fleet_vehicle_kanban_equiport_inherit" model="ir.ui.view">
+            <field name="name">fleet.vehicle.kanban.equiport.inherit</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='model_id']" position="after">
+                    <field name="unit_lot_id"/>
+                    <field name="unit_model_id"/>
+                    <field name="unit_type"/>
+                </xpath>
+
+                <xpath expr="//div[hasclass('o_kanban_image')]" position="replace">
+                    <t t-if="record.unit_type.raw_value == 'vehicle'">
+                        <div class="o_kanban_image"
+                             t-attf-style="background-image:url('#{kanban_image('fleet.vehicle', 'image_128', record.id.raw_value)}')"/>
+                    </t>
+                    <t t-else="">
+                        <div class="o_kanban_image"
+                             t-attf-style="background-image:url('#{kanban_image('fleet.vehicle', 'unit_image_128', record.id.raw_value)}')"/>
+                    </t>
+                </xpath>
+
+                <xpath expr="//strong[hasclass('o_kanban_record_title')]" position="replace">
+                    <t t-if="record.unit_type.raw_value == 'vehicle'">
+                        <strong class="o_kanban_record_title">
+                            <t t-if="record.license_plate.raw_value"><field name="license_plate"/>:</t> <field
+                                name="model_id"/>
+                        </strong>
+                    </t>
+                    <t t-else="">
+                        <field name="unit_type"/>:
+                        <strong class="o_kanban_record_title">
+                            <t t-if="record.unit_lot_id.raw_value"><field name="unit_lot_id"/></t>
+                            <field name="unit_model_id"/>
+                        </strong>
+                    </t>
+
+                </xpath>
+            </field>
+        </record>
+
+        <record id='fleet_unit_hourmeter_view_form' model='ir.ui.view'>
+            <field name="name">fleet.unit.hourmeter.form</field>
+            <field name="model">fleet.unit.hourmeter</field>
+            <field name="arch" type="xml">
+                <form string="Historial de Horómetro">
+                    <sheet>
+                        <group>
+                            <field name="vehicle_id"/>
+                            <field name="value" class="oe_inline"/>
+                            <field name="unit" class="oe_inline"/>
+                            <field name="date"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='fleet_unit_hourmeter_view_tree' model='ir.ui.view'>
+            <field name="name">fleet.unit.hourmeter.tree</field>
+            <field name="model">fleet.unit.hourmeter</field>
+            <field name="arch" type="xml">
+                <tree string="Historial de Horómetro" editable="top">
+                    <field name="date"/>
+                    <field name="vehicle_id" widget="many2one_avatar"/>
+                    <field name="value"/>
+                    <field name="unit"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id='fleet_unit_hourmeter_view_kanban' model='ir.ui.view'>
+            <field name="name">fleet.unit.hourmeter.kanban</field>
+            <field name="model">fleet.unit.hourmeter</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div>
+                                    <strong>
+                                        <field name="vehicle_id" widget="res_partner_many2one"/>
+                                        <span class="float-right"><field name="date"/></span>
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span class="float-right"><field name="value"/> Km</span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id='fleet_unit_hourmeter_view_search' model='ir.ui.view'>
+            <field name="name">fleet.unit.hourmeter.search</field>
+            <field name="model">fleet.unit.hourmeter</field>
+            <field name="arch" type="xml">
+                <search string="Horómetro de unidades">
+                    <field name="vehicle_id"/>
+                    <field name="value"/>
+                    <field name="date"/>
+                    <group expand="0" string="Group By">
+                        <filter name="groupby_vehicle" context="{'group_by': 'vehicle_id'}" string="Unidades"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="fleet_unit_hourmeter_view_graph" model="ir.ui.view">
+            <field name="name">fleet.unit.hourmeter.graph</field>
+            <field name="model">fleet.unit.hourmeter</field>
+            <field name="arch" type="xml">
+                <graph string="Valores de horómetro por unidad" sample="1">
+                    <field name="vehicle_id" type="row"/>
+                    <field name="value" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id='fleet_unit_hourmeter_action' model='ir.actions.act_window'>
+            <field name="name">Horómetros</field>
+            <field name="res_model">fleet.unit.hourmeter</field>
+            <field name="view_mode">tree,kanban,form,graph</field>
+            <field name="context"></field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo registro de horómetro
+                </p><p>
+                Puedes agregar varias entradas de horómetros para todas las unidades.
+            </p>
+            </field>
+        </record>
+
+        <menuitem action="fleet_unit_hourmeter_action" parent="fleet.fleet_vehicles" id="fleet_unit_hourmeter_menu"
+                  groups="fleet.fleet_group_user" sequence="10"/>
+
+
+        <record id='fleet_vehicle_service_types_view_form' model='ir.ui.view'>
+            <field name="name">fleet.service.type.form</field>
+            <field name="model">fleet.service.type</field>
+            <field name="arch" type="xml">
+                <form string="Tipo de servicios">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+
+                            <group>
+                                <field name="category"/>
+                            </group>
+
+                        </group>
+
+                        <notebook>
+                            <page name="config_service_alert" string="Alertas" attrs="{'invisible': [('category', 'not in', ['service', 'repair', 'maintenance'])]}">
+                                <group col="3">
+                                    <group>
+                                        <field name="date_service"/>
+                                    </group>
+                                    <group>
+                                        <field name="hr_service"/>
+                                    </group>
+                                    <group>
+                                        <field name="km_service"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page name="service_repair_line" string="Piezas"
+                                  attrs="{'invisible': [('category', 'not in', ['repair', 'maintenance'])]}">
+                                <field name="material_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom"/>
+                                        <field name="product_uom_category_id" invisible="1"/>
+                                        <field name="company_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page name="service_repair_fee" string="Operaciones"
+                                  attrs="{'invisible': [('category', 'not in', ['repair', 'maintenance'])]}">
+                                <field name="operation_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom"/>
+                                        <field name="product_uom_category_id" invisible="1"/>
+                                        <field name="company_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='fleet_vehicle_log_services_view_form_equiport_inherit' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.log.services.form.equiport.inherit</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_log_services_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_repair_quotations_new" type="object" string="Generar reparación/mantenimiento"
+                            class="oe_highlight btn-primary"
+                            attrs="{'invisible': ['|', ('category', 'not in', ['repair', 'maintenance']), ('state', '!=', 'running')]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='service_type_id']" position="after">
+                    <field name="category" invisible="1"/>
+                    <field name="unit_type" invisible="1"/>
+                    <field name="check_done" invisible="1"/>
+                    <field name="location_id"
+                           attrs="{'invisible': [('category', 'not in', ['repair', 'maintenance'])], 'required': [('category', 'in', ['repair', 'maintenance'])]}"
+                           options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                    <field name="repair_id"
+                           attrs="{'readonly': True, 'invisible': [('category', 'not in', ['repair', 'maintenance'])]}"/>
+                </xpath>
+
+<!--                <xpath expr="//field[@name='service_type_id']" position="attributes">-->
+<!--                    <attribute name="domain">[('category', 'in', ['service', 'repair', 'maintenance'])]</attribute>-->
+<!--                </xpath>-->
+
+                <field name="purchaser_id" position="attributes">
+                    <attribute name="attrs">{'invisible': [('unit_type', '!=', 'vehicle')]}</attribute>
+                </field>
+
+                <xpath expr="//sheet/group/group[2]/label[@for='odometer']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('unit_type', '!=', 'vehicle')]}</attribute>
+                </xpath>
+                <xpath expr="//sheet/group/group[2]/div[hasclass('o_row')]" position="replace">
+                    <div class="o_row" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                        <field name="odometer"/>
+                        <field name="odometer_unit"/>
+                    </div>
+                    <label for="hourmeter" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}"/>
+                    <div class="o_row" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
+                        <field name="hourmeter"/>
+                        <field name="hourmeter_unit"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="fleet_vehicle_log_services_tree_equiport_inherit" model="ir.ui.view">
+            <field name="name">fleet.vehicle.log.services.tree.equiport.inherit</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_log_services_view_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='date']" position="after">
+                    <field name="location_id" optional="hide"/>
+                    <field name="unit_type" optional="show"/>
+                    <field name="date_waited" optional="hide"/>
+                    <field name="hr_waited" optional="hide"/>
+                    <field name="km_waited" optional="hide"/>
+                    <field name="odometer" optional="hide"/>
+                    <field name="hourmeter" optional="hide"/>
+                    <field name="check_done" optional="hide"/>
+                    <field name="check_notify" invisible="1"/>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-danger">
+                        (((current_date &gt;= date_waited) and (odometer > km_waited)) or ((current_date &gt; date_waited) and (hourmeter > hr_waited) and (unit_type == 'gen_set'))) and (check_done == False) and (check_notify == True)
+                    </attribute>
+                    <attribute name="decoration-warning">
+                        ((current_date >= date_waited) or (odometer > km_waited) or ((hourmeter > hr_waited) and (unit_type == 'gen_set'))) and (check_done == False) and (check_notify == True)
+                    </attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

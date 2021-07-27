@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_task_form2_equiport_inherit" model="ir.ui.view">
+            <field name="name">view.task.form2.equiport.inherit</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="industry_fsm_sale.view_task_form2_inherit"/>
+            <field name="arch" type="xml">
+                <field name="is_fsm" position="after">
+                    <field name="fsm_invoice_available" invisible="1"/>
+                </field>
+                <button class="btn-primary" name="action_create_invoice" type="object"
+                        attrs="{'invisible': [('display_create_invoice_primary', '=', False)]}"
+                        groups="industry_fsm.group_fsm_manager" position="attributes">
+                    <attribute name="attrs">{'invisible': 1}</attribute>
+                </button>
+
+                <button class="btn-secondary" name="action_create_invoice" type="object"
+                        attrs="{'invisible': [('display_create_invoice_secondary', '=', False)]}"
+                        groups="industry_fsm.group_fsm_manager" position="attributes">
+                    <attribute name="attrs">{'invisible': 1}</attribute>
+                </button>
+
+            </field>
+        </record>
+
+        <record id="project_task_form2_equiport_inherit" model="ir.ui.view">
+            <field name="name">project.task.form.equiport.inherit</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="fsm_invoice_available" invisible="1"/>
+                    <field name="extra_user1_id" options="{'no_create': 1, 'no_edit': 1}"
+                           domain="[('user_id', '!=', user_id)]"/>
+                    <field name="extra_user2_id" options="{'no_create': 1, 'no_edit': 1}"/>
+                </xpath>
+
+                <xpath expr="//notebook/page[@name='description_page']" position="after">
+                    <page string="Detalles del rescate" name="rescue_info"
+                          attrs="{'invisible': [('is_fsm', '=', False)]}">
+                        <div class="row-content">
+                            <h1 class="text-center">FORMULARIO DE ASISTENCIA Y RESCATE</h1>
+                        </div>
+                        <group name="general_info">
+                            <group>
+                                <field name="transport_name"/>
+                                <field name="driver_name"/>
+                                <field name="rescue_location"/>
+                                <field name="employee_worker_ids" widget="many2many_tags"/>
+                                <field name="main_cause" widget="radio" options="{'horizontal': 1}"/>
+                                <field name="rescue_truck_id" required="1" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                            </group>
+
+                            <group>
+                                <field name="effective_date"/>
+                                <field name="phone"/>
+                                <field name="arrive_time" widget="float_time"/>
+                                <field name="leave_time" widget="float_time"/>
+                                <field name="km_travelled"/>
+                                <field name="odometer_start"/>
+                                <field name="odometer_end"/>
+                            </group>
+
+                        </group>
+
+                        <group name="unit_info">
+                            <group>
+                                <field name="th_gen_set" widget="boolean"/>
+                                <field name="gen_set" nolabel="1" attrs="{'required': [('th_gen_set', '=', True)]}"/>
+                            </group>
+
+                            <group>
+                                <field name="hourmeter"/>
+                            </group>
+
+                        </group>
+
+                        <group name="units">
+                            <group>
+                                <field name="container_long" widget="selection_badge"/>
+                                <field name="container_type" widget="selection_badge"/>
+                                <field name="container" attrs="{'required': [('container_long', '!=', False)]}"/>
+                            </group>
+
+                            <group>
+                                <field name="chassis_long" widget="selection_badge"/>
+                                <field name="chassis" attrs="{'required': [('chassis_long', '!=', False)]}"/>
+                            </group>
+
+                        </group>
+
+                        <group name="damage_info">
+                            <field name="damage_type_ids" widget="many2many_tags"
+                                   options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                            <field name="other_damage"/>
+                        </group>
+
+                        <group name="timesheets_info" col="1" string="Horas trabajadas" attrs="{'invisible': ['|',('is_fsm', '=', False), ('allow_timesheets', '=', False)]}">
+                            <field name="analytic_account_active" invisible="1"/>
+                            <field name="allow_timesheets" invisible="1"/>
+                            <field name="allow_subtasks" invisible="1"/>
+                            <field name="encode_uom_in_days" invisible="1"/>
+                            <div id="timesheets_tab" class="row-content">
+                                <group name="timesheet_error"
+                                       attrs="{'invisible': [('analytic_account_active', '!=', False)]}">
+                                    <div class="alert alert-warning" role="alert">
+                                        No puede registrar horas de trabajo en este proyecto ya que está vinculado a un inactivo
+                                        cuenta analítica. Cambie esta cuenta o reactive la actual para
+                                        hoja de tiempo en el proyecto.
+                                    </div>
+                                </group>
+                                <field name="timesheet_ids" mode="tree,kanban"
+                                       attrs="{'invisible': [('analytic_account_active', '=', False)]}"
+                                       context="{'default_project_id': project_id, 'default_name':''}">
+                                    <tree editable="bottom" string="Timesheet Activities" default_order="date">
+                                        <field name="date"/>
+                                        <field name="user_id" invisible="1"/>
+                                        <field name="employee_id" required="1" widget="many2one_avatar_employee"/>
+                                        <field name="name" required="0"/>
+                                        <field name="unit_amount" widget="timesheet_uom"
+                                               decoration-danger="unit_amount &gt; 24"/>
+                                        <field name="project_id" invisible="1"/>
+                                        <field name="task_id" invisible="1"/>
+                                        <field name="company_id" invisible="1"/>
+                                    </tree>
+                                    <kanban class="o_kanban_mobile">
+                                        <field name="date"/>
+                                        <field name="user_id"/>
+                                        <field name="employee_id" widget="many2one_avatar_employee"/>
+                                        <field name="name"/>
+                                        <field name="unit_amount" decoration-danger="unit_amount &gt; 24"/>
+                                        <field name="project_id"/>
+                                        <field name="task_id" invisible="1"/>
+                                        <templates>
+                                            <t t-name="kanban-box">
+                                                <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <strong><span><t
+                                                                    t-esc="record.employee_id.value"/></span></strong>
+                                                        </div>
+                                                        <div class="col-6 pull-right text-right">
+                                                            <strong><t t-esc="record.date.value"/></strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 text-muted">
+                                                            <span><t t-esc="record.name.value"/></span>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <span class="pull-right text-right">
+                                                                <field name="unit_amount" widget="float_time"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form string="Timesheet Activities">
+                                        <sheet>
+                                            <group>
+                                                <field name="date"/>
+                                                <field name="user_id" invisible="1"/>
+                                                <field name="employee_id" required="1"
+                                                       widget="many2one_avatar_employee"/>
+                                                <field name="name"/>
+                                                <field name="unit_amount" string="Duration" widget="float_time"
+                                                       decoration-danger="unit_amount &gt; 24"/>
+                                                <field name="project_id" invisible="1"/>
+                                                <field name="task_id" invisible="1"/>
+                                                <field name="company_id" invisible="1"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                                <group attrs="{'invisible': [('analytic_account_active', '=', False)]}">
+                                    <group class="oe_subtotal_footer oe_right" name="project_hours">
+                                        <span>
+                                            <label class="font-weight-bold" for="effective_hours" string="Horas dedicadas"
+                                                   attrs="{'invisible': [('encode_uom_in_days', '=', True)]}"/>
+                                            <label class="font-weight-bold" for="effective_hours" string="Dias dedicados"
+                                                   attrs="{'invisible': [('encode_uom_in_days', '=', False)]}"/>
+                                        </span>
+                                        <field name="effective_hours" widget="timesheet_uom" nolabel="1"/>
+
+                                        <button name="action_view_subtask_timesheet" type="object"
+                                                class="o_td_label o_form_label o_form_subtask_button oe_inline oe_link mr-0"
+                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}">
+                                            <span class="text-nowrap"
+                                                  attrs="{'invisible' : [('encode_uom_in_days', '=', True)]}">Horas dedicadas en subtareas</span>
+                                            <span class="text-nowrap"
+                                                  attrs="{'invisible' : [('encode_uom_in_days', '=', False)]}">Dias dedicados en subtareas</span>
+                                        </button>
+                                        <field name="subtask_effective_hours" class="mt-2" widget="timesheet_uom"
+                                               attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}"
+                                               nolabel="1"/>
+                                        <span>
+                                            <label class="font-weight-bold" for="total_hours_spent" string="Total de horas"
+                                                   attrs="{'invisible': ['|', '|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0), ('encode_uom_in_days', '=', True)]}"/>
+                                            <label class="font-weight-bold" for="total_hours_spent" string="Total de dias"
+                                                   attrs="{'invisible': ['|', '|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0), ('encode_uom_in_days', '=', False)]}"/>
+                                        </span>
+                                        <field name="total_hours_spent" widget="timesheet_uom"
+                                               class="oe_subtotal_footer_separator" nolabel="1"
+                                               attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}"/>
+                                        <span>
+                                            <label class="font-weight-bold" for="remaining_hours"
+                                                   string="Horas restantes"
+                                                   attrs="{'invisible': ['|', ('planned_hours', '=', 0.0), ('encode_uom_in_days', '=', True)]}"/>
+                                            <label class="font-weight-bold" for="remaining_hours"
+                                                   string="Dias restantes"
+                                                   attrs="{'invisible': ['|', ('planned_hours', '=', 0.0), ('encode_uom_in_days', '=', False)]}"/>
+                                        </span>
+                                        <field name="remaining_hours" widget="timesheet_uom"
+                                               class="oe_subtotal_footer_separator"
+                                               attrs="{'invisible' : [('planned_hours', '=', 0.0)]}" nolabel="1"/>
+                                    </group>
+                                </group>
+                            </div>
+                        </group>
+
+                        <div class="row-content" attrs="{'invisible': [('sale_order_id', '=', False)]}">
+                            <h3 class="text-center">PIEZAS UTILIZADAS</h3>
+                        </div>
+
+                        <group name="sale_order_line_info" attrs="{'invisible': [('sale_order_id', '=', False)]}">
+                            <field name="product_line_ids" context="{'form_view_ref': 0}"
+                                   options="{'no_create': 1, 'no_edit': 1, 'no_open': 1, 'clickable': 0}" nolabel="1"
+                                   readonly="1">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="qty_delivered"/>
+                                </tree>
+                            </field>
+                        </group>
+
+                        <div class="row-content">
+                            <h3 class="text-center">SETTING</h3>
+                        </div>
+                        <group name="setting_info">
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Antes</th>
+                                        <th>Después</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <label for="before_temp" string="Temperatura"/>
+                                                <field name="before_temp"/>
+                                            </div>
+                                            <div>
+                                                <label for="before_humid" string="Humedad"/>
+                                                <field name="before_humid"/>
+                                            </div>
+                                            <div>
+                                                <label for="before_diox" string="Dióxido"/>
+                                                <field name="before_diox"/>
+                                            </div>
+
+                                            <div>
+                                                <label for="before_vent" string="Ventilación"/>
+                                                <field name="before_vent"/>
+                                            </div>
+                                            <div>
+                                                <label for="before_carb" string="Carbón"/>
+                                                <field name="before_carb"/>
+                                            </div>
+                                            <div>
+                                                <label for="before_oxy" string="Oxigeno"/>
+                                                <field name="before_oxy"/>
+                                            </div>
+
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <label for="after_temp" string="Temperatura"/>
+                                                <field name="after_temp"/>
+                                            </div>
+                                            <div>
+                                                <label for="after_humid" string="Humedad"/>
+                                                <field name="after_humid"/>
+                                            </div>
+                                            <div>
+                                                <label for="after_diox" string="Dióxido"/>
+                                                <field name="after_diox"/>
+                                            </div>
+
+                                            <div>
+                                                <label for="after_vent" string="Ventilación"/>
+                                                <field name="after_vent"/>
+                                            </div>
+                                            <div>
+                                                <label for="after_carb" string="Carbón"/>
+                                                <field name="after_carb"/>
+                                            </div>
+                                            <div>
+                                                <label for="after_oxy" string="Oxígeno"/>
+                                                <field name="after_oxy"/>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </group>
+
+                        <group name="notes">
+                            <field name="rescue_notes" widget="text"/>
+                        </group>
+
+                        <group name="signature">
+                            <group string="Firma cliente">
+                                <field name="partner_sign" widget="signature"
+                                       options="{'size': ['',200]}" nolabel="1"/>
+                            </group>
+
+                            <group string="Firma técnico">
+                                <field name="employee_sign" widget="signature"
+                                       options="{'size': ['',200]}" nolabel="1"/>
+                            </group>
+
+                            <group>
+                                <field name="partner_name"/>
+                                <field name="partner_vat"/>
+                            </group>
+                        </group>
+
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="view_task_form2_inherited_equiport" model="ir.ui.view">
+            <field name="name">project.task.form.inherited.equiport</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//page[@id='timesheets_tab']/field[@name='timesheet_ids']" position="attributes">
+                    <attribute name="attrs">
+                        {'invisible': ['|', ('analytic_account_active', '=', False), ('is_fsm', '=', True)]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//page[@id='timesheets_tab']/group[3]" position="attributes">
+                    <attribute name="attrs">
+                        {'invisible': ['|', ('analytic_account_active', '=', False), ('is_fsm', '=', True)]}
+                    </attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="damage_option_tree_view" model="ir.ui.view">
+            <field name="name">damage.option.tree.view</field>
+            <field name="model">damage.option</field>
+            <field name="arch" type="xml">
+                <tree string="Tipos de averia" editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="damage_option_view_action" model="ir.actions.act_window">
+            <field name="name">Tipo de averias</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">damage.option</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menuitem_damage_option" name="Tipo de averias" parent="industry_fsm.fsm_menu_settings"
+                  action="damage_option_view_action" sequence="20" groups="stock.group_stock_manager"/>
+
+    </data>
+</odoo>

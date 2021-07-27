@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <record id="gate_service" model="product.product">
+            <field name="name">Gate In / Gate Out</field>
+            <field name="type">service</field>
+            <field name="list_price">1</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="is_gate_service" eval="True"/>
+            <field name="invoice_policy">order</field>
+            <field name="taxes_id" eval="False"/>
+        </record>
+
         <record id="storage_rate_product" model="product.product">
             <field name="name">Servicio de estadia</field>
             <field name="type">service</field>
@@ -8,6 +19,38 @@
             <field name="uom_id" ref="uom.product_uom_day"/>
             <field name="uom_po_id" ref="uom.product_uom_day"/>
             <field name="image_1920" type="base64" file="sale_timesheet/static/img/product_product_time_product.png"/>
+        </record>
+
+        <record id="toll_tax_product" model="product.product">
+            <field name="name">Peaje</field>
+            <field name="type">service</field>
+            <field name="list_price">1</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="diet_product" model="product.product">
+            <field name="name">Dieta</field>
+            <field name="type">service</field>
+            <field name="list_price">1</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="km_travelled_product" model="product.product">
+            <field name="name">Costo por kilometros</field>
+            <field name="type">service</field>
+            <field name="list_price">1</field>
+            <field name="uom_id" ref="uom.product_uom_km"/>
+            <field name="uom_po_id" ref="uom.product_uom_km"/>
+        </record>
+
+        <record id="fuel_product" model="product.product">
+            <field name="name">Combustible</field>
+            <field name="type">consu</field>
+            <field name="list_price">1</field>
+            <field name="uom_id" ref="uom.product_uom_gal"/>
+            <field name="uom_po_id" ref="uom.product_uom_gal"/>
         </record>
 
     </data>

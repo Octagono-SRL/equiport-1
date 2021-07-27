@@ -8,7 +8,25 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='product_id']" position="after">
-                    <field name="order_use" attrs="{'invisible': [('trigger','!=', 'manual')]}"/>
+                    <field name="order_use" attrs="{'invisible': [('trigger','!=', 'manual')], 'required': [('trigger','=', 'manual')]}"/>
+                </xpath>
+
+                <xpath expr="//button[@name='action_replenish']" position="attributes">
+                    <attribute name="groups">
+                        equiport_custom.supervisor_stock_order_point
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='action_replenish_auto']" position="attributes">
+                    <attribute name="groups">
+                        equiport_custom.supervisor_stock_order_point
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='%(stock.action_orderpoint_snooze)d']" position="attributes">
+                    <attribute name="groups">
+                        equiport_custom.supervisor_stock_order_point
+                    </attribute>
                 </xpath>
 
             </field>

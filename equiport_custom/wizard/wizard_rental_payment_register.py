@@ -187,7 +187,7 @@ class RentalPaymentRegister(models.TransientModel):
         lines = batch_result['lines']
         company = lines[0].company_id
 
-        source_amount = abs(sum(lines.mapped('price_total')))
+        source_amount = abs(sum(lines.mapped('price_subtotal')))
         if key_values['currency_id'] == company.currency_id.id:
             source_amount_currency = source_amount
         else:

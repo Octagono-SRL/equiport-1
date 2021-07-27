@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_currency_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">res.currency.form.equiport.inherit</field>
+            <field name="model">res.currency</field>
+            <field name="inherit_id" ref="base.view_currency_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='rate']" position="after">
+                    <field name="currency_rate" digits="[12,2]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="res_currency_tree_equiport_inherit" model="ir.ui.view">
+            <field name="name">res.currency.tree.equiport.inherit</field>
+            <field name="model">res.currency</field>
+            <field name="inherit_id" ref="base.view_currency_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='rate']" position="before">
+                    <field name="currency_rate" digits="[12,2]"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

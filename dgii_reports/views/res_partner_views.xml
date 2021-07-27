@@ -11,6 +11,10 @@
                             options="{'horizontal': true}"
                             attrs="{'invisible': [('country_id', '=', %(base.do)d)]}"/>
             </xpath>
+
+            <xpath expr="//field[@name='l10n_do_dgii_tax_payer_type']" position="attributes">
+                <attribute name="attrs">{'readonly': [('parent_id', '!=', False)], 'required':True}</attribute>
+            </xpath>
         </field>
     </record>
 

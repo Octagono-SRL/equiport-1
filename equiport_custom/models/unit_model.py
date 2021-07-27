@@ -10,6 +10,7 @@ class UnitModel(models.Model):
     name = fields.Char('Nombre de modelo', required=True)
     brand_id = fields.Many2one('unit.model.brand', 'Marca', required=True,
                                help='')
+    unit_type = fields.Selection(related='brand_id.unit_type', string="Tipo de unidad")
     image_128 = fields.Image(related='brand_id.image_128', readonly=True)
     active = fields.Boolean(default=True)
     # unit_type = fields.Selection([('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')], default='container', required=True, string="Tipo de unidad")

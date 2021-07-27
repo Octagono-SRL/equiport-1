@@ -16,16 +16,23 @@
                     <attribute name="help">Selecciona la categoria para el producto actual.
 
                         Detalle categorias especificas:
-                            01  Accesorios, herramientas y partes (tuercas, tornillos, arandelas, remaches, destornilladores, alicates, engranajes, cables, mangueras, etc).
-                            02 Repuestos, neumáticos y baterías
-                            03 Combustibles y lubricantes
-                            04  Materia prima (pinturas, diluyentes, tolas, plywood, químicos de limpieza, etc)
-                            05 Material Gastable de Oficina y provisiones.
-                            06  Equipos de trabajo (taladros, máquinas de soldar, pistolas de pintar)
-                            07  Servicios externos (doblaje de tolas, torneados, mantenimientos, etc.)
-                            08  Activos comerciales (contenedores, chasis y gensets propios)
-                            09  Activos Fijos (vehículos, equipos de oficina, mobiliario, etc).</attribute>
+                        01 Accesorios, herramientas y partes (tuercas, tornillos, arandelas, remaches, destornilladores,
+                        alicates, engranajes, cables, mangueras, etc).
+                        02 Repuestos, neumáticos y baterías
+                        03 Combustibles y lubricantes
+                        04 Materia prima (pinturas, diluyentes, tolas, plywood, químicos de limpieza, etc)
+                        05 Material Gastable de Oficina y provisiones.
+                        06 Equipos de trabajo (taladros, máquinas de soldar, pistolas de pintar)
+                        07 Servicios externos (doblaje de tolas, torneados, mantenimientos, etc.)
+                        08 Activos comerciales (contenedores, chasis y gensets propios)
+                        09 Activos Fijos (vehículos, equipos de oficina, mobiliario, etc).</attribute>
                 </field>
+
+                <xpath expr="//sheet/notebook/page[@name='general_information']" position="inside">
+                    <group string="Uso">
+                        <field name="product_use" nolabel="1" placeholder="Esta sección es para definir el uso."/>
+                    </group>
+                </xpath>
 
                 <xpath expr="//sheet/notebook/page[@name='general_information']/group" position="after">
                     <group attrs="{'invisible':[('type', '!=', 'product')]}">
@@ -37,45 +44,50 @@
                         <group name="unit_details" string="Detalles de Unidad"
                                attrs="{'invisible':[('is_tool', '=', True)]}">
                             <field name="unit_type"/>
-                            <field name="unit_size" attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])], 'required':[('unit_type', 'in', ['container', 'chassis'])]}"/>
+                            <field name="unit_size" widget="selection_badge"
+                                   attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])], 'required':[('unit_type', 'in', ['container', 'chassis'])]}"/>
                             <field name="container_type"
                                    attrs="{'invisible':[('unit_type', '!=', 'container')], 'required':[('unit_type', '=', 'container')]}"/>
-                            <field name="unit_brand" attrs="{'required':[('unit_type', '!=', False)]}"
+                            <field name="unit_brand_id" attrs="{'required':[('unit_type', '!=', False)]}"
                                    options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"
                                    domain="[('unit_type', '=', unit_type)]"/>
-                            <field name="unit_model" attrs="{'required':[('unit_type', '!=', False)]}"
+                            <field name="unit_model_id" attrs="{'required':[('unit_type', '!=', False)]}"
                                    options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"
-                                   domain="[('brand_id', '=', unit_brand)]"/>
+                                   domain="[('brand_id', '=', unit_brand_id)]"/>
                             <field name="unit_year" attrs="{'required':[('unit_type', '!=', False)]}"/>
-<!--                            <field name="unit_state_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>-->
+                            <!--                            <field name="unit_state_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>-->
                             <field name="unit_grade_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                         </group>
                     </group>
                 </xpath>
 
-<!--                <xpath expr="//sheet/notebook" position="inside">-->
-<!--                    <page string="Gate In/Gate Out" name="gate_in_out"-->
-<!--                          attrs="{'invisible':['|', ('type', '!=', 'product'), '|', ('sale_ok', '=',True), '|',('purchase_ok', '=',True), ('rent_ok', '=',True)]}">-->
-<!--                        <group>-->
-<!--                            <group name="owner_info" string="Información de propietario">-->
-<!--                                <field name="external_owner" readonly="1"/>-->
-<!--                                <field name="owner_partner_id" readonly="1"/>-->
-<!--                                <field name="booking" readonly="1"/>-->
-<!--                                <field name="boat" readonly="1"/>-->
-<!--                                <field name="stamp" readonly="1"/>-->
-<!--                            </group>-->
+            </field>
+        </record>
 
-<!--                            <group name="gate_info" string="Información del servicio">-->
-<!--                                <field name="gate_in_date" readonly="1"/>-->
-<!--                                <field name="gate_out_date" readonly="1"/>-->
-<!--                                <field name="storage_rate" readonly="1"/>-->
-<!--                            </group>-->
-<!--                        </group>-->
+        <record id="product_template_view_form_recurring_equiport_custom" model="ir.ui.view">
+            <field name="name">sale.subscription.product.template.form.equiport.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="sale_subscription.product_template_view_form_recurring"/>
+            <field name="arch" type="xml">
 
-<!--                    </page>-->
+                <xpath expr="//group[@name='subscription']" position="replace"/>
 
-<!--                </xpath>-->
+            </field>
+        </record>
 
+        <record id="product_template_form_view_rental_equiport_custom" model="ir.ui.view">
+            <field name="name">product.template.form.rental.equiport.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="sale_renting.product_template_form_view_rental"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook/page[@name='rental']/group" position="inside">
+                    <group name="subscription" string="Suscripciones">
+                        <field name="recurring_invoice"/>
+                        <field name="subscription_template_id" class="field_sub_template_id"
+                               attrs="{'invisible': [('recurring_invoice', '=', False)]}"/>
+                    </group>
+                </xpath>
 
             </field>
         </record>

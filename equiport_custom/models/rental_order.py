@@ -16,6 +16,22 @@ class RentalOrder(models.Model):
     rental_subscription_id = fields.Many2one(comodel_name='sale.subscription', string="Suscripción")
     rental_template_id = fields.Many2one(comodel_name='sale.subscription.template', string="Plantilla de suscripción")
     rental_sub_state = fields.Selection(related='rental_subscription_id.stage_id.category')
+    is_inventory_user = fields.Boolean(compute='_compute_inventory_flag', store=False)
+    x_css = fields.Html(
+        string='CSS',
+        sanitize=False,
+        compute='_compute_inventory_flag',
+        store=False,
+    )
+
+    def _compute_inventory_flag(self):
+        for rec in self:
+            if self.env.user.has_group('equiport_custom.rental_stock_picking'):
+                rec.is_inventory_user = True
+                rec.x_css = '<style>.o_form_button_edit, .oe_subtotal_footer, .o_form_button_create, .btn-secondary, .o-discussion {display: none !important;}</style>'
+            else:
+                rec.is_inventory_user = False
+                rec.x_css = False
 
     def update_existing_rental_subscriptions(self):
         """
@@ -370,6 +386,8 @@ class RentalOrder(models.Model):
                                                                 '\n**Contrato de arrendamiento**'}}
 
     def open_pickup(self):
+        if not self.env.user.has_group('equiport_custom.rental_stock_picking'):
+            raise ValidationError("El personal de despacho es el encargado de seleccionar las unidades a despachar")
         if not self.access_granted:
             self = self.with_company(self.company_id)
             deposit_product = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
@@ -451,4 +469,3 @@ class RentalOrderLine(models.Model):
                     rec.new_rental_addition = False
             else:
                 rec.new_rental_addition = False
-

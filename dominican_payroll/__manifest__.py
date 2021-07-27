@@ -37,7 +37,6 @@
         'views/hr_payslip_view.xml',
         'views/hr_payroll_structure.xml',
         'views/hr_payslip_run_view.xml',
-        'views/account_payment_views.xml',
         'views/hr_employee_loan_views.xml',
         'views/hr_employee_views.xml',
         'views/payslip_report_templates.xml',

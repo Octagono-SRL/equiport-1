@@ -11,6 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 
 class HrEmployeeLoan(models.Model):
     _name = 'hr.employee.loan'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Modelo para manejar los prestamos de los empleados"
     _rec_name = "name"
 
