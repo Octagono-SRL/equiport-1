@@ -52,6 +52,74 @@ class AccountMove(models.Model):
 
         return res
 
+    # Invoice flow origin
+
+    flow_origin = fields.Char(string='Generado en', compute='compute_flow_origin', store=True, tracking=True)
+
+    @api.depends('invoice_origin', 'name')
+    def compute_flow_origin(self):
+        for rec in self:
+            if rec.invoice_origin and rec.move_type == 'out_invoice':
+                obj_list = list(map(lambda e: e.strip(), rec.invoice_origin.split(',')))
+                model_list = []
+                SaleOrder = self.env['sale.order']
+                SaleSubscription = self.env['sale.subscription']
+                RepairOrder = self.env['repair.order']
+                if len(obj_list) == 1:
+                    obj = obj_list[0]
+                    domain = [('name', '=', obj), ('company_id', '=', rec.company_id.id)]
+                    sale_order = SaleOrder.search(domain)
+                    repair_order = RepairOrder.search(domain)
+                    sale_subscription = SaleSubscription.search([('code', '=', obj), ('company_id', '=', rec.company_id.id)])
+
+                    if sale_order:
+                        if sale_order.is_rental_order:
+                            rec.flow_origin = "Alquiler"
+                        elif sale_order.is_fsm:
+                            rec.flow_origin = "Servicio de campo"
+                        else:
+                            rec.flow_origin = "Ventas"
+
+                    elif repair_order:
+                        if repair_order.is_fleet_origin:
+                            rec.flow_origin = "Flota"
+                        else:
+                            rec.flow_origin = "Reparaciones"
+                    elif sale_subscription:
+                        if sale_subscription.rental_order_id:
+                            rec.flow_origin = "Alquiler recurrente"
+                        else:
+                            rec.flow_origin = "Subscripción"
+                    else:
+                        rec.flow_origin = "Sin origen"
+                else:
+                    for obj in obj_list:
+                        domain = [('name', '=', obj), ('company_id', '=', rec.company_id.id)]
+                        sale_order = SaleOrder.search(domain)
+                        repair_order = RepairOrder.search(domain)
+                        sale_subscription = SaleSubscription.search(domain)
+
+                        if sale_order:
+                            model_list.append(sale_order._name)
+                        elif repair_order:
+                            model_list.append(repair_order._name)
+                        elif sale_subscription:
+                            model_list.append(sale_subscription._name)
+
+                    o_list = [True for e in model_list if e == 'sale.order']
+                    r_list = [True for e in model_list if e == 'repair.order']
+                    s_list = [True for e in model_list if e == 'sale.subscription']
+                    if all(o_list) and (len(o_list) == len(model_list)):
+                        rec.flow_origin = "Documentos combinados: Ventas"
+                    elif all(r_list) and (len(r_list) == len(model_list)):
+                        rec.flow_origin = "Documentos combinados: Reparaciones"
+                    elif all(s_list) and (len(s_list) == len(model_list)):
+                        rec.flow_origin = "Documentos combinados: Subscripciones"
+                    else:
+                        rec.flow_origin = "Documentos combinados"
+            else:
+                rec.flow_origin = "Sin origen"
+
     @api.constrains('invoice_origin')
     def _check_user_group_to_save(self):
         for rec in self:

@@ -85,5 +85,3 @@ class PurchaseOrderCancel(models.TransientModel):
             'context': ctx,
         }
 
-        # print(self.user_id, self.purchase_order_id)
-        # pass

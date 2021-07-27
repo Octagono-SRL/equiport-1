@@ -9,10 +9,29 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out", compute='compute_is_gate_service')
+    fsm_invoice_available = fields.Boolean(string="Facturación interna", compute='compute_fsm_invoice_available')
+    is_fsm = fields.Boolean(string="Es servicio de campo", compute='compute_fsm_invoice_available')
     section_gate_service_seq = fields.Integer(string="Sectión Gate Service")
 
+    @api.depends('tasks_ids')
+    def compute_fsm_invoice_available(self):
+        for rec in self:
+            rec.fsm_invoice_available = True
+            if rec.tasks_count <= 1:
+                for task_id in rec.tasks_ids:
+                    if task_id.is_fsm and task_id.main_cause == 'wear':
+                        rec.fsm_invoice_available = False
+                    else:
+                        rec.fsm_invoice_available = True
+
+                if any(rec.tasks_ids.mapped('is_fsm')):
+                    rec.is_fsm = True
+                else:
+                    rec.is_fsm = False
+
+
     def _create_invoices(self, grouped=False, final=False, date=None):
-        res = super(SaleOrder, self)._create_invoices(grouped=grouped, final=final, date=date)
+        res = super(SaleOrder, self)._create_invoices()
         if res.is_gate_service:
 
             invoice_lines = []

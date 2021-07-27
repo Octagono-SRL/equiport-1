@@ -13,7 +13,10 @@ from . import rental_order
 from . import sale_subscription
 from . import repair_order
 from . import crm_lead
+from . import res_currency
 from . import res_partner
 from . import res_company
 from . import res_employee
 from . import product_unit
+from . import project_task
+from . import fleet_vehicle

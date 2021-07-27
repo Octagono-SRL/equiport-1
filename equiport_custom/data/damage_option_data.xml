@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="damage_option1" model="damage.option">
+            <field name="name">Gomas pinchadas</field>
+        </record>
+
+        <record id="damage_option2" model="damage.option">
+            <field name="name">Gomas explotadas</field>
+        </record>
+
+        <record id="damage_option3" model="damage.option">
+            <field name="name">Corrida frenada</field>
+        </record>
+
+        <record id="damage_option4" model="damage.option">
+            <field name="name">Corrida sin aire</field>
+        </record>
+
+        <record id="damage_option5" model="damage.option">
+            <field name="name">Pulmones</field>
+        </record>
+
+        <record id="damage_option6" model="damage.option">
+            <field name="name">Cotorra o Conector</field>
+        </record>
+
+        <record id="damage_option7" model="damage.option">
+            <field name="name">Patas averiadas</field>
+        </record>
+
+        <record id="damage_option8" model="damage.option">
+            <field name="name">Bomba de aire rota</field>
+        </record>
+
+        <record id="damage_option9" model="damage.option">
+            <field name="name">Manguera rota</field>
+        </record>
+
+        <record id="damage_option10" model="damage.option">
+            <field name="name">Chasis frenado</field>
+        </record>
+
+        <record id="damage_option11" model="damage.option">
+            <field name="name">Problemas de piña</field>
+        </record>
+
+        <record id="damage_option12" model="damage.option">
+            <field name="name">Bomba de agua</field>
+        </record>
+
+        <record id="damage_option13" model="damage.option">
+            <field name="name">Tensión de correa</field>
+        </record>
+
+        <record id="damage_option14" model="damage.option">
+            <field name="name">Filtro de transf. de gasoil</field>
+        </record>
+
+        <record id="damage_option15" model="damage.option">
+            <field name="name">Voltaje de bateria</field>
+        </record>
+
+        <record id="damage_option16" model="damage.option">
+            <field name="name">Bateria averiada</field>
+        </record>
+
+        <record id="damage_option17" model="damage.option">
+            <field name="name">Cargador de bateria</field>
+        </record>
+
+        <record id="damage_option18" model="damage.option">
+            <field name="name">Motor de arranque</field>
+        </record>
+
+        <record id="damage_option19" model="damage.option">
+            <field name="name">Bloqueado por alarma</field>
+        </record>
+
+        <record id="damage_option20" model="damage.option">
+            <field name="name">Alta temperatura</field>
+        </record>
+
+        <record id="damage_option21" model="damage.option">
+            <field name="name">Nivel de coolant</field>
+        </record>
+
+        <record id="damage_option22" model="damage.option">
+            <field name="name">Nivel de aceite</field>
+        </record>
+
+        <record id="damage_option23" model="damage.option">
+            <field name="name">Cortadura leve</field>
+        </record>
+
+        <record id="damage_option24" model="damage.option">
+            <field name="name">Cortadura de impacto</field>
+        </record>
+
+        <record id="damage_option25" model="damage.option">
+            <field name="name">Perforación punzante</field>
+        </record>
+
+        <record id="damage_option26" model="damage.option">
+            <field name="name">Puertas averiadas</field>
+        </record>
+
+        <record id="damage_option27" model="damage.option">
+            <field name="name">Perforación lateral</field>
+        </record>
+
+        <record id="damage_option28" model="damage.option">
+            <field name="name">Perforación frontal</field>
+        </record>
+
+        <record id="damage_option29" model="damage.option">
+            <field name="name">Gomas de las puertas</field>
+        </record>
+
+        <record id="damage_option30" model="damage.option">
+            <field name="name">Piso averiado</field>
+        </record>
+
+        <record id="damage_option31" model="damage.option">
+            <field name="name">Chapa averiada</field>
+        </record>
+
+        <record id="damage_option32" model="damage.option">
+            <field name="name">Gancho puerta</field>
+        </record>
+
+        <record id="damage_option33" model="damage.option">
+            <field name="name">Generación 12V ó 48</field>
+        </record>
+
+        <record id="damage_option34" model="damage.option">
+            <field name="name">Fuga de refrigerante</field>
+        </record>
+
+        <record id="damage_option35" model="damage.option">
+            <field name="name">Cable 480V roto</field>
+        </record>
+
+        <record id="damage_option36" model="damage.option">
+            <field name="name">Compresor dañado</field>
+        </record>
+
+        <record id="damage_option37" model="damage.option">
+            <field name="name">Filtro Drying</field>
+        </record>
+
+        <record id="damage_option38" model="damage.option">
+            <field name="name">Sensor de humedad</field>
+        </record>
+
+        <record id="damage_option39" model="damage.option">
+            <field name="name">Fase de cable abierta</field>
+        </record>
+
+        <record id="damage_option40" model="damage.option">
+            <field name="name">Cambio Setting point</field>
+        </record>
+
+
+        <record id="damage_option41" model="damage.option">
+            <field name="name">Moto condensador</field>
+        </record>
+
+        <record id="damage_option42" model="damage.option">
+            <field name="name">Moto evaporador</field>
+        </record>
+
+        <record id="damage_option43" model="damage.option">
+            <field name="name">Fuga de condensador</field>
+        </record>
+
+        <record id="damage_option44" model="damage.option">
+            <field name="name">Chequeo de unidad</field>
+        </record>
+
+    </data>
+</odoo>

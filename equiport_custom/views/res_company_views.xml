@@ -14,38 +14,49 @@
                             <label for="active_op_approval"/>
                             <field name="active_op_approval"/>
                         </div>
-                        <group string="Niveles de aprobación" attrs="{'invisible':[('active_op_approval', '=', False)]}">
+                        <group string="Niveles de aprobación"
+                               attrs="{'invisible':[('active_op_approval', '=', False)]}">
                             <group string="Nivel 1">
-                                <field name="op_ini_level" string="Monto minimo" attrs="{'required':[('active_op_approval', '=', True)]}"/>
-                                <field name="op_ini_user_id" string="Responsable" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_ini_level" string="Monto minimo"
+                                       attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_ini_user_id" string="Responsable"
+                                       attrs="{'required':[('active_op_approval', '=', True)]}"/>
                             </group>
                             <group string="Nivel 2">
-                                <field name="op_mid_level" string="Monto minimo" attrs="{'required':[('active_op_approval', '=', True)]}"/>
-                                <field name="op_mid_user_id" string="Responsable" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_mid_level" string="Monto minimo"
+                                       attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_mid_user_id" string="Responsable"
+                                       attrs="{'required':[('active_op_approval', '=', True)]}"/>
                             </group>
                             <group string="Nivel 3">
-                                <field name="op_top_level" string="Monto minimo" attrs="{'required':[('active_op_approval', '=', True)]}"/>
-                                <field name="op_top_user_id" string="Responsable" attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_top_level" string="Monto minimo"
+                                       attrs="{'required':[('active_op_approval', '=', True)]}"/>
+                                <field name="op_top_user_id" string="Responsable"
+                                       attrs="{'required':[('active_op_approval', '=', True)]}"/>
                             </group>
                         </group>
                         <group string="Responsables solicitudes de cancelación">
                             <group>
-                                <field name="user_po_allow_cancel" string="Usuarios" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="user_po_allow_cancel" string="Usuarios" widget="many2many_tags_email"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                             </group>
                         </group>
                     </page>
                     <page name="so_page" string="Pedidos de ventas">
                         <group>
                             <group>
-                                <field name="default_gate_service" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
-                                <field name="default_stock" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="default_gate_service" attrs="{'required':True}"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                                <field name="default_stock" attrs="{'required':True}"
+                                       options="{'no_create': True, 'no_open': True}"/>
                             </group>
                         </group>
                     </page>
                     <page name="sp_page" string="Conduces">
                         <group>
                             <group string="Encargados">
-                                <field name="user_sp_access" string="Usuarios" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="user_sp_access" string="Usuarios" widget="many2many_tags_email"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                             </group>
                         </group>
                     </page>
@@ -53,12 +64,23 @@
                     <page name="rental_page" string="Alquiler">
                         <group>
                             <group string="Encargados">
-                                <field name="user_rental_access" string="Usuarios" widget="many2many_tags_email" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="user_rental_access" string="Usuarios" widget="many2many_tags_email"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <page name="fleet_page" string="Flotas">
+                        <group>
+                            <group string="Notificar a">
+                                <field name="user_fleet_notify" string="Usuarios" widget="many2many_tags_email"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                             </group>
 
-<!--                            <group string="Depositos">-->
-<!--                                <field name="default_deposit_account_id" attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>-->
-<!--                            </group>-->
+                            <group string="Combustibles">
+                                <field name="fuel_services_fleet" string="Servicios" widget="many2many_tags"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
                         </group>
                     </page>
                 </xpath>

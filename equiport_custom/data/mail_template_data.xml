@@ -124,5 +124,61 @@
             <field name="lang">${object.partner_id.lang}</field>
             <field name="auto_delete" eval="True"/>
         </record>
+
+        <record id="email_template_fleet_alerts" model="mail.template">
+            <field name="name">Equiport: Enviar alertas de servicios en flota</field>
+            <field name="model_id" ref="fleet.model_fleet_vehicle_log_services"/>
+            <field name="email_from">${(object.env.company.email_formatted or object.company_id.email_formatted) |safe}</field>
+            <field name="partner_to">${object.get_users_to_alert()}</field>
+            <field name="subject">${object.company_id.name} Flota (Alerta ${object.service_type_id.name or 'n/a'})</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px 25px;">
+                        <h3>El servicio ha generado las siguientes alertas:</h3>
+                        % if ctx['date_alert']:
+                            <p>La fecha acordada para ${ctx.get('service_type')} ha sido alcanzada.</p>
+                        % endif
+
+                        % if ctx['km_alert']:
+                            <p>Los kilómetros acordados para ${ctx.get('service_type')} han sido alcanzados.</p>
+                        % endif
+
+                        % if ctx['hr_alert']:
+                            <p>Las horas acordadas para ${ctx.get('service_type')} han sido alcanzadas.</p>
+                        % endif
+
+                        <h3>Detalles de servicio:</h3>
+                        % if object.description:
+                            <p>Descripción: <strong>${ object.description }</strong></p>
+                        % endif
+                        <p>Unidad: <strong>${ object.vehicle_id.name }</strong></p>
+                        % if object.unit_type == 'vehicle':
+                            <p>Tipo: <strong>Vehículo</strong></p>
+                        % elif object.unit_type == 'container':
+                            <p>Tipo: <strong>Contenedor</strong></p>
+                        % elif object.unit_type == 'chassis':
+                            <p>Tipo: <strong>Chasis</strong></p>
+                        % elif object.unit_type == 'gen_set':
+                            <p>Tipo: <strong>Gen Set</strong></p>
+                        % endif
+                        % if object.category == 'repair':
+                        <p>Categoria: <strong>Reparación</strong></p>
+                        % elif object.category == 'contract':
+                        <p>Categoria: <strong>Contrato</strong></p>
+                        % elif object.category == 'service':
+                        <p>Categoria: <strong>Servicio</strong></p>
+                        % elif object.category == 'maintenance':
+                        <p>Categoria: <strong>Mantenimiento</strong></p>
+                        % endif
+
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+<!--        Activities-->
+        <record id="mail_act_fleet_service_to_renew" model="mail.activity.type">
+            <field name="name">Servicio a renovar</field>
+            <field name="icon">fa-car</field>
+            <field name="res_model_id" ref="fleet.model_fleet_vehicle_log_services"/>
+        </record>
     </data>
 </odoo>

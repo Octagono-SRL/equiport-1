@@ -12,6 +12,12 @@
                     <field name="access_requested" invisible="1"/>
                     <field name="deposit_status" invisible="1"/>
                     <field name="rental_sub_state" invisible="1"/>
+                    <field name="is_inventory_user" invisible="1"/>
+                    <field name="x_css" nolabel="1" invisible="0"/>
+                </field>
+
+                <field name="validity_date" position="attributes">
+                    <attribute name="string">Valido hasta</attribute>
                 </field>
 
                 <xpath expr="//notebook/page[@name='other_information']/group[1]/group[@name='sale_info']"
@@ -30,23 +36,33 @@
 
                 <header position="inside">
                     <button name="add_deposit" type="object" string="Agregar deposito" class="oe_highlight"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']),('deposit_status','in',['added', 'returned'])]}"/>
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']),('deposit_status','in',['added', 'returned'])]}"
+                            groups="equiport_custom.rental_account_deposit"/>
                     <button name="remove_deposit" type="object" string="Devolver deposito" class="oe_highlight"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"/>
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"
+                            groups="equiport_custom.rental_account_deposit"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"/>
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), '|', ('state', 'not in', ['sent', 'sale']), ('is_inventory_user', '=', True)]}"/>
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
                             groups="sales_team.group_sale_manager"/>
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
                             string="Actualizar subscripción"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False), ('rental_sub_state', 'in', ['closed', False])]}"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|', ('rental_sub_state', 'in', ['closed', False]), ('is_inventory_user', '=', True)]}"
                             confirm="¿Está seguro de continuar? esta acción actualizara todas las lineas de la subscripción existente."/>
                 </header>
 
+                <button name="open_pickup" type="object" class="btn-primary"
+                        attrs="{'invisible':['|', ('has_pickable_lines','=',False), ('state', 'not in', ['sale', 'done'])]}" position="attributes">
+                    <attribute name="string">
+                        Seleccionar unidades
+                    </attribute>
+                </button>
+
+
                 <div class="oe_button_box" name="button_box" position="inside">
                     <button name="action_view_deposits" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
-                            attrs="{'invisible': [('deposit_status', 'not in', ['added', 'returned'])]}">
+                            attrs="{'invisible': ['|', ('deposit_status', 'not in', ['added', 'returned']), ('is_inventory_user', '=', True)]}">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_text">Depositos</span>
                             <!--                                <span class="o_stat_text">Preview</span>-->

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-        <!--Loan Views-->
+    <!--Loan Views-->
     <record id="hr_employee_loan_tree" model="ir.ui.view">
         <field name="name">hr.employee.loan.tree</field>
         <field name="model">hr.employee.loan</field>
@@ -24,7 +24,8 @@
         <field name="arch" type="xml">
             <form string="Préstamo">
                 <header>
-                    <button name="compute_fees" type="object" states="draft" string="Calcular Cuotas" class="btn-primary"/>
+                    <button name="compute_fees" type="object" states="draft" string="Calcular Cuotas"
+                            class="btn-primary"/>
                     <button name="approve_loan" type="object" states="draft" string="Aprobar" class="btn-primary"/>
                     <button name="cancel_loan" type="object" states="approved" string="Cancelar" class="btn-default"/>
                     <button name="set_loan_to_draft" type="object" states="cancel" string="Establecer en borrador"/>
@@ -67,11 +68,17 @@
                         </page>
                     </notebook>
                 </sheet>
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
 
-        <!--Loan Rate Views-->
+    <!--Loan Rate Views-->
 
     <record id="hr_employee_loan_rate_tree" model="ir.ui.view">
         <field name="name">hr.employee.loan.rate.tree</field>
@@ -101,28 +108,28 @@
         </field>
     </record>
 
-        <!--  Loan action  -->
+    <!--  Loan action  -->
     <record id="action_hr_employee_loan" model="ir.actions.act_window">
         <field name="name">Préstamos</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hr.employee.loan</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
-          <p class="oe_view_nocontent_create">
-            Cree su primer préstamo!
-          </p>
+            <p class="oe_view_nocontent_create">
+                Cree su primer préstamo!
+            </p>
         </field>
     </record>
-        <!-- Rate action -->
+    <!-- Rate action -->
     <record id="action_hr_employee_loan_rate" model="ir.actions.act_window">
         <field name="name">Tarifas de préstamos</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hr.employee.loan.rate</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
-          <p class="oe_view_nocontent_create">
-            Cree su primera tarifa!
-          </p>
+            <p class="oe_view_nocontent_create">
+                Cree su primera tarifa!
+            </p>
         </field>
     </record>
 

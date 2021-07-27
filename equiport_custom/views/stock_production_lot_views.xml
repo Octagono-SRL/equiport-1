@@ -22,19 +22,28 @@
                 <xpath expr="//sheet/notebook" position="inside">
                     <page string="Gate In/Gate Out" name="gate_in_out"
                           attrs="{'invisible':[('is_gate_product', '=',False)]}">
-                        <group>
-                            <group name="owner_info" string="Información de propietario">
+                        <group col="2">
+                            <group colspan="2" name="owner_info" string="Información de propietario">
                                 <field name="external_owner" readonly="1"/>
                                 <field name="owner_partner_id" readonly="1"/>
-                                <field name="booking" readonly="1"/>
-                                <field name="boat" readonly="1"/>
-                                <field name="stamp" readonly="1"/>
+                                <field name="storage_rate" readonly="1"/>
+
+                            </group>
+                            <group name="gate_in_info" string="Información de entrada del servicio">
+                                <field name="in_booking" readonly="1"/>
+                                <field name="in_boat" readonly="1"/>
+                                <field name="in_navy_line" readonly="1"/>
+                                <field name="in_stamp" readonly="1"/>
+                                <field name="gate_in_date" readonly="1"/>
+
                             </group>
 
-                            <group name="gate_info" string="Información del servicio">
-                                <field name="gate_in_date" readonly="1"/>
+                            <group name="gate_out_info" string="Información de salida del servicio">
+                                <field name="out_booking" readonly="1"/>
+                                <field name="out_boat" readonly="1"/>
+                                <field name="out_navy_line" readonly="1"/>
+                                <field name="out_stamp" readonly="1"/>
                                 <field name="gate_out_date" readonly="1"/>
-                                <field name="storage_rate" readonly="1"/>
                             </group>
                         </group>
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RENTAL ORDER LINES : PICKUP / RETURN WIZARD -->
+
+    <record id="rental_order_wizard_view_form_equiport_inherit" model="ir.ui.view">
+        <field name="name">rental.order.wizard.form.equiport.inherit</field>
+        <field name="model">rental.order.wizard</field>
+        <field name="inherit_id" ref="sale_stock_renting.rental_order_wizard_view_form"/>
+        <field name="arch" type="xml">
+
+            <field name="pickedup_lot_ids" position="attributes">
+                <attribute name="domain">
+                    [
+                        ('rent_state', '=','available'),
+                        ('id', 'in', pickeable_lot_ids)
+                    ]
+                </attribute>
+            </field>
+
+        </field>
+    </record>
+</odoo>

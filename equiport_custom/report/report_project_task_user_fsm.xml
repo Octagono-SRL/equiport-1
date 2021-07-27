@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="project_task_user_view_tree_equiport" model="ir.ui.view">
+            <field name="name">project.task.user.view.equiport</field>
+            <field name="model">report.project.task.user.fsm</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="container"/>
+                    <field name="chassis"/>
+                    <field name="gen_set"/>
+                    <!--                <field name="date"/>-->
+                    <field name="effective_date" optional="show"/>
+                    <field name="arrive_time" optional="show"/>
+                    <field name="leave_time"/>
+                    <field name="employee_worker_ids" widget="many2many_tags"/>
+                    <field name="rescue_location"/>
+                    <field name="damage_type_ids" widget="many2many_tags"/>
+                    <field name="rescue_notes"/>
+                    <field name="main_cause" optional="show"/>
+                    <field name="product_line_value" optional="show"/>
+                    <field name="km_travelled" optional="show"/>
+                    <field name="km_travelled_product_value" optional="show"/>
+                    <field name="toll_tax_value" optional="show"/>
+                    <field name="product_amount_total" optional="show"/>
+                    <field name="time_product_value" optional="show"/>
+                    <field name="fuel_product_qty" optional="show"/>
+                    <field name="fuel_product_price" optional="show"/>
+                    <field name="fuel_product_value" optional="show"/>
+                    <field name="rescue_amount_total" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="industry_fsm.project_task_user_action_report_fsm" model="ir.actions.act_window">
+            <field name="view_mode">tree,graph,pivot</field>
+            <field name="context">{'group_by_no_leaf': 0}</field>
+        </record>
+    </data>
+</odoo>

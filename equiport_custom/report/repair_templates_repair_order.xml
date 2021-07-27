@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_repair_order_equiport" inherit_id="repair.report_repairorder">
+            <xpath expr="//p[@t-field='o.quotation_notes']" position="before">
+                <div class="text-muted">
+                    <style>
+                        table.recibido {position:relative; top:200px; margin-top:15px;width:100% !important;border:0px
+                        !important; border-spacing: 10px !important; border-collapse: separate !important;}
+                        table.recibido td {border:0px !important;border-top:2px solid black !important; background:none
+                        !important; text-align:center !important; width:30% !important;}
+
+                        table.recibido .spacing {
+                            border:0px !important;border-top:2px solid white !important; background:none
+                        !important; text-align:center !important; width:30% !important;
+                        }
+
+                    </style>
+                    <table class="recibido"
+                           border="0"
+                           cellspacing="30">
+                        <tr>
+                            <!--                            <td>Preparado por</td>-->
+                            <td>Aprobado por</td>
+                            <td class="spacing"></td>
+                            <td>Recibido por</td>
+                        </tr>
+                    </table>
+                </div>
+                <t t-if="o.is_fuel_replenishment == False">
+                    <div class="text-muted">
+                        <style>
+                            table.recibido {position:relative; top:200px; margin-top:35px;width:100%
+                            !important;border:0px
+                            !important; border-spacing: 10px !important; border-collapse: separate !important;}
+                            table.recibido td {border:0px !important;border-top:2px solid black !important;
+                            background:none
+                            !important; text-align:center !important; width:30% !important;}
+
+                            table.recibido .spacing {
+                                border:0px !important;border-top:2px solid white !important; background:none
+                            !important; text-align:center !important; width:30% !important;
+                            }
+                        </style>
+                        <table class="recibido"
+                               border="0"
+                               cellspacing="30">
+                            <tr>
+                                <!--                            <td>Preparado por</td>-->
+                                <td>Verificado por</td>
+                                <td class="spacing"></td>
+                                <td>Trabajado por</td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+
+            </xpath>
+        </template>
+    </data>
+</odoo>

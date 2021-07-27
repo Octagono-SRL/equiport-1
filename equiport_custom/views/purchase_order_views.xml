@@ -2,30 +2,90 @@
 <odoo>
     <data>
 
-       <record id="purchase_order_form_equiport_inherit" model="ir.ui.view">
-           <field name="name">purchase.order.form.equiport.inherit</field>
-           <field name="model">purchase.order</field>
-           <field name="inherit_id" ref="purchase.purchase_order_form"/>
-           <field name="arch" type="xml">
+        <record id="purchase_order_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.equiport.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
 
-               <xpath expr="//field[@name='fiscal_position_id']" position="after">
-                   <field name="allowed_cancel" attrs="{'readonly':True}"/>
-                   <field name="approval_needed" invisible="1"/>
-                   <field name="allowed_confirm" invisible="1"/>
-                   <field name="request_approval" invisible="1"/>
-                   <field name="requested_cancel" invisible="1"/>
-                   <field name="cancel_reason" attrs="{'invisible':[('allowed_cancel', '=', False)], 'readonly':True}"/>
-               </xpath>
+                <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                    <field name="is_approval_group" invisible="0"/>
+                    <field name="is_cancel_group" invisible="0"/>
+                    <field name="allowed_cancel" attrs="{'readonly':True}"/>
+                    <field name="approval_needed" invisible="1"/>
+                    <field name="allowed_confirm" invisible="1"/>
+                    <field name="request_approval" invisible="1"/>
+                    <field name="requested_cancel" invisible="1"/>
+                    <field name="cancel_reason"
+                           attrs="{'invisible':[('allowed_cancel', '=', False)], 'readonly':True}"/>
+                </xpath>
 
-               <xpath expr="//header/button[@name='button_cancel']" position="before">
-                   <button name="allow_confirm" type="object" attrs="{'invisible':['|', ('allowed_confirm', '=', True),('request_approval', '=', False)]}" groups="purchase.group_purchase_manager" string="Aprobar compra" class="oe_highlight" help="Autorizar cancelar esta orden"/>
-                   <button name="allow_cancel" type="object" attrs="{'invisible':['|', ('allowed_cancel', '=', True),('cancel_reason', '=', False)]}" groups="purchase.group_purchase_manager" string="Aprobar cancelación" class="oe_highlight" help="Autorizar cancelar esta orden"/>
-                   <button name="request_cancel" type="object" attrs="{'invisible':[('requested_cancel', '=', True)]}" groups="equiport_custom.request_cancel_purchase_order" string="Solicitar cancelación" class="oe_highlight" help="Realizar solicitud de autorización para cancelar esta orden"/>
-                   <button name="request_confirm" type="object" attrs="{'invisible':['|', ('request_approval', '=', True), ('approval_needed', '=', False)]}" string="Solicitar Aprobacion" class="oe_highlight" help="Realizar solicitud de autorización para realizar esta compra"/>
-               </xpath>
+                <xpath expr="//header/button[@name='button_cancel']" position="before">
+                    <button name="allow_confirm" type="object"
+                            attrs="{'invisible':['|', ('allowed_confirm', '=', True),('request_approval', '=', False)]}"
+                            groups="purchase.group_purchase_manager" string="Aprobar compra" class="oe_highlight"
+                            help="Autorizar cancelar esta orden"/>
+                    <button name="allow_cancel" type="object"
+                            attrs="{'invisible':['|', ('allowed_cancel', '=', True),('cancel_reason', '=', False)]}"
+                            groups="purchase.group_purchase_manager" string="Aprobar cancelación" class="oe_highlight"
+                            help="Autorizar cancelar esta orden"/>
+                    <button name="request_cancel" type="object" attrs="{'invisible':[('requested_cancel', '=', True)]}"
+                            groups="equiport_custom.request_cancel_purchase_order" string="Solicitar cancelación"
+                            class="oe_highlight" help="Realizar solicitud de autorización para cancelar esta orden"/>
+                    <button name="request_confirm" type="object"
+                            attrs="{'invisible':['|', ('request_approval', '=', True), ('approval_needed', '=', False)]}"
+                            string="Solicitar Aprobacion" class="oe_highlight"
+                            help="Realizar solicitud de autorización para realizar esta compra"/>
+                </xpath>
 
-           </field>
-       </record>
+                <xpath expr="//notebook/page[@name='products']" position="after">
+                    <page string="Firmas" name="sign_section"
+                          attrs="{'invisible': [('requested_cancel', '=', False),('request_approval', '=', False)]}">
+                        <div class="row-content" attrs="{'invisible': [('request_approval', '=', False)]}">
+                            <h2>Aprobación de monto</h2>
+                        </div>
+                        <group name="amount_sign" attrs="{'invisible': [('request_approval', '=', False)]}">
+                            <group>
+                                <field name="allowed_confirm_sign" widget="signature" nolabel="1"
+                                       options="{'size': ['',200]}"
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False),('allowed_confirm', '=', True)]}"/>
+                            </group>
+                            <group>
+                                <field name="allowed_confirm_date_sign" readonly="1"/>
+                                <field name="allowed_confirm_signed_by" readonly="1"/>
+                            </group>
+                        </group>
+                        <div class="row-content" attrs="{'invisible': [('requested_cancel', '=', False)]}">
+                            <h2>Aprobación de cancelación</h2>
+                        </div>
+                        <group name="cancel_sign" attrs="{'invisible': [('requested_cancel', '=', False)]}">
+                            <group>
+                                <field name="allowed_cancel_sign" widget="signature" nolabel="1"
+                                       options="{'size': ['',200]}"
+                                       attrs="{'readonly': ['|', ('is_cancel_group', '=', False),('allowed_cancel', '=', True)]}"/>
+                            </group>
+                            <group>
+                                <field name="allowed_cancel_date_sign" readonly="1"/>
+                                <field name="allowed_cancel_signed_by" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+
+                <button name="action_create_invoice" type="object" class="oe_highlight" context="{'create_bill':True}"
+                        attrs="{'invisible': ['|', ('state', 'not in', ('purchase', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}"
+                        position="attributes">
+                    <attribute name="string">Registrar factura</attribute>
+                </button>
+                <button name="action_create_invoice" type="object" context="{'create_bill':True}"
+                        attrs="{'invisible': ['|', '|', ('state', 'not in', ('purchase', 'done')), ('invoice_status', 'not in', ('no', 'invoiced')), ('order_line', '=', [])]}"
+                        position="attributes">
+                    <attribute name="string">Registrar factura</attribute>
+                </button>
+
+
+            </field>
+        </record>
 
     </data>
 </odoo>

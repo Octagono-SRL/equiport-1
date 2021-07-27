@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
@@ -9,7 +10,15 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     allowed_cancel = fields.Boolean(string="Cancelación aprobada", tracking=True)
+    allowed_cancel_sign = fields.Binary(copy=False)
+    allowed_cancel_signed_by = fields.Char('Cancelación firmada por', help='Nombre de la persona que firmo la aprobacion de cancelacion.', copy=False)
+    allowed_cancel_date_sign = fields.Datetime(string="Fecha de cancelación")
+    is_cancel_group = fields.Boolean(string="Grupo de cancelacion", compute="_check_cancel_group")
     allowed_confirm = fields.Boolean(string="Confirmación aprobada", tracking=True)
+    allowed_confirm_sign = fields.Binary(copy=False)
+    allowed_confirm_signed_by = fields.Char('Aprobacion firmada por', help='Nombre de la persona que firmo la aprobacion de monto.', copy=False)
+    allowed_confirm_date_sign = fields.Datetime(string="Fecha de aprobación")
+    is_approval_group = fields.Boolean(string="Grupo de aprobacion", compute="_check_approval_group")
     request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
     approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
     requested_cancel = fields.Boolean(string="Solicitó cancelación", tracking=True)
@@ -19,6 +28,23 @@ class PurchaseOrder(models.Model):
         ('order_has_errors', 'Se realizó una orden con error identificado luego de la impresión'),
         ('change_info', 'Cambios en la informacion de la orden'),
     ], tracking=True, string="Razón de Cancelación")
+
+    @api.depends('approval_needed')
+    def _check_approval_group(self):
+        approval_list = [self.env.company.op_ini_user_id, self.env.company.op_mid_user_id, self.env.company.op_top_user_id]
+        for rec in self:
+            if self.env.user in approval_list:
+                rec.is_approval_group = True
+            else:
+                rec.is_approval_group = False
+
+    @api.depends('requested_cancel')
+    def _check_cancel_group(self):
+        for rec in self:
+            if self.env.user in self.env.company.user_po_allow_cancel:
+                rec.is_cancel_group = True
+            else:
+                rec.is_cancel_group = False
 
     @api.depends('amount_total', 'company_id.active_op_approval')
     def _check_approval_need(self):
@@ -172,10 +198,18 @@ class PurchaseOrder(models.Model):
         return res
 
     def allow_cancel(self):
+        if not self.allowed_cancel_sign:
+            raise ValidationError("El documento debe ser firmado, dirijase a la sección de aprobación de cancelación en la pestaña de firmas.")
+        self.allowed_cancel_date_sign = datetime.datetime.now()
+        self.allowed_cancel_signed_by = self.env.user.display_name
         self.allowed_cancel = True
 
     def allow_confirm(self):
+        if not self.allowed_confirm_sign:
+            raise ValidationError("El documento debe ser firmado, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
         self.allowed_confirm = True
+        self.allowed_confirm_signed_by = self.env.user.display_name
+        self.allowed_confirm_date_sign = datetime.datetime.now()
 
     def button_confirm(self):
         company_id = self.company_id

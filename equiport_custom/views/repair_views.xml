@@ -8,8 +8,96 @@
             <field name="inherit_id" ref="repair.view_repair_order_form"/>
             <field name="arch" type="xml">
 
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="is_fleet_origin" invisible="1"/>
+                    <field name="is_fuel_replenishment" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='product_id']" position="replace">
+                    <field name="product_id" attrs="{'invisible': [('is_fleet_origin', '=', True)]}"/>
+                    <field name="product_fleet_name" attrs="{'invisible': [('is_fleet_origin', '=', False)], 'readonly': [('is_fleet_origin', '=', True)]}" string="Producto a reparar"/>
+                </xpath>
+
                 <xpath expr="//sheet/notebook/page[@name='extra_info']/group/group" position="inside">
                     <field name="opportunity_id" attrs="{'invisible':[('opportunity_id', '=', False)]}"/>
+                </xpath>
+
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <field name="picking_ids" invisible="1"/>
+                    <button type="object" name="action_view_delivery" class="oe_stat_button" icon="fa-truck" attrs="{'invisible': [('delivery_count', '=', 0)]}" groups="base.group_user">
+                        <field name="delivery_count" widget="statinfo" string="Conduces"/>
+                    </button>
+                </div>
+
+                <xpath expr="//sheet/notebook/page[@name='operations']/field[@name='fees_lines']" position="attributes">
+                    <attribute name="attrs">
+                        {'readonly': [('state', 'not in', ['draft', 'under_repair', 'ready'])]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//sheet/notebook/page[@name='extra_info']" position="before">
+                    <page string="Detalles levantamiento fisico" name="gathering_repair_info">
+
+                        <group name="repair_general_info">
+                            <group>
+                                <field name="inspection_date"/>
+                                <field name="material" widget="selection_badge"/>
+                                <field name="other_material" attrs="{'invisible': [('material', '!=', 'other')]}"/>
+                                <field name="inspection_worker"/>
+                            </group>
+
+                            <group>
+                                <field name="no_unit"/>
+                                <field name="size" widget="selection_badge"/>
+                                <field name="inspection_location"/>
+                                <field name="line_location"/>
+                            </group>
+
+                        </group>
+                        <group name="date_info">
+                            <group>
+                                <field name="entry_date"/>
+                                <field name="exit_date"/>
+                            </group>
+
+                            <group>
+                                <field name="entry_status"/>
+                                <field name="exit_status"/>
+                            </group>
+
+                        </group>
+                        <hr/>
+
+                        <group name="unit_detail_info">
+                            <field name="repair_info_line_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="damage_type" required="1"/>
+                                    <field name="affected_panel_qty" required="1"/>
+                                    <field name="repair_panel_description" required="1"/>
+                                    <field name="panel_location" required="1"/>
+                                    <field name="height" required="1"/>
+                                    <field name="long" required="1"/>
+                                </tree>
+                            </field>
+
+                        </group>
+                        <hr/>
+
+                        <group name="bottom_info">
+                            <group>
+                                <field name="inspection_air"/>
+                            </group>
+                            <group>
+                                <field name="inspection_top"/>
+                            </group>
+                            <group>
+                                <field name="inspection_screw"/>
+                            </group>
+                            <group>
+                                <field name="inspection_patch"/>
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
 
             </field>

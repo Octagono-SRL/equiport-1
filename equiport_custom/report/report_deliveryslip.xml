@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_delivery_document_equiport_inherit" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']" position="after">
+            <table class="table table-sm mt48" t-if="o.move_line_ids and o.is_gate_service"
+                   name="stock_move_line_gate_info">
+                <t t-set="has_serial_number" t-value="False"/>
+                <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')"
+                   groups="stock.group_lot_on_delivery_slip"/>
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col" colspan="2"><strong>Información Servicio Gate</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="o.move_line_ids" t-as="line">
+                        <tr>
+                            <th scope="col"><span t-esc="line.product_id.display_name"/></th>
+                            <t t-if="has_serial_number">
+                                <th scope="col">
+                                    <span t-esc="line.lot_id.name"/>
+                                </th>
+                            </t>
+                        </tr>
+                        <tr>
+                            <th scope="row">Número de reserva</th>
+                            <t t-if="o.picking_type_code == 'incoming'">
+                                <td>
+                                    <span t-if="line.in_booking" t-esc="line.in_booking"/>
+                                </td>
+                            </t>
+                            <t t-if="o.picking_type_code == 'outgoing'">
+                                <td>
+                                    <span t-if="line.out_booking" t-esc="line.out_booking"/>
+                                </td>
+                            </t>
+                        </tr>
+                        <tr>
+                            <th scope="row">Sello</th>
+                            <t t-if="o.picking_type_code == 'incoming'">
+                                <td>
+                                    <span t-if="line.in_stamp" t-esc="line.in_stamp"/>
+                                </td>
+                            </t>
+                            <t t-if="o.picking_type_code == 'outgoing'">
+                                <td>
+                                    <span t-if="line.out_stamp" t-esc="line.out_stamp"/>
+                                </td>
+                            </t>
+                        </tr>
+                        <tr>
+                            <th scope="row">Barco</th>
+                            <t t-if="o.picking_type_code == 'incoming'">
+                                <td>
+                                    <span t-if="line.in_boat" t-esc="line.in_boat"/>
+                                </td>
+                            </t>
+                            <t t-if="o.picking_type_code == 'outgoing'">
+                                <td>
+                                    <span t-if="line.out_boat" t-esc="line.out_boat"/>
+                                </td>
+                            </t>
+                        </tr>
+                        <tr>
+                            <th scope="row">Linea</th>
+                            <t t-if="o.picking_type_code == 'incoming'">
+                                <td>
+                                    <span t-if="line.in_navy_line" t-esc="line.in_navy_line"/>
+                                </td>
+                            </t>
+                            <t t-if="o.picking_type_code == 'outgoing'">
+                                <td>
+                                    <span t-if="line.out_navy_line" t-esc="line.out_navy_line"/>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <div class="row">
+                <style>
+                    .border-custom{
+                    border: 1px solid black !important;
+                    }
+                    bold-custom{
+                    font-weight: bold !important;
+                    }
+                </style>
+                <div t-if="o.partner_driver" class="col-12 d-flex justify-content-end">
+                    <div class="clearfix col-4">
+                        <table class="table table-cover border-custom" name="stock_picking_client_info">
+                            <tr>
+                                <th class="border-custom bold-custom" scope="row" name="partner_driver">Conductor</th>
+                                <td><t t-esc="o.partner_driver"/></td>
+                            </tr>
+                            <tr>
+                                <th class="border-custom bold-custom" scope="row" name="card_driver">Carnet del
+                                    conductor</th>
+                                <td><t t-esc="o.card_driver"/></td>
+                            </tr>
+                            <tr>
+                                <th class="border-custom bold-custom" scope="row" name="vat_driver">Cédula</th>
+                                <td><t t-esc="o.vat_driver"/></td>
+                            </tr>
+                            <tr>
+                                <th class="border-custom bold-custom" scope="row" name="partner_truck">Placa del
+                                    camión</th>
+                                <td><t t-esc="o.partner_truck"/></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div t-if="o.state in ['assigned', 'done']"  class="text-muted">
+                <style>
+                    table.recibido {position:relative; top:200px; margin-top:35px;width:100%
+                    !important;border:0px
+                    !important; border-spacing: 10px !important; border-collapse: separate !important;}
+                    table.recibido td {border:0px !important;border-top:2px solid black !important;
+                    background:none
+                    !important; text-align:center !important; width:30% !important;}
+
+                    table.recibido .spacing {
+                    border:0px !important;border-top:2px solid white !important; background:none
+                    !important; text-align:center !important; width:30% !important;
+                    }
+                </style>
+                <table class="recibido"
+                       border="0"
+                       cellspacing="30">
+                    <tr>
+                        <td>Verificado por</td>
+                        <td class="spacing"></td>
+                        <td>Recibido por</td>
+                    </tr>
+                </table>
+            </div>
+
+        </xpath>
+
+    </template>
+
+</odoo>

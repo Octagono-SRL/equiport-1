@@ -7,6 +7,18 @@
             <field name="name">Permitir transferencias, ajustes de inventario, desecho y costes en destino.</field>
         </record>
 
+        <record id="supervisor_stock_order_point" model="res.groups">
+            <field name="name">Encargado de terminal (Valida y realiza las reposiciones de material).</field>
+        </record>
+
+        <record id="rental_stock_picking" model="res.groups">
+            <field name="name">Selección de unidades a despachar en el área de alquileres.</field>
+        </record>
+
+        <record id="rental_account_deposit" model="res.groups">
+            <field name="name">Puede agregar depositos en el alquiler.</field>
+        </record>
+
         <record id="set_security_group_for_costumer_invoices" model="res.groups">
             <field name="name">Encargado creacion de facturas sin documento de origen.</field>
         </record>
@@ -27,23 +39,29 @@
             <field name="name">Manejo de crédito en los contactos.</field>
         </record>
 
+        <record id="equiport_custom_rule_hidden_vehicle_product" model="ir.rule">
+            <field name="name">Productos de vehiculos invisibles</field>
+            <field ref="model_product_template" name="model_id"/>
+            <field name="domain_force">[('is_vehicle', '=', False)]</field>
+        </record>
+
 
         <!-- User group-->
-<!--        <record id="group_oct_bank_reconciliation_user" model="res.groups">-->
-<!--            <field name="category_id" ref=""/>-->
-<!--            <field name="name">Usuario</field>-->
-<!--            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>-->
-<!--        </record>-->
+        <!--        <record id="group_oct_bank_reconciliation_user" model="res.groups">-->
+        <!--            <field name="category_id" ref=""/>-->
+        <!--            <field name="name">Usuario</field>-->
+        <!--            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>-->
+        <!--        </record>-->
 
 
-     <!-- Manager group-->
+        <!-- Manager group-->
 
-<!--    <record id="group_oct_bank_reconciliation_manager" model="res.groups">-->
-<!--        <field name="category_id" ref=""/>-->
-<!--        <field name="name">Responsable</field>-->
-<!--        <field name="implied_ids" eval="[(4, ref('group_oct_bank_reconciliation_user'))]"/>-->
-<!--        <field name="users" eval="[(4, ref('base.user_root'))]"/>-->
-<!--    </record>-->
+        <!--    <record id="group_oct_bank_reconciliation_manager" model="res.groups">-->
+        <!--        <field name="category_id" ref=""/>-->
+        <!--        <field name="name">Responsable</field>-->
+        <!--        <field name="implied_ids" eval="[(4, ref('group_oct_bank_reconciliation_user'))]"/>-->
+        <!--        <field name="users" eval="[(4, ref('base.user_root'))]"/>-->
+        <!--    </record>-->
 
     </data>
 

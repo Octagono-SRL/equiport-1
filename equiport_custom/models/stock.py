@@ -18,7 +18,7 @@ class StockRule(models.Model):
     @api.model
     def _run_buy(self, procurements):
         for procurement, rule in procurements:
-            procurement.values['order_use'] = procurement.values['orderpoint_id'].order_use
+            procurement.values['order_use'] = procurement.values['orderpoint_id'].order_use or ''
 
         res = super(StockRule, self)._run_buy(procurements)
 
@@ -42,8 +42,9 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     partner_driver = fields.Char(string="Conductor")
-    vat_driver = fields.Char(string="Cédula conductor")
-    card_driver = fields.Char(string="Carnet conductor")
+    vat_driver = fields.Char(string="Cédula del conductor")
+    card_driver = fields.Char(string="Carnet del conductor")
+    license_card_driver = fields.Char(string="Licencia del conductor")
     partner_truck = fields.Char(string="Placa Camión")
     access_granted = fields.Boolean(string="Acceso permitido", tracking=True)
     access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
@@ -51,17 +52,7 @@ class StockPicking(models.Model):
     is_rental = fields.Boolean(string="Proviene de una orden de alquiler", default=False)
     is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate", related='sale_id.is_gate_service')
 
-    def _action_assign(self):
-        res = super(StockPicking, self)._action_assign()
-
-        for rec in self:
-            if rec.is_gate_service and rec.picking_type_code == 'outgoing':
-                for move_line in self.move_line_ids_without_package:
-                    move_line.booking = move_line.lot_id.booking
-                    move_line.stamp = move_line.lot_id.stamp
-                    move_line.boat = move_line.lot_id.boat
-
-        return res
+    repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 
     @api.constrains('vat_driver')
     def nif_length_constrain(self):
@@ -71,27 +62,45 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         sale_id = self.sale_id
+        fsm_invoice_available = True
+        for task_id in sale_id.tasks_ids:
+            if task_id.is_fsm and sale_id.tasks_count <= 1 and task_id.main_cause == 'wear':
+                fsm_invoice_available = False
+                
         if not self.sale_id.partner_id.allowed_credit:
-            if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
-                for inv in sale_id.invoice_ids.filtered(lambda i: i.state == 'posted'):
-                    if inv.payment_state not in ['in_payment', 'paid']:
-                        raise ValidationError(f"Posee facturas sin pago, no puede validar este despacho. "
-                                              f"Documento de referencia **{inv.name}**.")
-            elif self.picking_type_code == 'outgoing' and sale_id.state == 'sale' and not sale_id.invoice_ids:
-                raise ValidationError(f"Se debe facturar y pagar la orden, no puede validar este despacho. ")
+            if fsm_invoice_available and not sale_id.is_fsm:
+                if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
+                    for inv in sale_id.invoice_ids.filtered(lambda i: i.state == 'posted'):
+                        if inv.payment_state not in ['in_payment', 'paid']:
+                            raise ValidationError(f"Posee facturas sin pago, no puede validar este despacho. "
+                                                  f"Documento de referencia **{inv.name}**.")
+                elif self.picking_type_code == 'outgoing' and sale_id.state == 'sale' and not sale_id.invoice_ids:
+                    raise ValidationError(f"Se debe facturar y pagar la orden, no puede validar este despacho. ")
 
         # region Gate Service
         if self.is_gate_service:
             if self.picking_type_code == 'incoming':
                 for line in self.move_line_nosuggest_ids:
-                    if line.booking and line.boat and line.stamp:
+                    if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
                         continue
                     else:
                         raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
                                               "\n"
                                               "* Número de reserva\n"
                                               "* Sello\n"
-                                              "* Barco\n")
+                                              "* Barco\n"
+                                              "* Linea naviera\n")
+            elif self.picking_type_code == 'outgoing':
+                for line in self.move_line_nosuggest_ids:
+                    if line.out_booking and line.out_boat and line.out_stamp and line.out_navy_line:
+                        continue
+                    else:
+                        raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
+                                              "\n"
+                                              "* Número de reserva\n"
+                                              "* Sello\n"
+                                              "* Barco\n"
+                                              "* Linea naviera\n")
 
         if len(sale_id.picking_ids) > 1 and sale_id.is_gate_service:
             in_picking_ids = self.env['stock.picking']
@@ -111,18 +120,20 @@ class StockPicking(models.Model):
         if self.is_gate_service:
             if self.picking_type_code == 'incoming':
                 for line in self.move_line_nosuggest_ids:
-                    line.lot_id.booking = line.booking
-                    line.lot_id.stamp = line.stamp
-                    line.lot_id.boat = line.boat
+                    line.lot_id.in_booking = line.in_booking
+                    line.lot_id.in_stamp = line.in_stamp
+                    line.lot_id.in_boat = line.in_boat
+                    line.lot_id.in_navy_line = line.in_navy_line
                     line.lot_id.owner_partner_id = self.partner_id
                     line.lot_id.gate_in_date = datetime.datetime.now()
                     line.lot_id.storage_rate = line.move_id.storage_rate
 
             elif self.picking_type_code == 'outgoing':
                 for line in self.move_line_nosuggest_ids:
-                    line.booking = line.lot_id.booking
-                    line.stamp = line.lot_id.stamp
-                    line.boat = line.lot_id.boat
+                    line.lot_id.out_booking = line.out_booking
+                    line.lot_id.out_stamp = line.out_stamp
+                    line.lot_id.out_boat = line.out_boat
+                    line.lot_id.out_navy_line = line.out_navy_line
                     line.lot_id.gate_out_date = datetime.datetime.now()
 
         return res
@@ -278,9 +289,15 @@ class StockProductionLot(models.Model):
     gate_in_date = fields.Datetime(string="Fecha de entrada")
     gate_out_date = fields.Datetime(string="Fecha de salida")
     storage_rate = fields.Float(string="Tasa de estadia")
-    booking = fields.Char(string="Número de reserva")
-    stamp = fields.Char(string="Sello")
-    boat = fields.Char(string="Barco")
+    in_booking = fields.Char(string="Número de reserva entrada")
+    in_stamp = fields.Char(string="Sello entrada")
+    in_boat = fields.Char(string="Barco entrada")
+    in_navy_line = fields.Char(string="Linea naviera entrada")
+
+    out_booking = fields.Char(string="Número de reserva salida")
+    out_stamp = fields.Char(string="Sello salida")
+    out_boat = fields.Char(string="Barco salida")
+    out_navy_line = fields.Char(string="Linea naviera salida")
 
     @api.depends('product_id')
     def compute_gate_product(self):
@@ -307,9 +324,15 @@ class StockMoveLine(models.Model):
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado")
 
-    booking = fields.Char(string="Número de reserva")
-    stamp = fields.Char(string="Sello")
-    boat = fields.Char(string="Barco")
+    in_booking = fields.Char(string="Número de reserva entrada")
+    in_stamp = fields.Char(string="Sello entrada")
+    in_boat = fields.Char(string="Barco entrada")
+    in_navy_line = fields.Char(string="Linea naviera entrada")
+
+    out_booking = fields.Char(string="Número de reserva salida")
+    out_stamp = fields.Char(string="Sello salida")
+    out_boat = fields.Char(string="Barco salida")
+    out_navy_line = fields.Char(string="Linea naviera salida")
 
 
 class StockMove(models.Model):

@@ -18,6 +18,8 @@
                            attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)]}">
                         <field name="partner_driver"
                                attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
+                        <field name="license_card_driver"
+                               attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
                         <field name="card_driver"
                                attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
                         <field name="vat_driver"
@@ -94,18 +96,31 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='lot_name']" position="after">
 
-                    <field name="booking"
-                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
-                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')],
-                             'readonly': [('parent.picking_type_code', '=', 'outgoing')]}"/>
-                    <field name="stamp"
-                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
-                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')],
-                             'readonly': [('parent.picking_type_code', '=', 'outgoing')]}"/>
-                    <field name="boat"
-                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
-                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')],
-                             'readonly': [('parent.picking_type_code', '=', 'outgoing')]}"/>
+                    <field name="in_booking"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>
+                    <field name="in_stamp"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>
+                    <field name="in_boat"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>
+                    <field name="in_navy_line"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>
+
+                    <field name="out_booking"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'outgoing')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'outgoing')]}"/>
+                    <field name="out_stamp"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'outgoing')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'outgoing')]}"/>
+                    <field name="out_boat"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'outgoing')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'outgoing')]}"/>
+                    <field name="out_navy_line"
+                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'outgoing')],
+                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'outgoing')]}"/>
 
                 </xpath>
             </field>
