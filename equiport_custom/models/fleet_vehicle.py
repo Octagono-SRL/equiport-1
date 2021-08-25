@@ -39,9 +39,7 @@ class FleetVehicle(models.Model):
         domain="[('product_id','=', product_unit_id), ('company_id', '=', company_id)]", check_company=True,
         help="Número de parte / Serie de esta unidad")
 
-
     unit_image_128 = fields.Image(related='unit_model_id.image_128', string="Logo unidad", readonly=True)
-
 
     hourmeter_count = fields.Integer(compute="_compute_count_all", string='Horómetro')
     hourmeter = fields.Float(compute='_get_hourmeter', inverse='_set_hourmeter', string='Último horómetro',
