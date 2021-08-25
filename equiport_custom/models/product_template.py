@@ -11,7 +11,9 @@ class ProductTemplate(models.Model):
 
     # Flota
 
+
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string="Vehiculo")
+  
     is_vehicle = fields.Boolean(string="Es vehiculo")
 
     # Campos para definir Contenedores, Gen set, Chasis
