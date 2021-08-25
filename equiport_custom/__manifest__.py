@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.0.8',
+    'version': '14.0.0.0.9',
 
     # any module necessary for this one to work correctly
     'depends': [

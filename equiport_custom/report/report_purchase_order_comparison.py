@@ -6,6 +6,7 @@ from odoo import api, fields, models
 class ComparisonReportView(models.TransientModel):
     _name = 'comparison.report.view'
     _description = "Modelo para visualizar la comparacion entre ordenes de compras confirmadas"
+    _auto = False
 
     name = fields.Char(string='name', compute='_compute_rec_name')
     order_id = fields.Many2one(comodel_name='purchase.order', string='Referencia', readonly=True)

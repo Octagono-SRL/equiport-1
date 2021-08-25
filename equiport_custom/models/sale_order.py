@@ -29,7 +29,6 @@ class SaleOrder(models.Model):
                 else:
                     rec.is_fsm = False
 
-
     def _create_invoices(self, grouped=False, final=False, date=None):
         res = super(SaleOrder, self)._create_invoices()
         if res.is_gate_service:
