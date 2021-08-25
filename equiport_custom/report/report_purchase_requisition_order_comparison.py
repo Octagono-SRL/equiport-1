@@ -6,11 +6,10 @@ from odoo import api, fields, models
 class ReportOrderComparison(models.TransientModel):
     _name = 'report.order.comparison'
     _description = "Modulo para realizar comparacion de precios por productos dentro de los acuerdos de compra"
-    _auto = False
 
     name = fields.Char(string='name', compute='_compute_rec_name')
     order_id = fields.Many2one(comodel_name='purchase.order', string='Referencia', readonly=True)
-    product_id = fields.Many2one(comodel_name='product.template', string='Producto', readonly=True)
+    product_id = fields.Many2one(comodel_name='product.product', string='Producto', readonly=True)
     discount = fields.Float(string='Descuento(%)', readonly=True)
     date_approve = fields.Datetime(string='Fecha de aprovacion', readonly=True)
     price_unit = fields.Float(string='Precio por unidad', readonly=True)
