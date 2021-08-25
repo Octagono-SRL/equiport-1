@@ -12,6 +12,7 @@
                   <button name="validate_reconciliation" type="object" string="Validar Conciliación" class="oe_highlight" states="generated"/>
                   <button name="return_draft" type="object" string="Cambiar a Borrador" class="oe_highlight" states="canceled"/>
                   <button name="cancel_reconciliation" type="object" string="Cancelar Conciliación" class="oe_highlight" states="generated,validated" groups="oct_bank_reconciliation.group_oct_bank_reconciliation_manager"/>
+                  <button name="validate_lines_reconciliation" type="object" string="Conciliar todos" class="oe_highlight" states="generated" groups="oct_bank_reconciliation.group_oct_bank_reconciliation_manager"/>
                   <field name="state" readonly="1" widget="statusbar"/>
               </header>
               <sheet>
@@ -31,6 +32,7 @@
                       <group string="Balance según banco">
                           <field name="current_balance1" attrs="{'readonly': [('state','in', ['validated', 'canceled'])]}"/>
                           <field name="current_checks1"/>
+                          <field name="debit_checks1"/>
                           <field name="final_balance1"/>
                       </group>
                       <group string="Balance según libro">

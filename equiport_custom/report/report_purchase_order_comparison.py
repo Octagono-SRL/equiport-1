@@ -9,7 +9,7 @@ class ComparisonReportView(models.TransientModel):
 
     name = fields.Char(string='name', compute='_compute_rec_name')
     order_id = fields.Many2one(comodel_name='purchase.order', string='Referencia', readonly=True)
-    product_id = fields.Many2one(comodel_name='product.template', string='Producto', readonly=True)
+    product_id = fields.Many2one(comodel_name='product.product', string='Producto', readonly=True)
     last_price = fields.Float(string='Precio anterior', readonly=True)
     last_discount = fields.Float(string='Descuento anterior (%)', readonly=True)
     last_date_approve = fields.Datetime(string='Fecha anterior', readonly=True)

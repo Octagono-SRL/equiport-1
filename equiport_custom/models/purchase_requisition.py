@@ -8,7 +8,6 @@ class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
 
     def generate_order_comparison(self):
-        self.ensure_one()
 
         # Busqueda de las vistas del modelo
         tree_view_id = self.env.ref('equiport_custom.report_order_comparison_tree_view').id
