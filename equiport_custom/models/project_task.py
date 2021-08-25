@@ -183,7 +183,7 @@ class ProjectTask(models.Model):
     damage_type_ids = fields.Many2many(comodel_name='damage.option', relation='task_damage_option_rel',
                                        string="Tipo de averia")
     other_damage = fields.Char(string="Otros")
-    value_damage_type = fields.Char(string="Tipo de averia", compute='compute_main_cause_value', store=True)
+    value_damage_type = fields.Char(string="Causa principal rescate", compute='compute_main_cause_value', store=True)
 
     @api.depends('stage_id', 'damage_type_ids', 'other_damage')
     def compute_main_cause_value(self):

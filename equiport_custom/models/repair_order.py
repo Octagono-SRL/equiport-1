@@ -22,7 +22,7 @@ class RepairOrder(models.Model):
     vehicle_service_log_id = fields.Many2one(comodel_name='fleet.vehicle.log.services', string="Registro de servicio")
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', related='vehicle_service_log_id.vehicle_id', string="Unidad")
     is_fleet_origin = fields.Boolean(string="Originado en flota")
-    product_fleet_name = fields.Char(related='product_id.display_name')
+    product_fleet_name = fields.Char(related='product_id.display_name', string="Nombre producto flota")
     is_fuel_replenishment = fields.Boolean(string="Reposición de combustible", compute='compute_is_fuel_replenishment', store=True)
 
     @api.depends('is_fleet_origin', 'operations')
@@ -164,7 +164,7 @@ class RepairPanelInfoLine(models.Model):
     damage_type = fields.Char(string="Tipo de daño")
     affected_panel_qty = fields.Float(string="Cantidad de paneles afectados")
     repair_panel_description = fields.Text(string="Localidad")
-    panel_location = fields.Char(string="Cantidad de paneles afectados")
+    panel_location = fields.Char(string="Ubicación de paneles afectados")
     height = fields.Char(string="Altura")
     long = fields.Char(string="Longitud")
     repair_order_id = fields.Many2one('repair.order', string="Orden de reparación")
