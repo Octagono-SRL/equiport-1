@@ -22,7 +22,7 @@
         'contacts',
         'stock',
         'stock_landed_costs',
-        'purchase_requisition',
+        'purchase_requisition_stock',
         'hr',
         'fleet',
         'repair',
@@ -36,6 +36,7 @@
         'industry_fsm',
         'industry_fsm_sale',
         'sale_timesheet',
+        'l10n_latam_invoice_document'
     ],
 
     # always loaded
@@ -72,6 +73,7 @@
         'views/repair_views.xml',
         'views/product_unit_view.xml',
         'views/account_move.xml',
+        'views/l10n_latam_document_type_views.xml',
         'views/fleet_vehicle_view.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
@@ -85,6 +87,7 @@
         'wizard/wizard_purchase_order_comparison_report_view.xml',
         'wizard/wizard_rental_processing_views.xml',
         'wizard/wizard_rental_payment_register_views.xml',
+        'wizard/wizard_alert_document_type_views.xml',
         # 'views/',
     ],
 }

@@ -7,46 +7,81 @@ from odoo.exceptions import ValidationError, UserError
 class AccountMove(models.Model):
     _inherit = ['account.move']
 
+    # region Document Type Alerts
+
+    document_type_alert = fields.Boolean(
+        compute="_compute_document_type_alert")
+
+    @api.depends('journal_id', 'l10n_latam_document_type_id', 'l10n_latam_document_type_id.alert_number')
+    def _compute_document_type_alert(self):
+        for invoice in self.filtered(lambda s: s.is_invoice()):
+            prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
+            alert_number = invoice.l10n_latam_document_type_id.alert_number
+            if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id and \
+                    invoice.move_type in ['out_invoice', 'out_refund', 'out_receipt']:
+                sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1]) + 1
+                if sequence_number:
+                    if sequence_number >= alert_number:
+                        invoice.document_type_alert = True
+                    else:
+                        invoice.document_type_alert = False
+                else:
+                    invoice.document_type_alert = False
+            else:
+                invoice.document_type_alert = False
+
+    # endregion
+
     # Gate Service
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
 
     def action_post(self):
 
-        if self.is_gate_service:
+        for invoice in self.filtered(lambda s: s.is_invoice()):
+            prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
+            last_number = invoice.l10n_latam_document_type_id.last_number
+            if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id:
+                sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1])
+                if sequence_number:
+                    if sequence_number >= last_number:
+                        raise ValidationError(
+                            "Los comprobantes de este tipo estan agotados. Comuniquese con administración. La confirmacion de facturas de este tipo esta bloqueada")
 
-            storage_rate_service = self.env.ref('equiport_custom.storage_rate_product')
+            if invoice.is_gate_service:
 
-            # Borrando lineas a actualizar
+                storage_rate_service = self.env.ref('equiport_custom.storage_rate_product')
 
-            storage_rate_lines = self.invoice_line_ids.filtered(lambda l: l.product_id == storage_rate_service)
-            storage_rate_lines.unlink()
+                # Borrando lineas a actualizar
 
-            # XXXXXXXXXXXXXXXXXXXXXXXX
+                storage_rate_lines = invoice.invoice_line_ids.filtered(lambda l: l.product_id == storage_rate_service)
+                storage_rate_lines.unlink()
 
-            invoice_lines = []
-            for inv_line in self.invoice_line_ids.filtered(
-                    lambda il: not il.product_id.is_gate_service and il.display_type == False):
-                if inv_line.storage_rate > 0:
-                    name_string = ""
-                    total_days = 0
-                    for serial in inv_line.reserved_lot_ids:
-                        start = serial.gate_in_date
-                        end = serial.gate_out_date or datetime.datetime.now()
-                        diff = end - start
+                # XXXXXXXXXXXXXXXXXXXXXXXX
 
-                        name_string += f'{serial.name} - {diff.days} días'
-                        total_days += diff.days
+                invoice_lines = []
+                for inv_line in invoice.invoice_line_ids.filtered(
+                        lambda il: not il.product_id.is_gate_service and il.display_type == False):
+                    if inv_line.storage_rate > 0:
+                        name_string = ""
+                        total_days = 0
+                        for serial in inv_line.reserved_lot_ids:
+                            start = serial.gate_in_date
+                            end = serial.gate_out_date or datetime.datetime.now()
+                            diff = end - start
 
-                    val = (0, 0, {
-                        'product_id': storage_rate_service.id,
-                        'name': f'{inv_line.product_id.name}\n'
-                                f'seriares: {name_string}',
-                        'quantity': total_days,
-                        'price_unit': inv_line.storage_rate,
-                    })
-                    invoice_lines.append(val)
+                            name_string += f'{serial.name} - {diff.days} días'
+                            total_days += diff.days
 
-            self.update({'invoice_line_ids': invoice_lines})
+                        val = (0, 0, {
+                            'product_id': storage_rate_service.id,
+                            'name': f'{inv_line.product_id.name}\n'
+                                    f'seriares: {name_string}',
+                            'quantity': total_days,
+                            'price_unit': inv_line.storage_rate,
+                        })
+                        invoice_lines.append(val)
+
+                invoice.update({'invoice_line_ids': invoice_lines})
 
         res = super(AccountMove, self).action_post()
 
@@ -70,7 +105,8 @@ class AccountMove(models.Model):
                     domain = [('name', '=', obj), ('company_id', '=', rec.company_id.id)]
                     sale_order = SaleOrder.search(domain)
                     repair_order = RepairOrder.search(domain)
-                    sale_subscription = SaleSubscription.search([('code', '=', obj), ('company_id', '=', rec.company_id.id)])
+                    sale_subscription = SaleSubscription.search(
+                        [('code', '=', obj), ('company_id', '=', rec.company_id.id)])
 
                     if sale_order:
                         if sale_order.is_rental_order:

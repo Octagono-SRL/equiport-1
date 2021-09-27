@@ -7,18 +7,37 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='name']"
+                       position="after">
                     <field name="reserved_lot_ids" widget="many2many_tags" optional="show" attrs="{'readonly': True}"/>
                 </xpath>
                 <field name="partner_id" position="after">
                     <field name="is_gate_service" invisible="1"/>
                 </field>
 
-                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="before">
-                    <field name="stamp" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
-                    <field name="boat" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
-                    <field name="booking" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
-                    <field name="storage_rate" attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+<!--                Alerta de Numero de comprobante-->
+                <xpath expr="/form/div[hasclass('alert')]" position="after">
+                    <field name="document_type_alert" invisible="1"/>
+                    <div groups="account.group_account_invoice" class="alert alert-info" role="alert"
+                         style="margin-bottom:0px;" attrs="{'invisible': [('document_type_alert','=',False)]}">
+                        Los comprobantes de este tipo están por agotarse
+                    </div>
+                </xpath>
+
+                <xpath expr="//field[@name='ref']" position="attributes">
+                    <attribute name="help">Documento que Afecta la factura</attribute>
+                </xpath>
+
+                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='price_unit']"
+                       position="before">
+                    <field name="stamp"
+                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                    <field name="boat"
+                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                    <field name="booking"
+                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+                    <field name="storage_rate"
+                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
                 </xpath>
             </field>
         </record>
@@ -36,7 +55,8 @@
 
                 <xpath expr="//filter[@name='duedate']" position="after">
                     <separator/>
-                    <filter string="Documento de origen" name="origin_invoice" context="{'group_by': 'invoice_origin'}"/>
+                    <filter string="Documento de origen" name="origin_invoice"
+                            context="{'group_by': 'invoice_origin'}"/>
                     <filter string="Concepto" name="origin_flow" context="{'group_by': 'flow_origin'}"/>
                 </xpath>
 
@@ -69,15 +89,18 @@
             <field name="view_id" ref="account.view_account_payment_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                  Register a payment
-                </p><p>
-                  Payments are used to register liquidity movements. You can process those payments by your own means or by using installed facilities.
+                    Register a payment
+                </p>
+                <p>
+                    Payments are used to register liquidity movements. You can process those payments by your own means
+                    or by using installed facilities.
                 </p>
             </field>
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem name="Cobros" id="menu_action_account_payments_receivable" parent="account.menu_finance_receivables" action="action_account_payments" sequence="15"/>
+        <menuitem name="Cobros" id="menu_action_account_payments_receivable" parent="account.menu_finance_receivables"
+                  action="action_account_payments" sequence="15"/>
 
     </data>
 </odoo>

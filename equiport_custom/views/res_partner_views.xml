@@ -18,6 +18,52 @@
                     </attribute>
                 </field>
 
+                <xpath expr="//field[@name='l10n_do_dgii_tax_payer_type']" position="attributes">
+                    <attribute name="help">
+                        Contribuyente:
+                        (B) Crédito Fiscal (Tipo 01)
+                        (B) Régimen Especial (Tipo 14)
+                        (B) Factura Gubernamental (Tipo 15)
+                        (E) Crédito Fiscal Electrónica
+                        (E) Régimen Especial Electrónica
+                        (E) Factura Gubernamental Electrónica
+
+                        Cliente de Consumo:
+                        (B) Comprobante de Compra (Tipo 11)
+                        (B) Gasto Menor (Tipo 13)
+
+                        Sin fines de lucro:
+                        (B) Régimen Especial (Tipo 14)
+                        (B) Factura Gubernamental (Tipo 15)
+                        (E) Régimen Especial Electrónica
+                        (E) Factura Gubernamental Electrónica
+
+                        Exento:
+                        (B) Crédito Fiscal (Tipo 01)
+                        (B) Régimen Especial (Tipo 14)
+                        (B) Factura Gubernamental (Tipo 15)
+                        (E) Crédito Fiscal Electrónica
+                        (E) Régimen Especial Electrónica
+                        (E) Factura Gubernamental Electrónica
+
+                        Gubernamental:
+                        (B) Crédito Fiscal (Tipo 01)
+                        (B) Régimen Especial (Tipo 14)
+                        (B) Factura Gubernamental (Tipo 15)
+                        (E) Crédito Fiscal Electrónica
+                        (E) Régimen Especial Electrónica
+                        (E) Factura Gubernamental Electrónica
+
+                        Extranjero:
+                        (B) Crédito Fiscal (Tipo 01)
+                        (B) Régimen Especial (Tipo 14)
+                        (B) Factura Gubernamental (Tipo 15)
+                        (E) Crédito Fiscal Electrónica
+                        (E) Régimen Especial Electrónica
+                        (E) Factura Gubernamental Electrónica
+                    </attribute>
+                </xpath>
+
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="vat_type" attrs="{'required':True}"/>
                     <field name="partner_type"/>
@@ -28,9 +74,12 @@
                     <field name="allowed_rental" invisible="1"/>
                     <field name="lot_unit_count" invisible="1"/>
                 </xpath>
-                <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']/group[@name='sale']" position="inside">
-                    <field name="credit_limit" attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
-                    <field name="credit_warning" attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
+                <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']/group[@name='sale']"
+                       position="inside">
+                    <field name="credit_limit"
+                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
+                    <field name="credit_warning"
+                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
                     <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
                 </xpath>
 
@@ -61,10 +110,11 @@
                         </div>
                     </page>
 
-                    <page name="gate_data" string="Gate In / Gate Out" attrs="{'invisible':[('lot_unit_count', '&lt;', 1)]}">
+                    <page name="gate_data" string="Gate In / Gate Out"
+                          attrs="{'invisible':[('lot_unit_count', '&lt;', 1)]}">
                         <field name="lot_unit_ids" readonly="1"/>
                     </page>
-                    
+
                 </xpath>
 
                 <field name="subscription_count" position="attributes">
