@@ -29,11 +29,11 @@
                             attrs="{'invisible':['|', ('allowed_cancel', '=', True),('cancel_reason', '=', False)]}"
                             groups="purchase.group_purchase_manager" string="Aprobar cancelación" class="oe_highlight"
                             help="Autorizar cancelar esta orden"/>
-                    <button name="request_cancel" type="object" attrs="{'invisible':[('requested_cancel', '=', True)]}"
+                    <button name="request_cancel" type="object" attrs="{'invisible':['|', ('requested_cancel', '=', True), ('state', '=', 'cancel')]}"
                             groups="equiport_custom.request_cancel_purchase_order" string="Solicitar cancelación"
                             class="oe_highlight" help="Realizar solicitud de autorización para cancelar esta orden"/>
                     <button name="request_confirm" type="object"
-                            attrs="{'invisible':['|', ('request_approval', '=', True), ('approval_needed', '=', False)]}"
+                            attrs="{'invisible':['|', ('request_approval', '=', True), '|', ('approval_needed', '=', False), ('state', 'in', ['cancel', 'done', 'purchase'])]}"
                             string="Solicitar Aprobacion" class="oe_highlight"
                             help="Realizar solicitud de autorización para realizar esta compra"/>
                 </xpath>
@@ -46,12 +46,27 @@
                         </div>
                         <group name="amount_sign" attrs="{'invisible': [('request_approval', '=', False)]}">
                             <group>
-                                <field name="allowed_confirm_sign" widget="signature" nolabel="1"
+                                <field name="logged_uid" invisible="1"/>
+                                <field name="approval_level" invisible="1"/>
+                                <field name="op_ini_user_id" invisible="1"/>
+                                <field name="op_mid_user_id" invisible="1"/>
+                                <field name="op_top_user_id" invisible="1"/>
+                                <field name="allowed_confirm_sign_one" widget="signature" nolabel="1"
                                        options="{'size': ['',200]}"
-                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False),('allowed_confirm', '=', True)]}"/>
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('op_ini_user_id', '!=', 'logged_uid')], 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
+
+                                <field name="allowed_confirm_sign_two" widget="signature" nolabel="1"
+                                       options="{'size': ['',200]}"
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('op_mid_user_id', '!=', 'logged_uid')], 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
+
+                                <field name="allowed_confirm_sign_three" widget="signature" nolabel="1"
+                                       options="{'size': ['',200]}"
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('op_top_user_id', '!=', 'logged_uid')], 'invisible':[('approval_level', 'not in', ['three'])]}"/>
                             </group>
                             <group>
-                                <field name="allowed_confirm_date_sign" readonly="1"/>
+                                <field name="allowed_confirm_date_sign_one" attrs="{'readonly': True, 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
+                                <field name="allowed_confirm_date_sign_two" attrs="{'readonly': True, 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
+                                <field name="allowed_confirm_date_sign_three" attrs="{'readonly': True, 'invisible':[('approval_level', 'not in', ['three'])]}"/>
                                 <field name="allowed_confirm_signed_by" readonly="1"/>
                             </group>
                         </group>

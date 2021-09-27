@@ -34,8 +34,10 @@
                 <xpath expr="//field[@name='user_id']" position="after">
                     <field name="fsm_invoice_available" invisible="1"/>
                     <field name="extra_user1_id" options="{'no_create': 1, 'no_edit': 1}"
+                           attrs="{'invisible': [('is_fsm', '=', False)]}"
                            domain="[('user_id', '!=', user_id)]"/>
-                    <field name="extra_user2_id" options="{'no_create': 1, 'no_edit': 1}"/>
+                    <field name="extra_user2_id" options="{'no_create': 1, 'no_edit': 1}"
+                           attrs="{'invisible': [('is_fsm', '=', False)]}"/>
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='description_page']" position="after">
@@ -51,7 +53,8 @@
                                 <field name="rescue_location"/>
                                 <field name="employee_worker_ids" widget="many2many_tags"/>
                                 <field name="main_cause" widget="radio" options="{'horizontal': 1}"/>
-                                <field name="rescue_truck_id" required="1" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                <field name="rescue_truck_id" attrs="{'required': [('is_fsm', '=', True)]}"
+                                       options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                             </group>
 
                             <group>
@@ -98,7 +101,8 @@
                             <field name="other_damage"/>
                         </group>
 
-                        <group name="timesheets_info" col="1" string="Horas trabajadas" attrs="{'invisible': ['|',('is_fsm', '=', False), ('allow_timesheets', '=', False)]}">
+                        <group name="timesheets_info" col="1" string="Horas trabajadas"
+                               attrs="{'invisible': ['|',('is_fsm', '=', False), ('allow_timesheets', '=', False)]}">
                             <field name="analytic_account_active" invisible="1"/>
                             <field name="allow_timesheets" invisible="1"/>
                             <field name="allow_subtasks" invisible="1"/>
@@ -107,7 +111,8 @@
                                 <group name="timesheet_error"
                                        attrs="{'invisible': [('analytic_account_active', '!=', False)]}">
                                     <div class="alert alert-warning" role="alert">
-                                        No puede registrar horas de trabajo en este proyecto ya que está vinculado a un inactivo
+                                        No puede registrar horas de trabajo en este proyecto ya que está vinculado a un
+                                        inactivo
                                         cuenta analítica. Cambie esta cuenta o reactive la actual para
                                         hoja de tiempo en el proyecto.
                                     </div>
@@ -180,9 +185,11 @@
                                 <group attrs="{'invisible': [('analytic_account_active', '=', False)]}">
                                     <group class="oe_subtotal_footer oe_right" name="project_hours">
                                         <span>
-                                            <label class="font-weight-bold" for="effective_hours" string="Horas dedicadas"
+                                            <label class="font-weight-bold" for="effective_hours"
+                                                   string="Horas dedicadas"
                                                    attrs="{'invisible': [('encode_uom_in_days', '=', True)]}"/>
-                                            <label class="font-weight-bold" for="effective_hours" string="Dias dedicados"
+                                            <label class="font-weight-bold" for="effective_hours"
+                                                   string="Dias dedicados"
                                                    attrs="{'invisible': [('encode_uom_in_days', '=', False)]}"/>
                                         </span>
                                         <field name="effective_hours" widget="timesheet_uom" nolabel="1"/>
@@ -191,17 +198,21 @@
                                                 class="o_td_label o_form_label o_form_subtask_button oe_inline oe_link mr-0"
                                                 attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}">
                                             <span class="text-nowrap"
-                                                  attrs="{'invisible' : [('encode_uom_in_days', '=', True)]}">Horas dedicadas en subtareas</span>
+                                                  attrs="{'invisible' : [('encode_uom_in_days', '=', True)]}">Horas
+                                                dedicadas en subtareas</span>
                                             <span class="text-nowrap"
-                                                  attrs="{'invisible' : [('encode_uom_in_days', '=', False)]}">Dias dedicados en subtareas</span>
+                                                  attrs="{'invisible' : [('encode_uom_in_days', '=', False)]}">Dias
+                                                dedicados en subtareas</span>
                                         </button>
                                         <field name="subtask_effective_hours" class="mt-2" widget="timesheet_uom"
                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}"
                                                nolabel="1"/>
                                         <span>
-                                            <label class="font-weight-bold" for="total_hours_spent" string="Total de horas"
+                                            <label class="font-weight-bold" for="total_hours_spent"
+                                                   string="Total de horas"
                                                    attrs="{'invisible': ['|', '|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0), ('encode_uom_in_days', '=', True)]}"/>
-                                            <label class="font-weight-bold" for="total_hours_spent" string="Total de dias"
+                                            <label class="font-weight-bold" for="total_hours_spent"
+                                                   string="Total de dias"
                                                    attrs="{'invisible': ['|', '|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0), ('encode_uom_in_days', '=', False)]}"/>
                                         </span>
                                         <field name="total_hours_spent" widget="timesheet_uom"

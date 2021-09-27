@@ -9,18 +9,14 @@ from odoo.exceptions import ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    # region Solicitud de Cancelacion
     allowed_cancel = fields.Boolean(string="Cancelación aprobada", tracking=True)
     allowed_cancel_sign = fields.Binary(copy=False)
-    allowed_cancel_signed_by = fields.Char('Cancelación firmada por', help='Nombre de la persona que firmo la aprobacion de cancelacion.', copy=False)
+    allowed_cancel_signed_by = fields.Char('Cancelación firmada por',
+                                           help='Nombre de la persona que firmo la aprobacion de cancelacion.',
+                                           copy=False)
     allowed_cancel_date_sign = fields.Datetime(string="Fecha de cancelación")
     is_cancel_group = fields.Boolean(string="Grupo de cancelacion", compute="_check_cancel_group")
-    allowed_confirm = fields.Boolean(string="Confirmación aprobada", tracking=True)
-    allowed_confirm_sign = fields.Binary(copy=False)
-    allowed_confirm_signed_by = fields.Char('Aprobacion firmada por', help='Nombre de la persona que firmo la aprobacion de monto.', copy=False)
-    allowed_confirm_date_sign = fields.Datetime(string="Fecha de aprobación")
-    is_approval_group = fields.Boolean(string="Grupo de aprobacion", compute="_check_approval_group")
-    request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
-    approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
     requested_cancel = fields.Boolean(string="Solicitó cancelación", tracking=True)
     cancel_reason = fields.Selection([
         ('supplier_no_fulfill', 'El suplidor no cumplió con una o varias de las especificaciones del pedido'),
@@ -29,15 +25,6 @@ class PurchaseOrder(models.Model):
         ('change_info', 'Cambios en la informacion de la orden'),
     ], tracking=True, string="Razón de Cancelación")
 
-    @api.depends('approval_needed')
-    def _check_approval_group(self):
-        approval_list = [self.env.company.op_ini_user_id, self.env.company.op_mid_user_id, self.env.company.op_top_user_id]
-        for rec in self:
-            if self.env.user in approval_list:
-                rec.is_approval_group = True
-            else:
-                rec.is_approval_group = False
-
     @api.depends('requested_cancel')
     def _check_cancel_group(self):
         for rec in self:
@@ -45,62 +32,6 @@ class PurchaseOrder(models.Model):
                 rec.is_cancel_group = True
             else:
                 rec.is_cancel_group = False
-
-    @api.depends('amount_total', 'company_id.active_op_approval')
-    def _check_approval_need(self):
-        for rec in self:
-            company_id = rec.company_id
-            op_approval = company_id.active_op_approval
-            if op_approval:
-                if company_id.op_ini_level <= rec.amount_total:
-                    rec.approval_needed = True
-                else:
-                    rec.approval_needed = False
-            else:
-                rec.approval_needed = False
-
-    def generate_report_file(self, order_id):
-        report = self.env.ref('purchase.action_report_purchase_order', False)
-        pdf = report._render_qweb_pdf(order_id)[0]
-        pdf = base64.b64encode(pdf)
-        return pdf
-
-    def get_responsible_cancel(self):
-        partners = self.env['res.partner']
-        for user in self.company_id.user_sp_access:
-            if user.partner_id.email:
-                partners += user.partner_id
-            else:
-                raise ValidationError(f"El usuario {user.name} no cuenta con un correo electrónico en su contacto.")
-        if partners:
-            return str(partners.ids).replace('[', '').replace(']', '')
-        else:
-            raise ValidationError("No se encontró personal asignado para autorizar esta operación.")
-
-    def get_responsible(self, partner_only=False):
-        company_id = self.company_id
-        op_approval = company_id.active_op_approval
-        responsible = False
-        if op_approval:
-            if company_id.op_ini_level <= self.amount_total < company_id.op_mid_level:
-                responsible = company_id.op_ini_user_id.partner_id
-            elif company_id.op_mid_level <= self.amount_total < company_id.op_top_level:
-                responsible = company_id.op_mid_user_id.partner_id
-            elif company_id.op_top_level <= self.amount_total:
-                responsible = company_id.op_top_user_id.partner_id
-
-            partners = responsible
-            partners = list(set(partners))
-            for partner in partners:
-                if not partner.email:
-                    raise ValidationError(
-                        'El cliente o usuario {partner} no tiene correo electronico asignado.'.format(
-                            partner=partner.name)
-                    )
-            if partner_only:
-                return responsible
-            else:
-                return str([p.id for p in partners]).replace('[', '').replace(']', '')
 
     def request_cancel(self):
 
@@ -119,6 +50,85 @@ class PurchaseOrder(models.Model):
             'target': 'new',
             'context': context,
         }
+
+    def get_responsible_cancel(self):
+        partners = self.env['res.partner']
+        for user in self.company_id.user_sp_access:
+            if user.partner_id.email:
+                partners += user.partner_id
+            else:
+                raise ValidationError(f"El usuario {user.name} no cuenta con un correo electrónico en su contacto.")
+        if partners:
+            return str(partners.ids).replace('[', '').replace(']', '')
+        else:
+            raise ValidationError("No se encontró personal asignado para autorizar esta operación.")
+
+    def allow_cancel(self):
+        if not self.allowed_cancel_sign:
+            raise ValidationError(
+                "El documento debe ser firmado, dirijase a la sección de aprobación de cancelación en la pestaña de firmas.")
+        self.allowed_cancel_date_sign = datetime.datetime.now()
+        self.allowed_cancel_signed_by = self.env.user.display_name
+        self.allowed_cancel = True
+
+    # endregion
+
+    # region Aprovacion escalonada con firmas
+    allowed_confirm = fields.Boolean(string="Confirmación aprobada", tracking=True)
+
+    op_ini_user_id = fields.Many2one(related='company_id.op_ini_user_id')
+    op_mid_user_id = fields.Many2one(related='company_id.op_mid_user_id')
+    op_top_user_id = fields.Many2one(related='company_id.op_top_user_id')
+    logged_uid = fields.Many2one(comodel_name='res.users', compute='_compute_logged_user')
+
+    def _compute_logged_user(self):
+        for rec in self:
+            rec.logged_uid = self.env.user
+
+    allowed_confirm_sign_one = fields.Binary(copy=False)
+    allowed_confirm_sign_two = fields.Binary(copy=False)
+    allowed_confirm_sign_three = fields.Binary(copy=False)
+    allowed_confirm_signed_by = fields.Char('Aprobacion firmada por',
+                                            help='Nombre de la persona que firmo la aprobacion de monto.', copy=False)
+    allowed_confirm_date_sign_one = fields.Datetime(string="Fecha de aprobación primer nivel")
+    allowed_confirm_date_sign_two = fields.Datetime(string="Fecha de aprobación segundo nivel")
+    allowed_confirm_date_sign_three = fields.Datetime(string="Fecha de aprobación tercer nivel")
+    is_approval_group = fields.Boolean(string="Grupo de aprobacion", compute="_check_approval_group")
+    approval_level = fields.Selection(
+        selection=[('one', 'Primer nivel'), ('two', 'Segundo nivel'), ('three', 'Tercer nivel')],
+        compute='_check_approval_need')
+    request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
+    approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
+
+    @api.depends('approval_needed')
+    def _check_approval_group(self):
+        approval_list = [self.env.company.op_ini_user_id, self.env.company.op_mid_user_id,
+                         self.env.company.op_top_user_id]
+        for rec in self:
+            if self.env.user in approval_list:
+                rec.is_approval_group = True
+            else:
+                rec.is_approval_group = False
+
+    @api.depends('amount_total', 'company_id.active_op_approval')
+    def _check_approval_need(self):
+        for rec in self:
+            company_id = rec.company_id
+            op_approval = company_id.active_op_approval
+            if op_approval:
+                if company_id.op_ini_level <= rec.amount_total:
+                    rec.approval_needed = True
+                    rec.approval_level = 'one'
+                if company_id.op_mid_level <= rec.amount_total:
+                    rec.approval_level = 'two'
+                if company_id.op_top_level <= rec.amount_total:
+                    rec.approval_level = 'three'
+                else:
+                    rec.approval_needed = False
+                    rec.approval_level = False
+            else:
+                rec.approval_needed = False
+                rec.approval_level = False
 
     def request_confirm(self):
 
@@ -139,7 +149,9 @@ class PurchaseOrder(models.Model):
         self.ensure_one()
         ir_model_data = self.env['ir.model.data']
         try:
-            template_id = ir_model_data.get_object_reference('equiport_custom', 'email_template_request_purchase_order_confirm')[1]
+            template_id = \
+                ir_model_data.get_object_reference('equiport_custom', 'email_template_request_purchase_order_confirm')[
+                    1]
         except ValueError:
             template_id = False
         try:
@@ -166,7 +178,7 @@ class PurchaseOrder(models.Model):
             'force_email': True,
         })
 
-        ctx['model_description'] = 'Solicitud de aprobación de cancelación'
+        ctx['model_description'] = 'Solicitud de aprobación de monto'
 
         return {
             'name': _('Compose Email'),
@@ -179,37 +191,113 @@ class PurchaseOrder(models.Model):
             'context': ctx,
         }
 
+    def get_responsible(self, partner_only=False):
+        company_id = self.company_id
+        op_approval = company_id.active_op_approval
+        responsible = self.env['res.partner']
+        if op_approval:
+            if company_id.op_ini_level <= self.amount_total:
+                responsible += company_id.op_ini_user_id.partner_id
+            if company_id.op_mid_level <= self.amount_total:
+                responsible += company_id.op_mid_user_id.partner_id
+            if company_id.op_top_level <= self.amount_total:
+                responsible += company_id.op_top_user_id.partner_id
+
+            partners = responsible
+            partners = list(set(partners))
+            for partner in partners:
+                if not partner.email:
+                    raise ValidationError(
+                        'El cliente o usuario {partner} no tiene correo electronico asignado.'.format(
+                            partner=partner.name)
+                    )
+            if partner_only:
+                return responsible
+            else:
+                return str([p.id for p in partners]).replace('[', '').replace(']', '')
+
+    def allow_confirm(self):
+        if self.approval_level:
+            responsible = False
+            if self.approval_level == 'one':
+                responsible = self.company_id.op_ini_level
+                if not self.allowed_confirm_sign_one:
+                    raise ValidationError(
+                        "El documento debe ser firmado, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
+            elif self.approval_level == 'two':
+                responsible = self.company_id.op_mid_user_id
+                if not self.allowed_confirm_sign_one or not self.allowed_confirm_sign_two:
+                    raise ValidationError(
+                        "El documento debe ser firmado por los usuarios de primer y segundo nivel de aprobacion, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
+            elif self.approval_level == 'three':
+                responsible = self.company_id.op_top_user_id
+                if not self.allowed_confirm_sign_one or not self.allowed_confirm_sign_two or not self.allowed_confirm_sign_three:
+                    raise ValidationError(
+                        "El documento debe ser firmado por los usuarios de primer, segundo y tercer nivel de aprobacion, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
+            if self.env.user != responsible:
+                raise ValidationError(
+                    "El usuario encargado de la aprobacion final es {0}.".format(responsible.display_name))
+
+        self.allowed_confirm = True
+
+    # endregion
+
+    def generate_report_file(self, order_id):
+        report = self.env.ref('purchase.action_report_purchase_order', False)
+        pdf = report._render_qweb_pdf(order_id)[0]
+        pdf = base64.b64encode(pdf)
+        return pdf
+
+    # region Herencia funciones Base
+
+    def write(self, vals):
+        sign_list = ['allowed_confirm_sign_one', 'allowed_confirm_sign_two', 'allowed_confirm_sign_three']
+        if any([sign in vals for sign in sign_list]):
+            if 'allowed_confirm_sign_one' in vals:
+                vals['allowed_confirm_date_sign_one'] = datetime.datetime.now()
+                if self.allowed_confirm_signed_by:
+                   vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by, self.op_ini_user_id.display_name)
+                else:
+                    vals['allowed_confirm_signed_by'] = self.op_ini_user_id.display_name
+
+            if 'allowed_confirm_sign_two' in vals:
+                vals['allowed_confirm_date_sign_two'] = datetime.datetime.now()
+                if self.allowed_confirm_signed_by:
+                   vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by, self.op_mid_user_id.display_name)
+                else:
+                    vals['allowed_confirm_signed_by'] = self.op_mid_user_id.display_name
+
+            if 'allowed_confirm_sign_three' in vals:
+                vals['allowed_confirm_date_sign_three'] = datetime.datetime.now()
+                if self.allowed_confirm_signed_by:
+                   vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by, self.op_top_user_id.display_name)
+                else:
+                    vals['allowed_confirm_signed_by'] = self.op_top_user_id.display_name
+
+        res = super(PurchaseOrder, self).write(vals)
+        return res
+
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
         if self.env.context.get('mark_request_cancel'):
             self.write({'requested_cancel': True})
 
         if self.env.context.get('mark_request_approval'):
-            self.write({'request_approval': True})
+            self.write({
+                'request_approval': True,
+                'state': 'to approve'
+            })
             kwargs['attachment_ids'] = self.env.context.get('attachment_ids')
 
         res = super(PurchaseOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
         # TODO find a better way to no create extra attachment
-        attachment_id = self.env['ir.attachment'].search([('res_model', '=', 'mail.compose.message'), ('name', '=', f"SA_{self.name}.pdf")])
+        attachment_id = self.env['ir.attachment'].search(
+            [('res_model', '=', 'mail.compose.message'), ('name', '=', f"SA_{self.name}.pdf")])
 
         if attachment_id:
             attachment_id.unlink()
 
         return res
-
-    def allow_cancel(self):
-        if not self.allowed_cancel_sign:
-            raise ValidationError("El documento debe ser firmado, dirijase a la sección de aprobación de cancelación en la pestaña de firmas.")
-        self.allowed_cancel_date_sign = datetime.datetime.now()
-        self.allowed_cancel_signed_by = self.env.user.display_name
-        self.allowed_cancel = True
-
-    def allow_confirm(self):
-        if not self.allowed_confirm_sign:
-            raise ValidationError("El documento debe ser firmado, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
-        self.allowed_confirm = True
-        self.allowed_confirm_signed_by = self.env.user.display_name
-        self.allowed_confirm_date_sign = datetime.datetime.now()
 
     def button_confirm(self):
         company_id = self.company_id
@@ -228,6 +316,8 @@ class PurchaseOrder(models.Model):
         res = super(PurchaseOrder, self).button_cancel()
         return res
 
+    # endregion
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -235,8 +325,10 @@ class PurchaseOrderLine(models.Model):
     @api.model
     def _prepare_purchase_order_line_from_procurement(self, product_id, product_qty, product_uom, company_id, values,
                                                       po):
-        res = super(PurchaseOrderLine, self)._prepare_purchase_order_line_from_procurement(product_id, product_qty, product_uom, company_id, values,
-                                                      po)
+        res = super(PurchaseOrderLine, self)._prepare_purchase_order_line_from_procurement(product_id, product_qty,
+                                                                                           product_uom, company_id,
+                                                                                           values,
+                                                                                           po)
         if res['name']:
             res['name'] += '\n Uso: ' + values.get('order_use')
         else:
@@ -260,6 +352,7 @@ class PurchaseRequisition(models.Model):
             'product_description_variants': description,
         })
 
-        res = super(PurchaseRequisition, self)._prepare_tender_values(product_id, product_qty, product_uom, location_id, name, origin, company_id, values)
+        res = super(PurchaseRequisition, self)._prepare_tender_values(product_id, product_qty, product_uom, location_id,
+                                                                      name, origin, company_id, values)
 
         return res

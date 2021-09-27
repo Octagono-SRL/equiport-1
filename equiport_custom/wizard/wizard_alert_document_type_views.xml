@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="wizard_alert_document_type_form_view" model="ir.ui.view">
+            <field name="name">wizard.alert.document.type.form.view</field>
+            <field name="model">wizard.alert.document.type</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="alert_number" attrs="{'required':True}"/>
+                            </group>
+                            <group>
+                                <field name="last_number" attrs="{'required':True}"/>
+                                <field name="document_type_id" attrs="{'invisible':True}"/>
+                            </group>
+                        </group>
+
+                        <footer>
+                            <button name="safe_settings" string="Guardar" type="object"
+                                    class="btn-primary"/>
+                            <button string="Cancel" class="btn-default" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
