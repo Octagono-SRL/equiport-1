@@ -10,6 +10,9 @@ class ReportProjectTaskUser(models.Model):
     # Form rescue and assistant
 
     task_id = fields.Many2one(comodel_name='project.task', default=lambda s: s.id)
+    rescue_truck_id = fields.Many2one(related='task_id.rescue_truck_id', string="Camion de rescate")
+    consumption = fields.Float(related='task_id.consumption', string="Consumo en rescate")
+    performance = fields.Float(related='task_id.performance', string="Rendiminto del viaje")
     transport_name = fields.Char(related='task_id.transport_name', string="Nombre del transporte")
     driver_name = fields.Char(related='task_id.driver_name', string="Nombre del chofer")
     rescue_location = fields.Char(related='task_id.rescue_location', string="Lugar de rescate")

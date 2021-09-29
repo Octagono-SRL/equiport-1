@@ -5,11 +5,21 @@ import datetime
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+AVAILABLE_PRIORITIES = [
+    ('0', 'Baja'),
+    ('1', 'Media'),
+    ('2', 'Alta'),
+    ('3', 'Muy alta'),
+]
+
 
 class StockOrderPoint(models.Model):
     _inherit = 'stock.warehouse.orderpoint'
 
     order_use = fields.Char(string="Uso")
+    priority = fields.Selection(
+        AVAILABLE_PRIORITIES, string='Prioridad', index=True,
+        default=AVAILABLE_PRIORITIES[0][0])
 
 
 class StockRule(models.Model):
@@ -18,7 +28,10 @@ class StockRule(models.Model):
     @api.model
     def _run_buy(self, procurements):
         for procurement, rule in procurements:
-            procurement.values['order_use'] = procurement.values['orderpoint_id'].order_use or ''
+            procurement.values.update({
+                'order_use': procurement.values['orderpoint_id'].order_use or '',
+                'priority': procurement.values['orderpoint_id'].priority
+            })
 
         res = super(StockRule, self)._run_buy(procurements)
 
@@ -269,6 +282,8 @@ class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse'
 
     is_gate_stock = fields.Boolean(string="Almacen Gate In / Gate Out")
+    is_mobile_stock = fields.Boolean(string="Almacen movil")
+    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string="Vehiculo Almacen")
 
 
 class StockLocation(models.Model):

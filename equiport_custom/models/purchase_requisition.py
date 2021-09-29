@@ -1,11 +1,74 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 
-from odoo import models
+from odoo import models, api, fields
 from odoo.exceptions import ValidationError
+
+AVAILABLE_PRIORITIES = [
+    ('0', 'Baja'),
+    ('1', 'Media'),
+    ('2', 'Alta'),
+    ('3', 'Muy alta'),
+]
 
 
 class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
+
+    priority = fields.Selection(
+        AVAILABLE_PRIORITIES, string='Prioridad', index=True,
+        default=AVAILABLE_PRIORITIES[0][0])
+
+    # region Aprobacion de reposition
+    allowed_confirm = fields.Boolean(string="Reposicion aprobada", tracking=True)
+    allowed_confirm_sign = fields.Binary(copy=False)
+    allowed_confirm_signed_by = fields.Char('Reposicion firmada por',
+                                           help='Nombre de la persona que firmo la aprobacion de reposicion.',
+                                           copy=False)
+    allowed_confirm_date_sign = fields.Datetime(string="Fecha de aprobacion")
+    is_confirm_group = fields.Boolean(string="Grupo de aprobacion", compute="_check_confirm_group")
+
+    @api.depends('state')
+    def _check_confirm_group(self):
+        for rec in self:
+            if self.env.user in self.env.company.user_pro_allow_confirm:
+                rec.is_confirm_group = True
+            else:
+                rec.is_confirm_group = False
+
+    def allow_requisition(self):
+        if not self.allowed_confirm_sign:
+            raise ValidationError(
+                "El documento debe ser firmado, dirijase a la pestaña de firmas.")
+        self.allowed_confirm_date_sign = datetime.now()
+        self.allowed_confirm_signed_by = self.env.user.display_name
+        self.allowed_confirm = True
+    # endregion
+
+    def action_in_progress(self):
+        if not self.allowed_confirm:
+            raise ValidationError("El documento debe ser aprobado por el personal asignado antes de continuar.")
+        res = super(PurchaseRequisition, self).action_in_progress()
+        return res
+
+    def _prepare_tender_values(self, product_id, product_qty, product_uom, location_id, name, origin, company_id, values):
+        description = values.get('product_description_variants')
+
+        if description:
+            description += '\n Uso: ' + values.get('order_use')
+        else:
+            description = 'Uso: ' + values.get('order_use')
+
+        values.update({
+            'product_description_variants': description,
+        })
+
+        res = super(PurchaseRequisition, self)._prepare_tender_values(product_id, product_qty, product_uom, location_id,
+                                                                      name, origin, company_id, values)
+
+        res['priority'] = values.get('priority')
+
+        return res
 
     def generate_order_comparison(self):
 

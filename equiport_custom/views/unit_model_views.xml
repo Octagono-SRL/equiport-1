@@ -41,12 +41,6 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="action_unit_model">
-            <field name="name">Modelo de unidad</field>
-            <field name="res_model">unit.model</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
         <record model="ir.ui.view" id="unit_model_brand_tree_view">
             <field name="name">Marca de unidad</field>
             <field name="model">unit.model.brand</field>
@@ -113,9 +107,81 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="tool_brand_tree_view">
+            <field name="name">Marca de unidad</field>
+            <field name="model">tool.brand</field>
+            <field name="arch" type="xml">
+                <tree string="Marca de unidad" editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tool_brand_form_view">
+            <field name="name">Marca de unidad</field>
+            <field name="model">tool.brand</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <div>
+                                <field name="image_128" widget="image" class="oe_avatar"/>
+                                <label for="name"/>
+                                <h1>
+                                    <field name="name"/>
+                                </h1>
+                            </div>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tool_brand_kanban_view">
+            <field name="name">Marca de unidad</field>
+            <field name="model">tool.brand</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="id"/>
+                    <field name="name"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_vignette oe_semantic_html_override oe_kanban_global_click">
+                                <a type="open" href="#" class="o_kanban_image oe_kanban_action">
+                                    <img alt="Open"
+                                         t-att-src="kanban_image('tool.brand', 'image_128', record.id.raw_value)"
+                                         class="img-fluid" style="width:100px;"/>
+                                </a>
+                                <div class="oe_kanban_details">
+                                    <h4 class="oe_partner_heading">
+                                        <a type="open" class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </a>
+                                    </h4>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="action_unit_model">
+            <field name="name">Modelo de unidad</field>
+            <field name="res_model">unit.model</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
         <record model="ir.actions.act_window" id="action_unit_model_brand">
             <field name="name">Marca de unidad</field>
             <field name="res_model">unit.model.brand</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_tool_brand">
+            <field name="name">Marca de Herramientas</field>
+            <field name="res_model">tool.brand</field>
             <field name="view_mode">kanban,tree,form</field>
         </record>
 
@@ -124,6 +190,12 @@
                   parent="stock.menu_product_in_config_stock"
                   groups="stock.group_stock_manager"
                   sequence="60"/>
+
+        <menuitem id="tool_brand_menuitem"
+                  action="equiport_custom.action_tool_brand"
+                  parent="stock.menu_product_in_config_stock"
+                  groups="stock.group_stock_manager"
+                  sequence="59"/>
 
         <menuitem id="unit_model_brand_menuitem"
                   action="equiport_custom.action_unit_model_brand"

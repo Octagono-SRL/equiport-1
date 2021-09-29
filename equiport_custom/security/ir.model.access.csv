@@ -10,6 +10,8 @@ access_product_grade,access_product_grade,model_product_grade,stock.group_stock_
 access_unit_model,access_unit_model,model_unit_model,stock.group_stock_manager,1,1,1,1
 access_unit_model_brand,access_unit_model_brand,model_unit_model_brand,stock.group_stock_manager,1,1,1,1
 access_unit_model_brand_user,access_unit_model_brand_user,model_unit_model_brand,stock.group_stock_user,1,0,0,0
+access_tool_brand,access_tool_brand,model_tool_brand,stock.group_stock_manager,1,1,1,1
+access_tool_brand_user,access_tool_brand_user,model_tool_brand,stock.group_stock_user,1,0,0,0
 access_unit_model_user,access_unit_model_user,model_unit_model,stock.group_stock_user,1,0,0,0
 access_damage_option,access_damage_option,model_damage_option,base.group_user,1,1,1,1
 access_repair_panel_info_line,access_repair_panel_info_line,model_repair_panel_info_line,base.group_user,1,1,1,1

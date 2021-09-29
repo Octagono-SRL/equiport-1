@@ -7,6 +7,34 @@ from odoo.exceptions import ValidationError, UserError
 class AccountMove(models.Model):
     _inherit = ['account.move']
 
+    # region Taxes detail
+    positive_amount_tax = fields.Monetary(string='Itbis Acum.', store=True, readonly=True,
+                                          compute='_compute_sign_amount_tax')
+    negative_amount_tax = fields.Monetary(string='Itbis Ret.', store=True, readonly=True,
+                                          compute='_compute_sign_amount_tax')
+
+    @api.depends(
+        'amount_tax',
+        'amount_by_group',
+        'l10n_latam_tax_ids.amount_currency')
+    def _compute_sign_amount_tax(self):
+        for rec in self:
+            positive = 0
+            negative = 0
+            tax_lines = rec.l10n_latam_tax_ids.filtered(lambda i: i.tax_line_id.tax_group_id.name == "ITBIS")
+            if rec.is_inbound(True):
+                for line in tax_lines:
+                    positive += line.credit
+                    negative += line.debit
+            elif rec.move_type == 'entry' or rec.is_outbound():
+                for line in tax_lines:
+                    positive += line.debit
+                    negative += line.credit
+            rec.negative_amount_tax = negative
+            rec.positive_amount_tax = positive
+
+    # endregion
+
     # region Document Type Alerts
 
     document_type_alert = fields.Boolean(
@@ -32,7 +60,7 @@ class AccountMove(models.Model):
 
     # endregion
 
-    # Gate Service
+    # region Gate Service
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
 
     def action_post(self):
@@ -87,7 +115,9 @@ class AccountMove(models.Model):
 
         return res
 
-    # Invoice flow origin
+    # endregion
+
+    # region Invoice flow origin
 
     flow_origin = fields.Char(string='Generado en', compute='compute_flow_origin', store=True, tracking=True)
 
@@ -163,6 +193,8 @@ class AccountMove(models.Model):
                 if rec.move_type == 'out_invoice':
                     raise ValidationError(
                         "No puede crear facturas sin origen, contacte con gerencia y solicite poder realizar esta acción")
+
+    # endregion
 
 
 class AccountMoveLine(models.Model):

@@ -10,6 +10,13 @@
 
                 <xpath expr="//notebook/page[@name='general_info']" position="after">
                     <page name="po_page" string="Pedidos de compras">
+                        <group string="Responsables reposición de materiales">
+                            <group>
+                                <field name="user_pro_allow_confirm" string="Usuarios" widget="many2many_tags_email"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+
                         <div>
                             <label for="active_op_approval"/>
                             <field name="active_op_approval"/>

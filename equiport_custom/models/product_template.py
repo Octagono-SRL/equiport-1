@@ -36,6 +36,8 @@ class ProductTemplate(models.Model):
     # Campos para manejo de inventario
     product_use = fields.Text(string="Uso", translate=True)
     is_tool = fields.Boolean(string="Es herramienta")
+    tool_brand_id = fields.Many2one(comodel_name='tool.brand',
+                                    string="Marca de Herramienta")
     assign_user_id = fields.Many2one(comodel_name='hr.employee', string="Asignado a")
 
     # Ajustes para la subcripcion de alquileres

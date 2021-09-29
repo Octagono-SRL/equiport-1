@@ -55,6 +55,8 @@
                                 <field name="main_cause" widget="radio" options="{'horizontal': 1}"/>
                                 <field name="rescue_truck_id" attrs="{'required': [('is_fsm', '=', True)]}"
                                        options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
+                                <field name="consumption" attrs="{'required': [('km_travelled', '!=', 0)]}"/>
+                                <field name="performance" force_save="1" readonly="1"/>
                             </group>
 
                             <group>

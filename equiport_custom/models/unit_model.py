@@ -42,3 +42,12 @@ class UnitModelBrand(models.Model):
         for record in self:
             record.model_count = Model.search_count([('brand_id', '=', record.id)])
 
+
+class ToolBrand(models.Model):
+    _name = 'tool.brand'
+    _description = "Modelo para registrar marcas de las herramientas"
+
+    name = fields.Char('Nombre', required=True)
+    image_128 = fields.Image("Logo", max_width=128, max_height=128)
+    active = fields.Boolean(default=True)
+

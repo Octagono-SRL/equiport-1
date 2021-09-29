@@ -15,6 +15,13 @@ class FleetVehicle(models.Model):
 
     # endregion
 
+    # region Nuevos Campos
+
+    performance = fields.Float(string='Rendimiento',
+                               tracking=True, help='Rendimiento en base a consumo y uso')
+
+    # endregion
+
     # region Nuevos campos para unidades
 
     custom_type = fields.Char(string="Tipo")
@@ -160,7 +167,7 @@ class FleetUnitHourmeter(models.Model):
     date = fields.Date(default=fields.Date.context_today)
     value = fields.Float('Valor de horómetro', group_operator="max")
     vehicle_id = fields.Many2one('fleet.vehicle', 'Unidad', required=True)
-    unit = fields.Selection(related='vehicle_id.odometer_unit', string="Medida", readonly=True)
+    unit = fields.Selection(related='vehicle_id.hourmeter_unit', string="Medida", readonly=True)
 
     @api.depends('vehicle_id', 'date')
     def _compute_vehicle_log_name(self):
@@ -176,6 +183,15 @@ class FleetUnitHourmeter(models.Model):
     def _onchange_vehicle(self):
         if self.vehicle_id:
             self.unit = self.vehicle_id.hourmeter_unit
+
+    @api.constrains('value')
+    def check_greater_value(self):
+        for rec in self:
+            records = self.search([('id', '!=', rec.id), ('vehicle_id', '=', rec.vehicle_id.id)])
+            if records:
+                for v in records.mapped('value'):
+                    if rec.value <= v:
+                        raise ValidationError("No puede crear un registro con un horometro menor o igual a uno ya existente")
 
 
 class FleetVehicleLogServices(models.Model):
