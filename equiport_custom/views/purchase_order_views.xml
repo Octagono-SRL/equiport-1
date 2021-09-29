@@ -12,7 +12,7 @@
                     <field name="is_approval_group" invisible="0"/>
                     <field name="is_cancel_group" invisible="0"/>
                     <field name="allowed_cancel" attrs="{'readonly':True}"/>
-                    <field name="approval_needed" invisible="1"/>
+                    <field name="approval_needed" invisible="0"/>
                     <field name="allowed_confirm" invisible="1"/>
                     <field name="request_approval" invisible="1"/>
                     <field name="requested_cancel" invisible="1"/>
