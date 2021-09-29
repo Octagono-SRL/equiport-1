@@ -39,6 +39,7 @@
                         <group name="tool_details" string="Detalles de Herramienta"
                                attrs="{'invisible':[('is_tool', '=', False)]}">
                             <field name="assign_user_id"/>
+                            <field name="tool_brand_id" attrs="{'invisible':[('is_tool', '=', False)]}"/>
                         </group>
 
                         <group name="unit_details" string="Detalles de Unidad"

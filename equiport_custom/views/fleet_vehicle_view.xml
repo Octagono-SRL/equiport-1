@@ -163,9 +163,14 @@
                                 <field name="model_year"/>
                             </group>
                             <group string="Motor"
-                                   attrs="{'invisible': ['|',('unit_type', '!=', 'gen_set'), '&amp;',('vehicle_type', '!=', 'car'), ('unit_type', '=', 'vehicle')]}">
+                                   attrs="{'invisible': [('vehicle_type', '!=', 'car'), '|',('unit_type', '=', 'vehicle'),('unit_type', '!=', 'gen_set')]}">
                                 <field name="transmission" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}"/>
                                 <field name="fuel_type"/>
+                                <label for="performance"/>
+                                <div class="o_row" name="performance">
+                                    <field name="performance"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                                    g/km</span><span attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">g/Hr</span>
+                                </div>
                                 <label for="co2"/>
                                 <div class="o_row" name="co2">
                                     <field name="co2"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">

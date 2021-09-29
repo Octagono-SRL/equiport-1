@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_warehouse_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">stock.warehouse.form.equiport.inherit</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='warehouse_config']/group/group[@name='group_resupply']" position="after">
+                    <group name="move_config">
+                        <field name="is_mobile_stock"/>
+                        <field name="vehicle_id" domain="[('unit_type', '=', 'vehicle')]" attrs="{'invisible':[('is_mobile_stock', '=', False)], 'required':[('is_mobile_stock', '=', True)]}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

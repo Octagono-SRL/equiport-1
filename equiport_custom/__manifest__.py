@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.1.0',
+    'version': '14.0.0.1.1',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -59,6 +59,7 @@
         'views/stock_menuitems.xml',
         'views/stock_picking_views.xml',
         'views/stock_production_lot_views.xml',
+        'views/stock_warehouse_views.xml',
         'views/product_category.xml',
         'views/product_pricelist_views.xml',
         'views/unit_model_views.xml',
@@ -81,6 +82,7 @@
         'report/report_purchase_requisition_order_comparison.xml',
         'report/report_holding_tax_view.xml',
         'report/rental_report_views.xml',
+        'report/report_invoice_document.xml',
         'report/report_project_task_user_fsm.xml',
         'report/repair_templates_repair_order.xml',
         'wizard/wizard_purchase_order_cancel_views.xml',

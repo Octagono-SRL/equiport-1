@@ -88,6 +88,9 @@ class PurchaseOrder(models.Model):
     allowed_confirm_sign_one = fields.Binary(copy=False)
     allowed_confirm_sign_two = fields.Binary(copy=False)
     allowed_confirm_sign_three = fields.Binary(copy=False)
+    allowed_confirm_sign_level = fields.Binary(copy=False)
+    allowed_confirm_sign_level_date = fields.Datetime(string="Fecha de aprobación final")
+    allowed_confirm_sign_level_by = fields.Char(copy=False, string="Aprovacion final")
     allowed_confirm_signed_by = fields.Char('Aprobacion firmada por',
                                             help='Nombre de la persona que firmo la aprobacion de monto.', copy=False)
     allowed_confirm_date_sign_one = fields.Datetime(string="Fecha de aprobación primer nivel")
@@ -220,20 +223,29 @@ class PurchaseOrder(models.Model):
         if self.approval_level:
             responsible = False
             if self.approval_level == 'one':
-                responsible = self.company_id.op_ini_level
+                responsible = self.company_id.op_ini_user_id
                 if not self.allowed_confirm_sign_one:
                     raise ValidationError(
                         "El documento debe ser firmado, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
+                self.allowed_confirm_sign_level = self.allowed_confirm_sign_one
+                self.allowed_confirm_sign_level_by = responsible.name
+                self.allowed_confirm_sign_level = self.allowed_confirm_date_sign_one
             elif self.approval_level == 'two':
                 responsible = self.company_id.op_mid_user_id
                 if not self.allowed_confirm_sign_one or not self.allowed_confirm_sign_two:
                     raise ValidationError(
                         "El documento debe ser firmado por los usuarios de primer y segundo nivel de aprobacion, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
+                self.allowed_confirm_sign_level = self.allowed_confirm_sign_two
+                self.allowed_confirm_sign_level_by = responsible.name
+                self.allowed_confirm_sign_level = self.allowed_confirm_date_sign_two
             elif self.approval_level == 'three':
                 responsible = self.company_id.op_top_user_id
                 if not self.allowed_confirm_sign_one or not self.allowed_confirm_sign_two or not self.allowed_confirm_sign_three:
                     raise ValidationError(
                         "El documento debe ser firmado por los usuarios de primer, segundo y tercer nivel de aprobacion, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
+                self.allowed_confirm_sign_level = self.allowed_confirm_sign_three
+                self.allowed_confirm_sign_level_by = responsible.name
+                self.allowed_confirm_sign_level = self.allowed_confirm_date_sign_three
             if self.env.user != responsible:
                 raise ValidationError(
                     "El usuario encargado de la aprobacion final es {0}.".format(responsible.display_name))
@@ -336,23 +348,3 @@ class PurchaseOrderLine(models.Model):
 
         return res
 
-
-class PurchaseRequisition(models.Model):
-    _inherit = 'purchase.requisition'
-
-    def _prepare_tender_values(self, product_id, product_qty, product_uom, location_id, name, origin, company_id, values):
-        description = values.get('product_description_variants')
-
-        if description:
-            description += '\n Uso: ' + values.get('order_use')
-        else:
-            description = 'Uso: ' + values.get('order_use')
-
-        values.update({
-            'product_description_variants': description,
-        })
-
-        res = super(PurchaseRequisition, self)._prepare_tender_values(product_id, product_qty, product_uom, location_id,
-                                                                      name, origin, company_id, values)
-
-        return res

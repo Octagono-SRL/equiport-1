@@ -38,11 +38,16 @@ class ResCompany(models.Model):
 
     #   endregion
 
-    # region PO Allow Cancel
+    # region PO (Purchase Order) Allow Cancel
     user_po_allow_cancel = fields.Many2many(comodel_name='res.users', relation='op_allow_cancel_users_rel')
 
     # endregion
-    # region SL services
+
+    # region PRO (Purchase Requisition Order) Allow Reposition
+    user_pro_allow_confirm = fields.Many2many(comodel_name='res.users', relation='pro_allow_confirm_users_rel')
+
+    # endregion
+    # region SL (Stock Location) services
 
     default_gate_service = fields.Many2one(comodel_name='product.product', domain=[('is_gate_service', '=', True)],
                                            string="Servicio Gate In / Gate Out", ondelete='restrict')
@@ -52,7 +57,7 @@ class ResCompany(models.Model):
 
     # endregion
 
-    # region SP Access
+    # region SP (Stock Picking) Access
     user_sp_access = fields.Many2many(comodel_name='res.users', relation='sp_access_users_rel')
     # endregion
 

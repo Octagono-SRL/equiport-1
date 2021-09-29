@@ -22,15 +22,15 @@
                            cellspacing="30">
                         <tr>
                             <td class="spacing"></td>
-                            <td class="spacing" t-if="o.allowed_confirm_sign" name="signature">
+                            <td class="spacing" t-if="o.allowed_confirm_sign_level" name="signature">
                                 <div class="">
-                                    <img t-att-src="image_data_uri(o.allowed_confirm_sign)"
+                                    <img t-att-src="image_data_uri(o.allowed_confirm_sign_level)"
                                          style="max-height: 4cm; max-width: 8cm;"/>
                                 </div>
                                 <div class="text-center">
-                                    <p t-field="o.allowed_confirm_signed_by"/>
+                                    <p t-field="o.allowed_confirm_sign_level_by"/>
                                     <p>
-                                        Fecha: <span t-field="o.allowed_confirm_date_sign"/>
+                                        Fecha: <span t-field="o.allowed_confirm_sign_level_date"/>
                                     </p>
                                 </div>
                             </td>

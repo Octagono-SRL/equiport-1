@@ -24,11 +24,25 @@ class ProjectTask(models.Model):
     # Form rescue and assistant
 
     transport_name = fields.Char(string="Nombre del transporte")
-    rescue_truck_id = fields.Many2one('stock.warehouse', string="Camion de rescate")
+    rescue_truck_id = fields.Many2one('stock.warehouse', string="Camion de rescate", domain="[('is_mobile_stock', '=', True)]")
+    consumption = fields.Float(string="Consumo en rescate")
+    performance = fields.Float(string="Rendiminto del viaje")
     driver_name = fields.Char(string="Nombre del chofer")
     rescue_location = fields.Char(string="Lugar de rescate")
     employee_worker_ids = fields.Many2many(comodel_name='hr.employee', relation='external_service_employee_rel',
                                            string="Personal de rescate")
+
+    @api.onchange('consumption', 'rescue_truck_id')
+    def get_truck_performance(self):
+        vehicle_id = self.rescue_truck_id.vehicle_id
+        if self.consumption > 0 and self.rescue_truck_id:
+            self.performance = (vehicle_id.performance/self.consumption) * 100
+        if vehicle_id.performance <= 0 and self.rescue_truck_id:
+            self.performance = 0
+            return {
+                'warning': {'title': "Advertencia",
+                            'message': "El campo de rendimiento en el Camion tiene un valor de cero o no valido."},
+            }
 
     def action_fsm_validate(self):
         """ Moves Task to next stage.

@@ -8,9 +8,51 @@
             <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
             <field name="arch" type="xml">
 
+                <header position="inside">
+                    <button name="allow_requisition" type="object" attrs="{'invisible':['|',('allowed_confirm', '=', True), ('is_confirm_group', '=', False)]}" class="btn-primary" string="Aprobar Reposicion"/>
+                </header>
+
                 <div class="oe_button_box" name="button_box" position="inside">
                     <button name="generate_order_comparison" type="object" class="oe_stat_button" icon="fa-list-alt" attrs="{'invisible': [('order_count', '&lt;', 2)]}" string="PO/Comparación"/>
                 </div>
+
+                <field name="picking_type_id" position="after">
+                    <field name="priority" widget="priority" readonly="1"/>
+                    <field name="allowed_confirm" invisible="1"/>
+                    <field name="is_confirm_group" invisible="1"/>
+                </field>
+
+                <xpath expr="//notebook/page[@name='products']" position="after">
+                    <page string="Firmas" name="confirm_sign">
+                        <div class="row-content" >
+                            <h2>Aprobación de reposición</h2>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="allowed_confirm_sign" widget="signature" nolabel="1"
+                                       options="{'size': ['',200]}"
+                                       attrs="{'readonly': ['|', ('is_confirm_group', '=', False),('allowed_confirm', '=', True)]}"/>
+                            </group>
+                            <group>
+                                <field name="allowed_confirm_date_sign" readonly="1"/>
+                                <field name="allowed_confirm_signed_by" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+
+                </xpath>
+            </field>
+        </record>
+
+        <record id="purchase_requisition_tree_equiport_inherit" model="ir.ui.view">
+            <field name="name">purchase.requisition.tree.equiport.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_tree"/>
+            <field name="arch" type="xml">
+
+                <field name="date_end" position="before">
+                    <field name="priority" widget="badge" decoration-success="state == 'done'"  decoration-danger="priority == '3' and state not in ('done', 'cancel')" decoration-warning="priority == '2' and state not in ('done', 'cancel')" decoration-info="priority == '1' and state not in ('done', 'cancel')"  readonly="1"/>
+                </field>
             </field>
         </record>
 
