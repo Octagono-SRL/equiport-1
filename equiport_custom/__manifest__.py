@@ -14,6 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
+
     'version': '14.0.0.3',
 
     # any module necessary for this one to work correctly

@@ -214,6 +214,7 @@ class PurchaseOrder(models.Model):
 
             return str([p.id for p in partners]).replace('[', '').replace(']', '')
 
+
     def allow_confirm(self):
         if self.approval_level:
             responsible = False
