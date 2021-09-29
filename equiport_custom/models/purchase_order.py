@@ -126,9 +126,6 @@ class PurchaseOrder(models.Model):
                     rec.approval_level = 'two'
                 if company_id.op_top_level <= rec.amount_total:
                     rec.approval_level = 'three'
-                else:
-                    rec.approval_needed = False
-                    rec.approval_level = False
             else:
                 rec.approval_needed = False
                 rec.approval_level = False
@@ -194,7 +191,7 @@ class PurchaseOrder(models.Model):
             'context': ctx,
         }
 
-    def get_responsible(self, partner_only=False):
+    def get_responsible(self):
         company_id = self.company_id
         op_approval = company_id.active_op_approval
         responsible = self.env['res.partner']
@@ -214,10 +211,9 @@ class PurchaseOrder(models.Model):
                         'El cliente o usuario {partner} no tiene correo electronico asignado.'.format(
                             partner=partner.name)
                     )
-            if partner_only:
-                return responsible
-            else:
-                return str([p.id for p in partners]).replace('[', '').replace(']', '')
+
+            return str([p.id for p in partners]).replace('[', '').replace(']', '')
+
 
     def allow_confirm(self):
         if self.approval_level:

@@ -45,8 +45,7 @@
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Saludos
-                        ${object.get_responsible(partner_only=True).name},
+                        Saludos,
                         <br/><br/>
                         Aqui el documento a la espera de aprobación para proceder con la compra.
                         <br/>
