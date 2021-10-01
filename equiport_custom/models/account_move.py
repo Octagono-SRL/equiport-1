@@ -47,7 +47,11 @@ class AccountMove(models.Model):
             alert_number = invoice.l10n_latam_document_type_id.alert_number
             if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id and \
                     invoice.move_type in ['out_invoice', 'out_refund', 'out_receipt']:
-                sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1]) + 1
+                sequence_number = False
+                if invoice.l10n_latam_document_number:
+                    sequence_number = False
+                    if len(invoice.l10n_latam_document_number.split(prefix_code)) > 1:
+                        sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1])
                 if sequence_number:
                     if sequence_number >= alert_number:
                         invoice.document_type_alert = True
@@ -69,7 +73,9 @@ class AccountMove(models.Model):
             prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
             last_number = invoice.l10n_latam_document_type_id.last_number
             if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id:
-                sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1])
+                sequence_number = False
+                if invoice.l10n_latam_document_number:
+                    sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1])
                 if sequence_number:
                     if sequence_number >= last_number:
                         raise ValidationError(

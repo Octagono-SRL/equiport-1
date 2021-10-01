@@ -13,6 +13,15 @@ class ProductTemplate(models.Model):
 
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string="Vehiculo")
     is_vehicle = fields.Boolean(string="Es vehiculo")
+    is_tire_product = fields.Boolean(string="Es Neumatico", store=True, compute='_compute_is_tire')
+
+    @api.depends('categ_id', 'company_id', 'company_id.tire_product_category', 'company_id.category_count')
+    def _compute_is_tire(self):
+        for rec in self:
+            if rec.categ_id in rec.company_id.tire_product_category or rec.categ_id in self.env.company.tire_product_category:
+                rec.is_tire_product = True
+            else:
+                rec.is_tire_product = False
 
     # Campos para definir Contenedores, Gen set, Chasis
     unit_type = fields.Selection([('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')],

@@ -70,5 +70,12 @@ class ResCompany(models.Model):
 
     user_fleet_notify = fields.Many2many(comodel_name='res.users', relation='fleet_notify_users_rel')
     fuel_services_fleet = fields.Many2many(comodel_name='fleet.service.type', relation='fuel_services_fleet_rel')
+    tire_product_category = fields.Many2many(comodel_name='product.category', relation='tires_product_category_rel')
+    category_count = fields.Integer(string="Numero de categorias", compute='_compute_category_count')
 
-    # endregion
+    @api.depends('tire_product_category')
+    def _compute_category_count(self):
+        for rec in self:
+            rec.category_count = len(rec.tire_product_category)
+
+# endregion

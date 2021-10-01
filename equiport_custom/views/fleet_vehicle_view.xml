@@ -39,6 +39,13 @@
                                     attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
                                 <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
                             </button>
+                            <button name="return_action_to_open" type="object" class="oe_stat_button"
+                                    icon="fa-circle"
+                                    context="{'xml_id':'fleet_vehicle_log_tires_action', 'xml_origin': 'tires'}"
+                                    help="Historial de asignacion de neumaticos"
+                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis', 'vehicle'])]}">
+                                <field name="tires_count" widget="statinfo" string="Neumaticos"/>
+                            </button>
                         </div>
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
                                 attrs="{'invisible': [('active', '=', True)]}"/>
@@ -169,7 +176,7 @@
                                 <label for="performance"/>
                                 <div class="o_row" name="performance">
                                     <field name="performance"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    g/km</span><span attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">g/Hr</span>
+                                    km/g</span><span attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">g/Hr</span>
                                 </div>
                                 <label for="co2"/>
                                 <div class="o_row" name="co2">
@@ -235,104 +242,6 @@
                 </xpath>
             </field>
         </record>
-
-        <record id='fleet_unit_hourmeter_view_form' model='ir.ui.view'>
-            <field name="name">fleet.unit.hourmeter.form</field>
-            <field name="model">fleet.unit.hourmeter</field>
-            <field name="arch" type="xml">
-                <form string="Historial de Horómetro">
-                    <sheet>
-                        <group>
-                            <field name="vehicle_id"/>
-                            <field name="value" class="oe_inline"/>
-                            <field name="unit" class="oe_inline"/>
-                            <field name="date"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <record id='fleet_unit_hourmeter_view_tree' model='ir.ui.view'>
-            <field name="name">fleet.unit.hourmeter.tree</field>
-            <field name="model">fleet.unit.hourmeter</field>
-            <field name="arch" type="xml">
-                <tree string="Historial de Horómetro" editable="top">
-                    <field name="date"/>
-                    <field name="vehicle_id" widget="many2one_avatar"/>
-                    <field name="value"/>
-                    <field name="unit"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id='fleet_unit_hourmeter_view_kanban' model='ir.ui.view'>
-            <field name="name">fleet.unit.hourmeter.kanban</field>
-            <field name="model">fleet.unit.hourmeter</field>
-            <field name="arch" type="xml">
-                <kanban class="o_kanban_mobile">
-                    <templates>
-                        <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_global_click">
-                                <div>
-                                    <strong>
-                                        <field name="vehicle_id" widget="res_partner_many2one"/>
-                                        <span class="float-right"><field name="date"/></span>
-                                    </strong>
-                                </div>
-                                <div>
-                                    <span class="float-right"><field name="value"/> Km</span>
-                                </div>
-                            </div>
-                        </t>
-                    </templates>
-                </kanban>
-            </field>
-        </record>
-
-        <record id='fleet_unit_hourmeter_view_search' model='ir.ui.view'>
-            <field name="name">fleet.unit.hourmeter.search</field>
-            <field name="model">fleet.unit.hourmeter</field>
-            <field name="arch" type="xml">
-                <search string="Horómetro de unidades">
-                    <field name="vehicle_id"/>
-                    <field name="value"/>
-                    <field name="date"/>
-                    <group expand="0" string="Group By">
-                        <filter name="groupby_vehicle" context="{'group_by': 'vehicle_id'}" string="Unidades"/>
-                    </group>
-                </search>
-            </field>
-        </record>
-
-        <record id="fleet_unit_hourmeter_view_graph" model="ir.ui.view">
-            <field name="name">fleet.unit.hourmeter.graph</field>
-            <field name="model">fleet.unit.hourmeter</field>
-            <field name="arch" type="xml">
-                <graph string="Valores de horómetro por unidad" sample="1">
-                    <field name="vehicle_id" type="row"/>
-                    <field name="value" type="measure"/>
-                </graph>
-            </field>
-        </record>
-
-        <record id='fleet_unit_hourmeter_action' model='ir.actions.act_window'>
-            <field name="name">Horómetros</field>
-            <field name="res_model">fleet.unit.hourmeter</field>
-            <field name="view_mode">tree,kanban,form,graph</field>
-            <field name="context"></field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Crear un nuevo registro de horómetro
-                </p><p>
-                Puedes agregar varias entradas de horómetros para todas las unidades.
-            </p>
-            </field>
-        </record>
-
-        <menuitem action="fleet_unit_hourmeter_action" parent="fleet.fleet_vehicles" id="fleet_unit_hourmeter_menu"
-                  groups="fleet.fleet_group_user" sequence="10"/>
-
 
         <record id='fleet_vehicle_service_types_view_form' model='ir.ui.view'>
             <field name="name">fleet.service.type.form</field>

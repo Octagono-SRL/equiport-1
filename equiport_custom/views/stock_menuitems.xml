@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <menuitem id="stock.all_picking" parent="stock.menu_stock_warehouse_mgmt" sequence="5" groups="equiport_custom.allowed_transfer"/>
+        <menuitem id="stock.all_picking" parent="stock.menu_stock_warehouse_mgmt" sequence="5"
+                  groups="equiport_custom.allowed_transfer"/>
 
-        <menuitem id="stock.menu_action_inventory_form" parent="stock.menu_stock_warehouse_mgmt" sequence="30" groups="equiport_custom.allowed_transfer"/>
+        <menuitem id="stock.menu_action_inventory_form" parent="stock.menu_stock_warehouse_mgmt" sequence="30"
+                  groups="equiport_custom.allowed_transfer"/>
 
-        <menuitem id="stock.menu_stock_scrap" parent="stock.menu_stock_warehouse_mgmt" sequence="99" groups="equiport_custom.allowed_transfer"/>
+        <menuitem id="stock.menu_stock_scrap" parent="stock.menu_stock_warehouse_mgmt" sequence="99"
+                  groups="equiport_custom.allowed_transfer"/>
 
-        <menuitem id="stock_landed_costs.menu_stock_landed_cost" parent="stock.menu_stock_warehouse_mgmt" sequence="115" groups="equiport_custom.allowed_transfer"/>
+        <menuitem id="stock_landed_costs.menu_stock_landed_cost" parent="stock.menu_stock_warehouse_mgmt" sequence="115"
+                  groups="equiport_custom.allowed_transfer"/>
+
+        <record id="action_stock_gate_picking" model="ir.actions.act_window">
+            <field name="name">Conduces Gate In/Out</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">form</field>
+            <field name="domain"></field>
+            <field name="context">{
+                'default_is_gate_service': True,
+            }</field>
+        </record>
+
+        <menuitem id="stock_gate_picking" parent="stock.menu_stock_warehouse_mgmt" action="action_stock_gate_picking"
+                  sequence="120" groups="stock.group_stock_user"/>
+
     </data>
 </odoo>

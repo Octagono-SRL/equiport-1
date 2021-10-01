@@ -63,7 +63,8 @@ class StockPicking(models.Model):
     access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
 
     is_rental = fields.Boolean(string="Proviene de una orden de alquiler", default=False)
-    is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate", related='sale_id.is_gate_service')
+    is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate",
+                                     default=lambda s: (s.sale_id.is_gate_service or False))
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 
@@ -79,7 +80,7 @@ class StockPicking(models.Model):
         for task_id in sale_id.tasks_ids:
             if task_id.is_fsm and sale_id.tasks_count <= 1 and task_id.main_cause == 'wear':
                 fsm_invoice_available = False
-                
+
         if not self.sale_id.partner_id.allowed_credit:
             if fsm_invoice_available and not sale_id.is_fsm:
                 if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
@@ -115,18 +116,18 @@ class StockPicking(models.Model):
                                               "* Barco\n"
                                               "* Linea naviera\n")
 
-        if len(sale_id.picking_ids) > 1 and sale_id.is_gate_service:
-            in_picking_ids = self.env['stock.picking']
-            out_picking_ids = self.env['stock.picking']
-            for picking in sale_id.picking_ids:
-                if picking.picking_type_code == 'outgoing':
-                    out_picking_ids += picking
-                elif picking.picking_type_code == 'incoming':
-                    in_picking_ids += picking
+            if len(sale_id.picking_ids) > 1 and sale_id.is_gate_service:
+                in_picking_ids = self.env['stock.picking']
+                out_picking_ids = self.env['stock.picking']
+                for picking in sale_id.picking_ids:
+                    if picking.picking_type_code == 'outgoing':
+                        out_picking_ids += picking
+                    elif picking.picking_type_code == 'incoming':
+                        in_picking_ids += picking
 
-            if not any(in_p.state == 'done' for in_p in in_picking_ids) and self.picking_type_code == 'outgoing':
-                raise ValidationError(
-                    "No se puede validar. Se debe validar la recepcion de las unidades del documento de origen.")
+                if not any(in_p.state == 'done' for in_p in in_picking_ids) and self.picking_type_code == 'outgoing':
+                    raise ValidationError(
+                        "No se puede validar. Se debe validar la recepcion de las unidades del documento de origen.")
         # endregion
         res = super(StockPicking, self).button_validate()
 
@@ -296,6 +297,7 @@ class StockProductionLot(models.Model):
     _inherit = 'stock.production.lot'
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
+    assigned_tire = fields.Boolean(string="esta asignado?")
 
     # Gate service
     is_gate_product = fields.Boolean(string="Servicio Gate In / Gate Out", compute='compute_gate_product')
