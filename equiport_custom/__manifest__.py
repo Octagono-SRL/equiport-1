@@ -14,7 +14,6 @@
     'website': "",
 
     'category': 'Customizations',
-
     'version': '14.0.0.3',
 
     # any module necessary for this one to work correctly
@@ -77,6 +76,7 @@
         'views/account_move.xml',
         'views/l10n_latam_document_type_views.xml',
         'views/fleet_vehicle_view.xml',
+        'views/fleet_vehicle_log_views.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
         'report/report_deliveryslip.xml',

@@ -9,10 +9,10 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='fiscal_position_id']" position="after">
-                    <field name="is_approval_group" invisible="0"/>
-                    <field name="is_cancel_group" invisible="0"/>
+                    <field name="is_approval_group" invisible="1"/>
+                    <field name="is_cancel_group" invisible="1"/>
                     <field name="allowed_cancel" attrs="{'readonly':True}"/>
-                    <field name="approval_needed" invisible="0"/>
+                    <field name="approval_needed" invisible="1"/>
                     <field name="allowed_confirm" invisible="1"/>
                     <field name="request_approval" invisible="1"/>
                     <field name="requested_cancel" invisible="1"/>
@@ -38,6 +38,8 @@
                             help="Realizar solicitud de autorización para realizar esta compra"/>
                 </xpath>
 
+                <xpath expr="//header/button[@name='button_approve']" position="replace"/>
+
                 <xpath expr="//notebook/page[@name='products']" position="after">
                     <page string="Firmas" name="sign_section"
                           attrs="{'invisible': [('requested_cancel', '=', False),('request_approval', '=', False)]}">
@@ -46,22 +48,24 @@
                         </div>
                         <group name="amount_sign" attrs="{'invisible': [('request_approval', '=', False)]}">
                             <group>
-                                <field name="logged_uid" invisible="1"/>
+                                <field name="is_ini_user" invisible="1"/>
+                                <field name="is_mid_user" invisible="1"/>
+                                <field name="is_top_user" invisible="1"/>
                                 <field name="approval_level" invisible="1"/>
                                 <field name="op_ini_user_id" invisible="1"/>
                                 <field name="op_mid_user_id" invisible="1"/>
                                 <field name="op_top_user_id" invisible="1"/>
                                 <field name="allowed_confirm_sign_one" widget="signature" nolabel="1"
                                        options="{'size': ['',200]}"
-                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('op_ini_user_id', '!=', 'logged_uid')], 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_ini_user', '=', False)], 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
 
                                 <field name="allowed_confirm_sign_two" widget="signature" nolabel="1"
                                        options="{'size': ['',200]}"
-                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('op_mid_user_id', '!=', 'logged_uid')], 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_mid_user', '=', False)], 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
 
                                 <field name="allowed_confirm_sign_three" widget="signature" nolabel="1"
                                        options="{'size': ['',200]}"
-                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('op_top_user_id', '!=', 'logged_uid')], 'invisible':[('approval_level', 'not in', ['three'])]}"/>
+                                       attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_top_user', '=', False)], 'invisible':[('approval_level', 'not in', ['three'])]}"/>
                             </group>
                             <group>
                                 <field name="allowed_confirm_date_sign_one" attrs="{'readonly': True, 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>

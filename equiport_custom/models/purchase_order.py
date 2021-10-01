@@ -79,11 +79,29 @@ class PurchaseOrder(models.Model):
     op_ini_user_id = fields.Many2one(related='company_id.op_ini_user_id')
     op_mid_user_id = fields.Many2one(related='company_id.op_mid_user_id')
     op_top_user_id = fields.Many2one(related='company_id.op_top_user_id')
-    logged_uid = fields.Many2one(comodel_name='res.users', compute='_compute_logged_user')
 
+    is_ini_user = fields.Boolean(compute='_compute_logged_user', string="Es usuario 1")
+    is_mid_user = fields.Boolean(compute='_compute_logged_user', string="Es usuario 2")
+    is_top_user = fields.Boolean(compute='_compute_logged_user', string="Es usuario 3")
+
+    @api.depends('op_ini_user_id', 'op_mid_user_id', 'op_top_user_id')
     def _compute_logged_user(self):
         for rec in self:
-            rec.logged_uid = self.env.user
+            actual_user = self.env.user
+            if rec.op_ini_user_id == actual_user:
+                rec.is_ini_user = True
+            else:
+                rec.is_ini_user = False
+
+            if rec.op_mid_user_id == actual_user:
+                rec.is_mid_user = True
+            else:
+                rec.is_mid_user = False
+
+            if rec.op_top_user_id == actual_user:
+                rec.is_top_user = True
+            else:
+                rec.is_top_user = False
 
     allowed_confirm_sign_one = fields.Binary(copy=False)
     allowed_confirm_sign_two = fields.Binary(copy=False)
@@ -214,7 +232,6 @@ class PurchaseOrder(models.Model):
 
             return str([p.id for p in partners]).replace('[', '').replace(']', '')
 
-
     def allow_confirm(self):
         if self.approval_level:
             responsible = False
@@ -225,7 +242,7 @@ class PurchaseOrder(models.Model):
                         "El documento debe ser firmado, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
                 self.allowed_confirm_sign_level = self.allowed_confirm_sign_one
                 self.allowed_confirm_sign_level_by = responsible.name
-                self.allowed_confirm_sign_level = self.allowed_confirm_date_sign_one
+                self.allowed_confirm_sign_level_date = self.allowed_confirm_date_sign_one
             elif self.approval_level == 'two':
                 responsible = self.company_id.op_mid_user_id
                 if not self.allowed_confirm_sign_one or not self.allowed_confirm_sign_two:
@@ -233,7 +250,7 @@ class PurchaseOrder(models.Model):
                         "El documento debe ser firmado por los usuarios de primer y segundo nivel de aprobacion, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
                 self.allowed_confirm_sign_level = self.allowed_confirm_sign_two
                 self.allowed_confirm_sign_level_by = responsible.name
-                self.allowed_confirm_sign_level = self.allowed_confirm_date_sign_two
+                self.allowed_confirm_sign_level_date = self.allowed_confirm_date_sign_two
             elif self.approval_level == 'three':
                 responsible = self.company_id.op_top_user_id
                 if not self.allowed_confirm_sign_one or not self.allowed_confirm_sign_two or not self.allowed_confirm_sign_three:
@@ -241,12 +258,15 @@ class PurchaseOrder(models.Model):
                         "El documento debe ser firmado por los usuarios de primer, segundo y tercer nivel de aprobacion, dirijase a la sección de aprobación de monto en la pestaña de firmas.")
                 self.allowed_confirm_sign_level = self.allowed_confirm_sign_three
                 self.allowed_confirm_sign_level_by = responsible.name
-                self.allowed_confirm_sign_level = self.allowed_confirm_date_sign_three
+                self.allowed_confirm_sign_level_date = self.allowed_confirm_date_sign_three
             if self.env.user != responsible:
                 raise ValidationError(
                     "El usuario encargado de la aprobacion final es {0}.".format(responsible.display_name))
 
-        self.allowed_confirm = True
+        self.write({
+            'allowed_confirm': True,
+            'state': 'draft'
+        })
 
     # endregion
 

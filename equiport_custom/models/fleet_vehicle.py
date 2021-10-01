@@ -58,6 +58,8 @@ class FleetVehicle(models.Model):
     odometer_km_cost = fields.Float(compute='compute_use_cost', string="Costo por kilometro", store=True)
     hourmeter_hr_cost = fields.Float(compute='compute_use_cost', string="Costo por hora", store=True)
 
+    tires_count = fields.Integer(compute="_compute_count_all", string='Neumaticos')
+
     # endregion
 
     # region Nuevas funciones
@@ -140,12 +142,24 @@ class FleetVehicle(models.Model):
         for record in self:
             record.hourmeter_count = Hourmeter.search_count([('vehicle_id', '=', record.id)])
 
+        Tires = self.env['fleet.vehicle.log.tires']
+        for record in self:
+            record.tires_count = Tires.search_count([('vehicle_id', '=', record.id)])
+
         return res
 
     def return_action_to_open(self):
         self.ensure_one()
         xml_origin = self.env.context.get('xml_origin')
         if xml_origin and xml_origin == 'hourmeter':
+            xml_id = self.env.context.get('xml_id')
+            res = self.env['ir.actions.act_window']._for_xml_id('equiport_custom.%s' % xml_id)
+            res.update(
+                context=dict(self.env.context, default_vehicle_id=self.id, group_by=False),
+                domain=[('vehicle_id', '=', self.id)]
+            )
+            return res
+        elif xml_origin and xml_origin == 'tires':
             xml_id = self.env.context.get('xml_id')
             res = self.env['ir.actions.act_window']._for_xml_id('equiport_custom.%s' % xml_id)
             res.update(
@@ -191,7 +205,98 @@ class FleetUnitHourmeter(models.Model):
             if records:
                 for v in records.mapped('value'):
                     if rec.value <= v:
-                        raise ValidationError("No puede crear un registro con un horometro menor o igual a uno ya existente")
+                        raise ValidationError(
+                            "No puede crear un registro con un horometro menor o igual a uno ya existente")
+
+
+class FleetVehicleLogTires(models.Model):
+    _name = 'fleet.vehicle.log.tires'
+    _description = 'Historial de asignacion de neumaticos'
+    _order = 'date desc'
+
+    name = fields.Char(compute='_compute_vehicle_log_tire_name', store=True)
+    date = fields.Date(string="Fecha de registro", default=fields.Date.context_today)
+    tires_number = fields.Integer(string='Numero de neumaticos', default=4, required=True)
+    tires_set_ids = fields.One2many(comodel_name='fleet.vehicle.tires.set', inverse_name='vehicle_log_tires_id', string='Grupo de neumaticos')
+    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehiculo', required=True)
+
+    @api.depends('vehicle_id', 'date')
+    def _compute_vehicle_log_tire_name(self):
+        for record in self:
+            name = record.vehicle_id.name
+            if not name:
+                name = 'Set - ' + str(record.date)
+            elif record.date:
+                name += ' / Set - ' + str(record.date)
+            record.name = name
+
+    @api.onchange('tires_number')
+    def _onchange_tires_number(self):
+        if self.tires_number < 2:
+            self.tires_number = 4
+        empty_spaces = []
+        for n in range(self.tires_number):
+            empty_spaces.append((0, 0, {}))
+
+        self.tires_set_ids = empty_spaces
+
+    @api.constrains('date')
+    def check_greater_date(self):
+        for rec in self:
+            records = self.search([('id', '!=', rec.id), ('vehicle_id', '=', rec.vehicle_id.id)])
+            if records:
+                for v in records.mapped('date'):
+                    if rec.date <= v:
+                        raise ValidationError(
+                            "No puede crear un registro con una menor o igual a uno ya existente")
+
+    @api.constrains('tires_number', 'tires_set_ids')
+    def check_tires_set_number(self):
+        for rec in self:
+            for line in rec.tires_set_ids:
+                if not line.product_id or not line.product_lot_id:
+                    raise ValidationError("Debe completar todas las lineas del grupo de neumaticos")
+
+
+class FleetTireSet(models.Model):
+    _name = 'fleet.vehicle.tires.set'
+    _description = 'Modulo para set de neumatico y numero de serie'
+
+    name = fields.Char(compute='_compute_name', store=True)
+    vehicle_log_tires_id = fields.Many2one(comodel_name='fleet.vehicle.log.tires',
+                                           string='Registro de cambio de neumatico')
+    product_id = fields.Many2one(comodel_name='product.product', string='Neumatico')
+    product_lot_id = fields.Many2one(comodel_name='stock.production.lot', string='Referencia de neumatico',
+                                     domain="[('product_id', '=', product_id), ('assigned_tire', '=', False)]")
+
+    # assigned_tire
+    
+    def write(self, vals):
+        if 'product_lot_id' in vals:
+            lot_id = vals['product_lot_id']
+            if self.product_lot_id != lot_id and self.product_id:
+                self.product_lot_id.assigned_tire = False
+
+        res = super(FleetTireSet, self).write(vals)
+
+        self.product_lot_id.assigned_tire = True
+
+        return res
+
+    @api.constrains('product_id', 'product_lot_id', 'vehicle_log_tires_id')
+    def check_different_lot(self):
+        for rec in self:
+            records = self.search([('id', '!=', rec.id), ('product_id', '=', rec.product_id.id), ('vehicle_log_tires_id', '=', rec.vehicle_log_tires_id.id)])
+            if records:
+                for v in records.mapped('product_lot_id'):
+                    if rec.product_lot_id == v:
+                        raise ValidationError(
+                            "No puede seleccionar una referencia de neumatico ya en uso.")
+
+    @api.depends('product_id')
+    def _compute_name(self):
+        for rec in self:
+            rec.name = "Set neumatico  {0}[{1}]".format(rec.product_id.name, rec.product_lot_id.name)
 
 
 class FleetVehicleLogServices(models.Model):
@@ -418,42 +523,46 @@ class FleetVehicleLogServices(models.Model):
         vehicle_ids = vehicleModel.search([])
         for service in service_ids:
             for vehicle in vehicle_ids:
-                last_service_log = self.search([('vehicle_id', '=', vehicle.id), ('state', '!=', 'cancelled'), ('service_type_id', '=', service.id)],
+                last_service_log = self.search([('vehicle_id', '=', vehicle.id), ('state', '!=', 'cancelled'),
+                                                ('service_type_id', '=', service.id)],
                                                limit=1, order='create_date desc')
                 if not last_service_log:
                     continue
 
                 if last_service_log.check_notify:
                     msg = ""
-                    if ((current_date >= last_service_log.date_waited) or (vehicle.odometer > last_service_log.km_waited) or (
-                                    (vehicle.hourmeter > last_service_log.hr_waited) and (last_service_log.unit_type == 'gen_set'))):
+                    if ((current_date >= last_service_log.date_waited) or (
+                            vehicle.odometer > last_service_log.km_waited) or (
+                            (vehicle.hourmeter > last_service_log.hr_waited) and (
+                            last_service_log.unit_type == 'gen_set'))):
 
-                                if current_date >= last_service_log.date_waited:
-                                    msg += "\n Se ha superado la fecha esperada."
-                                    date_alert = True
-                                if vehicle.odometer > last_service_log.km_waited:
-                                    msg += "\n Se han superado los kilometros esperados."
-                                    km_alert = True
-                                if (vehicle.hourmeter > last_service_log.hr_waited) and (last_service_log.unit_type == 'gen_set'):
-                                    msg += "\n Se han superado las horas esperadas."
-                                    hr_alert = True
+                        if current_date >= last_service_log.date_waited:
+                            msg += "\n Se ha superado la fecha esperada."
+                            date_alert = True
+                        if vehicle.odometer > last_service_log.km_waited:
+                            msg += "\n Se han superado los kilometros esperados."
+                            km_alert = True
+                        if (vehicle.hourmeter > last_service_log.hr_waited) and (
+                                last_service_log.unit_type == 'gen_set'):
+                            msg += "\n Se han superado las horas esperadas."
+                            hr_alert = True
 
-                                # Alerta en odoo
-                                last_service_log.activity_schedule(
-                                    'fleet.mail_act_fleet_service_to_renew', last_service_log.date_waited,
-                                    summary=msg,
-                                    user_id=last_service_log.create_uid.id)
+                        # Alerta en odoo
+                        last_service_log.activity_schedule(
+                            'fleet.mail_act_fleet_service_to_renew', last_service_log.date_waited,
+                            summary=msg,
+                            user_id=last_service_log.create_uid.id)
 
-                                new_context = {
-                                    'date_alert': date_alert,
-                                    'km_alert': km_alert,
-                                    'hr_alert': hr_alert,
-                                    'service_type': category_dict[last_service_log.category]
-                                }
-                                local_context.update(new_context)
-                                # Correo electronico
-                                template_id.with_context(local_context).send_mail(last_service_log.id, force_send=True,
-                                                                                  notif_layout="mail.mail_notification_light")
+                        new_context = {
+                            'date_alert': date_alert,
+                            'km_alert': km_alert,
+                            'hr_alert': hr_alert,
+                            'service_type': category_dict[last_service_log.category]
+                        }
+                        local_context.update(new_context)
+                        # Correo electronico
+                        template_id.with_context(local_context).send_mail(last_service_log.id, force_send=True,
+                                                                          notif_layout="mail.mail_notification_light")
 
     # endregion
 

@@ -88,6 +88,11 @@
                                 <field name="fuel_services_fleet" string="Servicios" widget="many2many_tags"
                                        attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                             </group>
+
+                            <group string="Neumaticos">
+                                <field name="tire_product_category" string="Categorias de producto" widget="many2many_tags"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
                         </group>
                     </page>
                 </xpath>
