@@ -16,7 +16,7 @@ class ResPartner(models.Model):
     @api.constrains('vat_type', 'vat')
     def _check_existing_vat(self):
         for rec in self:
-            search_vat = self.search([('vat', '=', rec.vat), ('vat_type', '=', rec.vat_type), ('vat', 'not in', [False, '']), ('id', '!=', rec.id)])
+            search_vat = self.search([('vat', '=', rec.vat), ('vat_type', '=', rec.vat_type), ('vat', 'not in', [False, '']), ('id', '!=', rec.id), ('id', '!=', rec.parent_id.id)])
             if search_vat and len(search_vat) == 1:
                 raise ValidationError("Ya existe un contacto con este numero de identificacion: {0}".format(search_vat.name))
             elif search_vat and len(search_vat) > 1:

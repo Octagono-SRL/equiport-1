@@ -30,7 +30,7 @@ class FleetVehicle(models.Model):
     product_unit_id = fields.Many2one(comodel_name='product.product', string="Unidad",
                                       domain="[('unit_type', '=', unit_type), ('unit_model_id', '=', unit_model_id)]")
     unit_type = fields.Selection(
-        [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')],
+        [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis'), ('utility', 'Utilitario')],
         tracking=True, string="Tipo de unidad", default='vehicle')
     unit_brand_id = fields.Many2one('unit.model.brand', related="unit_model_id.brand_id", store=True, readonly=False,
                                     string="Marca de unidad")
