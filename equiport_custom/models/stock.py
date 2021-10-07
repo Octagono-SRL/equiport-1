@@ -298,6 +298,15 @@ class StockProductionLot(models.Model):
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
     assigned_tire = fields.Boolean(string="esta asignado?")
+    positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
+
+    @api.depends('product_qty', 'product_id')
+    def _compute_positive_qty(self):
+        for rec in self:
+            if rec.product_qty > 0:
+                rec.positive_qty = True
+            else:
+                rec.positive_qty = False
 
     # Gate service
     is_gate_product = fields.Boolean(string="Servicio Gate In / Gate Out", compute='compute_gate_product')

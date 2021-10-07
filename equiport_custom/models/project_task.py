@@ -24,7 +24,8 @@ class ProjectTask(models.Model):
     # Form rescue and assistant
 
     transport_name = fields.Char(string="Nombre del transporte")
-    rescue_truck_id = fields.Many2one('stock.warehouse', string="Camion de rescate", domain="[('is_mobile_stock', '=', True)]")
+    rescue_truck_id = fields.Many2one('stock.warehouse', string="Camion de rescate",
+                                      domain="[('is_mobile_stock', '=', True)]")
     consumption = fields.Float(string="Consumo en rescate")
     performance = fields.Float(string="Rendiminto del viaje")
     driver_name = fields.Char(string="Nombre del chofer")
@@ -36,7 +37,7 @@ class ProjectTask(models.Model):
     def get_truck_performance(self):
         vehicle_id = self.rescue_truck_id.vehicle_id
         if self.consumption > 0 and self.rescue_truck_id:
-            self.performance = (vehicle_id.performance/self.consumption) * 100
+            self.performance = (vehicle_id.performance / self.consumption) * 100
         if vehicle_id.performance <= 0 and self.rescue_truck_id:
             self.performance = 0
             return {
@@ -179,7 +180,8 @@ class ProjectTask(models.Model):
     km_travelled = fields.Float(string="Km recorridos")
     main_cause = fields.Selection([('bad_use', 'Mal uso'), ('wear', 'Deterioro')], string="Causa rescate")
     chassis_long = fields.Selection(selection=LONG_OPTIONS, string="Long. Chasis")
-    th_gen_set = fields.Boolean(string="Gen Set")
+    th_gen_set = fields.Boolean(string="¿Hay Gen Set?")
+    th_freeze = fields.Boolean(string="Nevera?")
     container_type = fields.Selection([('dry', 'Seco'), ('cooled', 'Refrigerado')], string="Tipo de contenedor")
     container_long = fields.Selection(selection=LONG_OPTIONS, string="Long. Contenedor")
 
@@ -191,9 +193,47 @@ class ProjectTask(models.Model):
     def set_unit_container_long(self):
         self.chassis_long = self.container_long
 
-    container = fields.Char(string="Contenedor")
-    chassis = fields.Char(string="Chasis")
-    gen_set = fields.Char(string="Gen set")
+    container = fields.Char(string="Contenedor nombre")
+    product_container_id = fields.Many2one('product.product', string="Contenedor")
+    container_lot_id = fields.Many2one('stock.production.lot', string="Número de contenedor")
+
+    chassis = fields.Char(string="Chasis nombre")
+    product_chassis_id = fields.Many2one('product.product', string="Chasis")
+    chassis_lot_id = fields.Many2one('stock.production.lot', string="Número de Chasis")
+
+    gen_set = fields.Char(string="Gen set nombre")
+    product_gen_set_id = fields.Many2one('product.product', string="Gen Set")
+    gen_set_lot_id = fields.Many2one('stock.production.lot', string="Número de Gen set")
+
+    @api.onchange('container_lot_id', 'chassis_lot_id', 'gen_set_lot_id')
+    def setup_units_serial_name(self):
+        if self.container_lot_id:
+            self.container = self.container_lot_id.name
+        else:
+            self.container = False
+
+        if self.chassis_lot_id:
+            self.chassis = self.chassis_lot_id.name
+        else:
+            self.chassis = False
+
+        if self.gen_set_lot_id:
+            self.gen_set = self.gen_set_lot_id.name
+        else:
+            self.gen_set = False
+
+    @api.onchange('product_gen_set_id')
+    def clear_gen_serial(self):
+        self.gen_set_lot_id = False
+
+    @api.onchange('product_container_id')
+    def clear_container_serial(self):
+        self.container_lot_id = False
+
+    @api.onchange('product_chassis_id')
+    def clear_chassis_serial(self):
+        self.chassis_lot_id = False
+
     damage_type_ids = fields.Many2many(comodel_name='damage.option', relation='task_damage_option_rel',
                                        string="Tipo de averia")
     other_damage = fields.Char(string="Otros")

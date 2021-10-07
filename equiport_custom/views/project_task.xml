@@ -74,7 +74,13 @@
                         <group name="unit_info">
                             <group>
                                 <field name="th_gen_set" widget="boolean"/>
-                                <field name="gen_set" nolabel="1" attrs="{'required': [('th_gen_set', '=', True)]}"/>
+                                <field name="product_gen_set_id"
+                                       attrs="{'required': [('th_gen_set', '=', True)], 'invisible': [('th_gen_set', '=', False)]}"
+                                       domain="[('unit_type', '=', 'gen_set')]"/>
+                                <field name="gen_set_lot_id"
+                                       attrs="{'required': [('product_gen_set_id', '!=', False)], 'invisible': [('th_gen_set', '=', False)]}"
+                                       domain="[('product_id', '=', product_gen_set_id), ('rent_state', 'not in', ['to_check','to_repair', 'to_wash', 'damaged']), ('positive_qty', '=', True)]"/>
+                                <field name="gen_set" invisible="1" force_save="1"/>
                             </group>
 
                             <group>
@@ -86,13 +92,24 @@
                         <group name="units">
                             <group>
                                 <field name="container_long" widget="selection_badge"/>
-                                <field name="container_type" widget="selection_badge"/>
-                                <field name="container" attrs="{'required': [('container_long', '!=', False)]}"/>
+                                <field name="container_type" widget="selection_badge"
+                                       attrs="{'required': [('container_long', '!=', False)]}"/>
+                                <field name="product_container_id"
+                                       attrs="{'required': [('container_long', '!=', False)]}"
+                                       domain="[('container_type', '=', container_type), ('unit_size', '=', container_long), ('unit_type', '=', 'container')]"/>
+                                <field name="container_lot_id"
+                                       attrs="{'required': [('product_container_id', '!=', False)]}"
+                                       domain="[('product_id', '=', product_container_id), ('rent_state', 'not in', ['to_check','to_repair', 'to_wash', 'damaged']), ('positive_qty', '=', True)]"/>
+                                <field name="container" invisible="1" force_save="1"/>
                             </group>
 
                             <group>
                                 <field name="chassis_long" widget="selection_badge"/>
-                                <field name="chassis" attrs="{'required': [('chassis_long', '!=', False)]}"/>
+                                <field name="product_chassis_id" attrs="{'required': [('chassis_long', '!=', False)]}"
+                                       domain="[('unit_size', '=', chassis_long), ('unit_type', '=', 'chassis')]"/>
+                                <field name="chassis_lot_id" attrs="{'required': [('product_chassis_id', '!=', False)]}"
+                                       domain="[('product_id', '=', product_chassis_id), ('rent_state', 'not in', ['to_check','to_repair', 'to_wash', 'damaged']), ('positive_qty', '=', True)]"/>
+                                <field name="chassis" invisible="1" force_save="1"/>
                             </group>
 
                         </group>
