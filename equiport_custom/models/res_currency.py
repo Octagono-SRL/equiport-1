@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class Currency(models.Model):
     _inherit = 'res.currency'
 
-    currency_rate = fields.Float('Tasa de Registro', compute='_get_currency_rate', digits=0, readonly=True, store=True)
+    currency_rate = fields.Float('Tasa de Registro', compute='_get_currency_rate', digits=(10, 2), readonly=True, store=True)
 
     @api.depends('rate', 'rate_ids.rate')
     def _get_currency_rate(self):

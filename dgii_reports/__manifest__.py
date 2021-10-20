@@ -15,7 +15,7 @@
               "iterativo SRL",
     'license': 'LGPL-3',
     'category': 'Accounting',
-    'version': '14.0.0.0.2',
+    'version': '14.0.0.0.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'l10n_do_accounting'],

@@ -16,15 +16,21 @@ class ResPartner(models.Model):
     @api.constrains('vat_type', 'vat')
     def _check_existing_vat(self):
         for rec in self:
-            search_vat = self.search([('vat', '=', rec.vat), ('vat_type', '=', rec.vat_type), ('vat', 'not in', [False, '']), ('id', '!=', rec.id), ('id', '!=', rec.parent_id.id)])
+            search_vat = self.search(
+                [('vat', '=', rec.vat), ('vat_type', '=', rec.vat_type), ('vat', 'not in', [False, '']),
+                 ('id', '!=', rec.id), ('id', '!=', rec.parent_id.id), ('id', 'not in', rec.child_ids.ids)])
             if search_vat and len(search_vat) == 1:
-                raise ValidationError("Ya existe un contacto con este numero de identificacion: {0}".format(search_vat.name))
+                print(rec.vat, rec.name)
+                raise ValidationError(
+                    "Ya existe un contacto con este numero de identificacion: {0}".format(search_vat.name))
             elif search_vat and len(search_vat) > 1:
-                raise ValidationError("Ya existe contactos con este numero de identificacion: {0}".format(search_vat.mapped('name')))
+                raise ValidationError(
+                    "Ya existe contactos con este numero de identificacion: {0}".format(search_vat.mapped('name')))
 
     # Gate In/Out
     lot_unit_count = fields.Integer(compute="_compute_lot_unit_count", string="Cantidad de unidades")
-    lot_unit_ids = fields.One2many(comodel_name='stock.production.lot', inverse_name='owner_partner_id', string="Unidades")
+    lot_unit_ids = fields.One2many(comodel_name='stock.production.lot', inverse_name='owner_partner_id',
+                                   string="Unidades")
 
     @api.depends('lot_unit_ids')
     def _compute_lot_unit_count(self):
@@ -60,4 +66,3 @@ class ResPartner(models.Model):
 
     def block_credit(self):
         self.allowed_credit = False
-

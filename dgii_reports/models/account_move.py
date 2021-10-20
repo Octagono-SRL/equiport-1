@@ -29,7 +29,8 @@ class AccountInvoice(models.Model):
 
     def _compute_invoice_payment_date(self):
         for inv in self:
-            if inv.state == 'posted':
+            # Aqui02
+            if inv.state == 'posted' and inv.payment_state == 'paid':
                 dates = [
                     payment['date'] for payment in inv._get_reconciled_info_JSON_values()
                 ]
@@ -39,7 +40,6 @@ class AccountInvoice(models.Model):
                     inv.payment_date = max_date if max_date >= date_invoice \
                         else date_invoice
 
-    # TODO Adaptar funcionalidad de busqueda de linea de impuestos
     @api.model
     @api.constrains('l10n_latam_tax_ids')
     def _check_isr_tax(self):
@@ -61,12 +61,11 @@ class AccountInvoice(models.Model):
         )
         return amount * sign
 
-    # TODO Adaptar funcionalidad de busqueda de linea de impuestos
     def _get_tax_line_ids(self):
         return self.l10n_latam_tax_ids
 
     @api.model
-    @api.depends('l10n_latam_tax_ids', 'line_ids.tax_ids', 'state')
+    @api.depends('l10n_latam_tax_ids', 'line_ids.tax_ids', 'state', 'payment_state')
     def _compute_taxes_fields(self):
         """Compute invoice common taxes fields"""
         for inv in self:
@@ -137,7 +136,7 @@ class AccountInvoice(models.Model):
                 for line in inv.invoice_line_ids:
 
                     # Monto calculado en bienes
-                    if line.product_id.type in ['product', 'consu']:
+                    if line.product_id.type in ["product", "consu"]:
                         good_amount += line.price_subtotal
 
                     # Si la linea no tiene un producto
@@ -154,7 +153,6 @@ class AccountInvoice(models.Model):
                 inv.good_total_amount = inv._convert_to_local_currency(
                     good_amount)
 
-    # TODO Adaptar funcionalidad de busqueda de linea de impuestos
     @api.model
     @api.depends('l10n_latam_tax_ids', 'state', 'move_type')
     def _compute_isr_withholding_type(self):
@@ -170,12 +168,12 @@ class AccountInvoice(models.Model):
         08 -- Juegos Telefónicos
         """
         for inv in self.filtered(
-                lambda i: i.move_type == "in_invoice" and i.state == "paid"):
+                lambda i: i.move_type == "in_invoice" and i.state == "posted" and i.payment_state in ["paid", "in_payment"]):
 
             tax_l_id = inv.l10n_latam_tax_ids.filtered(
-                lambda t: t.tax_line_id.purchase_tax_type == "isr") # TODO Revisar esta parte de tax_group_id hacer una relacion con el campo isr_retention_tipe y purchase_tax_type a account.accoun
+                lambda t: t.tax_line_id.purchase_tax_type == "isr")
             if tax_l_id:  # invoice tax lines use case
-                inv.isr_withholding_type = tax_l_id[0].tax_line_id.purchase_tax_type
+                inv.isr_withholding_type = tax_l_id[0].tax_line_id.isr_retention_type
             else:  # in payment/journal entry use case
                 aml_ids = self.env["account.move"].browse(
                     p["move_id"] for p in inv._get_invoice_payment_widget()
@@ -205,7 +203,7 @@ class AccountInvoice(models.Model):
             move_id = False
             if payment_id:
                 if payment_id.journal_id.type in ['cash', 'bank']:
-                    p_string = payment_id.journal_id.payment_form
+                    p_string = payment_id.journal_id.l10n_do_payment_form
 
             if not payment_id:
                 move_id = self.env['account.move'].browse(
@@ -225,10 +223,10 @@ class AccountInvoice(models.Model):
             return 'mixed'
 
     @api.model
-    @api.depends('state')
+    @api.depends('state', 'payment_state')
     def _compute_in_invoice_payment_form(self):
         for inv in self:
-            if inv.state == 'paid':
+            if inv.state == 'posted' and inv.payment_state == 'paid':
                 payment_dict = {'cash': '01', 'bank': '02', 'card': '03',
                                 'credit': '04', 'swap': '05',
                                 'credit_note': '06', 'mixed': '07'}
@@ -236,7 +234,6 @@ class AccountInvoice(models.Model):
             else:
                 inv.payment_form = '04'
 
-    # TODO Adaptar funcionalidad de busqueda de linea de impuestos
     @api.model
     @api.depends('l10n_latam_tax_ids', 'l10n_latam_tax_ids.credit', 'l10n_latam_tax_ids.debit', 'state')
     def _compute_invoiced_itbis(self):
@@ -244,16 +241,16 @@ class AccountInvoice(models.Model):
         for inv in self:
             if inv.state != 'draft':
                 amount = 0
-                # itbis_taxes = ['ITBIS', 'ITBIS 18%']
+                itbis_taxes = ['ITBIS', 'ITBIS 18%']
                 for tax in inv._get_tax_line_ids():
-                    # print(tax.tax_line_id.purchase_tax_type)
-                    # print(itbis_taxes)
-                    # if tax.tax_line_id.purchase_tax_type in itbis_taxes and \
-                    #         tax.tax_line_id.purchase_tax_type != 'ritbis':
-                    if inv.move_type in ['out_invoice', 'out_refund']:
-                        amount += tax.credit
-                    elif inv.move_type in ['in_invoice', 'in_refund']:
-                        amount += tax.debit
+                    if tax.tax_line_id.tax_group_id.name in itbis_taxes and \
+                            tax.tax_line_id.purchase_tax_type != 'ritbis':
+                        amount += abs(tax.balance)
+
+                    # if inv.move_type in ['out_invoice', 'out_refund']:
+                    #     amount += tax.credit
+                    # elif inv.move_type in ['in_invoice', 'in_refund']:
+                    #     amount += tax.debit
                     inv.invoiced_itbis = inv._convert_to_local_currency(amount)
 
     def _get_payment_move_iterator(self, payment, inv_type, witheld_type):
@@ -263,13 +260,13 @@ class AccountInvoice(models.Model):
             if inv_type == 'out_invoice':
                 return [
                     move_line.debit
-                    for move_line in payment_id.move_line_ids
+                    for move_line in payment_id.line_ids
                     if move_line.account_id.account_fiscal_type in witheld_type
                 ]
             else:
                 return [
                     move_line.credit
-                    for move_line in payment_id.move_line_ids
+                    for move_line in payment_id.line_ids
                     if move_line.account_id.account_fiscal_type in witheld_type
                 ]
         else:
@@ -290,8 +287,6 @@ class AccountInvoice(models.Model):
                         witheld_type
                     ]
 
-    # TODO Adaptar funcionalidad de busqueda de linea de impuestos
-
     # @api.model
     @api.depends('state', 'move_type', 'payment_state', 'payment_id')
     def _compute_withheld_taxes(self):
@@ -307,14 +302,14 @@ class AccountInvoice(models.Model):
                     # Monto ITBIS Retenido por impuesto
                     inv.withholded_itbis = abs(
                         inv._convert_to_local_currency(sum(tax_line_ids.filtered(
-                        lambda tax: tax.tax_line_id.purchase_tax_type == 'ritbis' # TODO revisar matcheo campo tax_group_id con el anterior de nfc_manager purchase_tax_type
-                        ).mapped('debit'))))
+                        lambda tax: tax.tax_line_id.purchase_tax_type == 'ritbis'
+                        ).mapped('credit'))))
 
                     # Monto Retención Renta por impuesto
                     inv.income_withholding = abs(
                         inv._convert_to_local_currency(sum(tax_line_ids.filtered(
-                        lambda tax: tax.tax_line_id.purchase_tax_type == 'isr' # TODO revisar matcheo campo tax_group_id con el anterior de nfc_manager purchase_tax_type
-                        ).mapped('debit'))))
+                        lambda tax: tax.tax_line_id.purchase_tax_type == 'isr'
+                        ).mapped('credit'))))
 
                 move_ids = [p["move_id"] for p in inv._get_invoice_payment_widget()]
                 aml_ids = self.env["account.move"].browse(move_ids).mapped(
@@ -322,7 +317,6 @@ class AccountInvoice(models.Model):
                 if aml_ids:
                     for aml in aml_ids:
                         fiscal_type = aml.account_id.account_fiscal_type
-                        print(fiscal_type)
                         if fiscal_type in withholding_amounts_dict:
                             withholding_amounts_dict[fiscal_type] += aml.debit \
                                 if inv.move_type == "out_invoice" else aml.credit
@@ -339,16 +333,17 @@ class AccountInvoice(models.Model):
                     elif inv.move_type == 'in_invoice':
                         inv.withholded_itbis = withheld_itbis
                         inv.income_withholding = withheld_isr
-    # TODO revisar funcion
+
+
     @api.model
     @api.depends('invoiced_itbis', 'cost_itbis', 'state')
     def _compute_advance_itbis(self):
         for inv in self:
             if inv.state != 'draft':
                 inv.advance_itbis = inv.invoiced_itbis - inv.cost_itbis
-    # TODO Evaluar funcionalidad
+
     @api.model
-    @api.depends('l10n_latam_document_type_id') # TODO Evaluar campo Purchase_type que no existe aqui, si en el nfc anterior para tomar funcionalidad
+    @api.depends('l10n_latam_document_type_id')
     def _compute_is_exterior(self):
         for inv in self:
             inv.is_exterior = True if inv.l10n_latam_document_type_id.l10n_do_ncf_type == \
@@ -372,7 +367,6 @@ class AccountInvoice(models.Model):
 
     # ISR Percibido       --> Este campo se va con 12 espacios en 0 para el 606
     # ITBIS Percibido     --> Este campo se va con 12 espacios en 0 para el 606
-    # TODO Reparar funciones luego habilitar los siguientes campos
     payment_date = fields.Date(compute='_compute_taxes_fields', store=True)
     service_total_amount = fields.Monetary(
         compute='_compute_amount_fields',
@@ -418,7 +412,6 @@ class AccountInvoice(models.Model):
                                      ('06', 'Credit Note'), ('07', 'Mixed')],
                                     compute='_compute_in_invoice_payment_form',
                                     store=True)
-    # TODO Reparar funciones luego habilitar los siguientes campos
     third_withheld_itbis = fields.Monetary(
         compute='_compute_withheld_taxes',
         store=True,

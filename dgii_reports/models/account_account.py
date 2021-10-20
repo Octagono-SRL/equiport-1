@@ -51,12 +51,8 @@ class AccountAccount(models.Model):
         ('I35', 'I35 - Recargos'), ('I36', 'I36 - Interés Indemnizatorio'),
         ('I39', 'I39 - Servicios sujetos a Retención Personas Físicas'),
         ('ISR', 'Retención de Renta por Terceros')
-    ], string='Account Fiscal Type', copy=False)
-    # TODO verificar funcion _get_isr_retention_type() agreba ncf
+    ], string='Tipo de cuenta fiscal', copy=False)
     isr_retention_type = fields.Selection(
         selection=lambda self: self.env["account.tax"]._get_isr_retention_type() or False,
-        string="ISR Withholding Type")
+        string="Tipo de retención ISR")
 
-    # isr_retention_type = fields.Selection(
-    #     selection=[('none', 'NONE')],
-    #     string="ISR Withholding Type")

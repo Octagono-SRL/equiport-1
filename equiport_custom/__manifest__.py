@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.3',
+    'version': '14.0.0.4',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -36,7 +36,8 @@
         'industry_fsm',
         'industry_fsm_sale',
         'sale_timesheet',
-        'l10n_latam_invoice_document'
+        'l10n_latam_invoice_document',
+        'l10n_do_accounting',
     ],
 
     # always loaded
@@ -81,11 +82,11 @@
         'report/report_purchase_order_comparison.xml',
         'report/report_deliveryslip.xml',
         'report/report_purchase_requisition_order_comparison.xml',
-        'report/report_holding_tax_view.xml',
         'report/rental_report_views.xml',
         'report/report_invoice_document.xml',
         'report/report_project_task_user_fsm.xml',
         'report/repair_templates_repair_order.xml',
+        'report/sale_report_template_inherit.xml',
         'wizard/wizard_purchase_order_cancel_views.xml',
         'wizard/wizard_purchase_order_comparison_report_view.xml',
         'wizard/wizard_rental_processing_views.xml',
