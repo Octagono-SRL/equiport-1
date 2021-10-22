@@ -17,10 +17,10 @@
                 </attribute>
             </xpath>
             <xpath expr="//t[@t-set='address']" position="inside">
-                <t t-set="child_id" t-value="doc.partner_id.child_ids.filtered(lambda s: s.type == 'contact')[0]"/>
+                <t t-set="child_id" t-value="doc.partner_id.child_ids.filtered(lambda s: s.type == 'contact')"/>
                 <p t-if="doc.partner_id.phone" class="m-0">Teléfono: <span t-field="doc.partner_id.vat"/></p>
                 <p t-if="doc.partner_id.email" class="m-0">Email: <span t-field="doc.partner_id.email"/></p>
-                <p t-if="doc.partner_id.company_type == 'company' and doc.partner_id.child_ids" class="m-0">Contacto: <span t-esc="child_id.name"/></p>
+                <p t-if="doc.partner_id.company_type == 'company' and child_id" class="m-0">Contacto: <span t-esc="child_id[0].name"/></p>
             </xpath>
 
             <xpath expr="//div[hasclass('page')]/div[@id='informations']"
