@@ -91,12 +91,14 @@
 
                         <group name="units">
                             <group>
-                                <field name="container_long" widget="selection_badge"/>
-                                <field name="container_type" widget="selection_badge"
+                                <field name="container_long" invisible="1"/>
+                                <field name="container_long_id"/>
+                                <field name="container_type" invisible="1"/>
+                                <field name="container_type_id"
                                        attrs="{'required': [('container_long', '!=', False)]}"/>
                                 <field name="product_container_id"
                                        attrs="{'required': [('container_long', '!=', False)]}"
-                                       domain="[('container_type', '=', container_type), ('unit_size', '=', container_long), ('unit_type', '=', 'container')]"/>
+                                       domain="[('container_type_id', '=', container_type_id), ('unit_size_id', '=', container_long_id), ('unit_type', '=', 'container')]"/>
                                 <field name="container_lot_id"
                                        attrs="{'required': [('product_container_id', '!=', False)]}"
                                        domain="[('product_id', '=', product_container_id), ('rent_state', 'not in', ['to_check','to_repair', 'to_wash', 'damaged']), ('positive_qty', '=', True)]"/>
@@ -104,9 +106,10 @@
                             </group>
 
                             <group>
-                                <field name="chassis_long" widget="selection_badge"/>
-                                <field name="product_chassis_id" attrs="{'required': [('chassis_long', '!=', False)]}"
-                                       domain="[('unit_size', '=', chassis_long), ('unit_type', '=', 'chassis')]"/>
+                                <field name="chassis_long" invisible="1"/>
+                                <field name="chassis_long_id"/>
+                                <field name="product_chassis_id" attrs="{'required': [('chassis_long_id', '!=', False)]}"
+                                       domain="[('unit_size_id', '=', chassis_long_id), ('unit_type', '=', 'chassis')]"/>
                                 <field name="chassis_lot_id" attrs="{'required': [('product_chassis_id', '!=', False)]}"
                                        domain="[('product_id', '=', product_chassis_id), ('rent_state', 'not in', ['to_check','to_repair', 'to_wash', 'damaged']), ('positive_qty', '=', True)]"/>
                                 <field name="chassis" invisible="1" force_save="1"/>

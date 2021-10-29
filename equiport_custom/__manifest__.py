@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.3',
+    'version': '14.0.0.4',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -52,6 +52,8 @@
         'data/damage_option_data.xml',
         'data/ir_con_data.xml',
         'data/fleet_service_data.xml',
+        'data/unit_model_size.xml',
+        'data/unit_model_type.xml',
         'views/res_currency_views.xml',
         'views/res_partner_views.xml',
         'views/res_company_views.xml',
@@ -78,6 +80,8 @@
         'views/l10n_latam_document_type_views.xml',
         'views/fleet_vehicle_view.xml',
         'views/fleet_vehicle_log_views.xml',
+        'views/unit_model_type.xml',
+        'views/unit_model_size.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
         'report/report_deliveryslip.xml',

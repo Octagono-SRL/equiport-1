@@ -163,9 +163,9 @@
                                 <field name="doors"
                                        attrs="{'invisible': ['|', ('vehicle_type', '!=', 'car'), ('unit_type', '!=', 'vehicle')]}"/>
                                 <field name="color"/>
-                                <field name="container_type"
+                                <field name="container_type_id"
                                        attrs="{'invisible':[('unit_type', '!=', 'container')]}"/>
-                                <field name="unit_size" widget="selection_badge"
+                                <field name="unit_size_id"
                                        attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])]}"/>
                                 <field name="model_year"/>
                             </group>

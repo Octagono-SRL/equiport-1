@@ -45,9 +45,12 @@
                         <group name="unit_details" string="Detalles de Unidad"
                                attrs="{'invisible':[('is_tool', '=', True)]}">
                             <field name="unit_type"/>
-                            <field name="unit_size" widget="selection_badge"
-                                   attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])], 'required':[('unit_type', 'in', ['container', 'chassis'])]}"/>
-                            <field name="container_type"
+                            <field name="unit_size_id"
+                                   domain="[('unit_type', '=', unit_type)]"
+                                   attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])], 'required':[('unit_type', 'in', ['container', 'chassis'])]}"
+                                   options="{'no_open': True}"
+                            />
+                            <field name="container_type_id"
                                    attrs="{'invisible':[('unit_type', '!=', 'container')], 'required':[('unit_type', '=', 'container')]}"/>
                             <field name="unit_brand_id" attrs="{'required': False}"
                                    options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"
@@ -55,9 +58,6 @@
                             <field name="unit_model_id" attrs="{'required': False}"
                                    options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"
                                    domain="[('brand_id', '=', unit_brand_id)]"/>
-                            <field name="unit_year" attrs="{'required':[('unit_type', '!=', False)]}"/>
-                            <!--                            <field name="unit_state_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>-->
-                            <field name="unit_grade_id" options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                         </group>
                     </group>
                 </xpath>

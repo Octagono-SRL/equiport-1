@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="container_model_freeze" model="unit.model.type">
+            <field name="name">Refrigerado</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="container_model_dry" model="unit.model.type">
+            <field name="name">Seco</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

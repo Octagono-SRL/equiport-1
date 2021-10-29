@@ -4,6 +4,7 @@ from odoo import api, tools, fields, models, _
 from odoo.exceptions import ValidationError
 
 LONG_OPTIONS = [('20', '20'), ('40', '40'), ('45', '45')]
+TYPE = [('0', 'Seco'), ('1', 'Refrigerado')]
 
 
 class ProductTemplate(models.Model):
@@ -30,13 +31,18 @@ class ProductTemplate(models.Model):
                                     string="Marca de unidad")
     unit_model_id = fields.Many2one(comodel_name='unit.model',
                                     string="Modelo de unidad")
-    unit_year = fields.Char(string="Año de unidad")
-    unit_size = fields.Selection(selection=LONG_OPTIONS, string="Tamaño de unidad")
-    container_type = fields.Selection([('dry', 'Seco'), ('cooled', 'Refrigerado')], string="Tipo de contenedor")
 
-    unit_state_id = fields.Many2one(comodel_name='product.state',
-                                    string='Estado')  # desabilitado por el momento entendido que solo se visualiza en la cantidad
-    unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
+    # unit_year = fields.Char(string="Año de unidad")
+    # TODO Modificar todas las condiciones del container_type y unit_size
+    # unit_size = fields.Char(related='unit_size_id.name')
+    unit_size_id = fields.Many2one('unit.model.size', string="Tamaño de unidad")
+
+    # container_type = fields.Char(related='container_type_id.name')
+    container_type_id = fields.Many2one('unit.model.type', string="Tipo de contenedor")
+
+    # unit_state_id = fields.Many2one(comodel_name='product.state',
+    #                                 string='Estado')  # desabilitado por el momento entendido que solo se visualiza en la cantidad
+    # unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
 
     # Campos servicio (Get In/Get Out) para definir a quien pertenece la unidad y su tiempo en el patio
 

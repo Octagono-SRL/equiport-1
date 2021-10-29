@@ -179,11 +179,14 @@ class ProjectTask(models.Model):
     leave_time = fields.Float(string="Hora de salida (lugar del rescate)")
     km_travelled = fields.Float(string="Km recorridos")
     main_cause = fields.Selection([('bad_use', 'Mal uso'), ('wear', 'Deterioro')], string="Causa rescate")
-    chassis_long = fields.Selection(selection=LONG_OPTIONS, string="Long. Chasis")
+    chassis_long = fields.Char(related='chassis_long_id.name')
+    chassis_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'chassis')], string="Long. Chasis")
     th_gen_set = fields.Boolean(string="¿Hay Gen Set?")
     th_freeze = fields.Boolean(string="Nevera?")
-    container_type = fields.Selection([('dry', 'Seco'), ('cooled', 'Refrigerado')], string="Tipo de contenedor")
-    container_long = fields.Selection(selection=LONG_OPTIONS, string="Long. Contenedor")
+    container_type = fields.Char(related='chassis_long_id.name')
+    container_type_id = fields.Many2one(comodel_name='unit.model.type', string="Tipo de contenedor")
+    container_long = fields.Char(related='container_long_id.name')
+    container_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'container')], string="Long. Contenedor")
 
     @api.onchange('chassis_long')
     def set_unit_chassis_long(self):
@@ -263,10 +266,11 @@ class ProjectTask(models.Model):
         else:
             self.odometer_end = 0.0
             self.km_travelled = 0.0
-            return {
-                'warning': {'title': "Advertencia",
-                            'message': "No olvide colocar el odometro final, este debe ser mayor al inicial."},
-            }
+            if self.odometer_start:
+                return {
+                    'warning': {'title': "Advertencia",
+                                'message': "No olvide colocar el odometro final, este debe ser mayor al inicial."},
+                }
 
     hourmeter = fields.Float(string="Horómetro")
 

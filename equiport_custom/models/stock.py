@@ -299,6 +299,9 @@ class StockProductionLot(models.Model):
     rent_ok = fields.Boolean(related='product_id.rent_ok')
     assigned_tire = fields.Boolean(string="esta asignado?")
     positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
+    unit_type = fields.Selection(related='product_id.unit_type')
+    unit_year = fields.Char(string="Año de unidad")
+    unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
 
     @api.depends('product_qty', 'product_id')
     def _compute_positive_qty(self):
