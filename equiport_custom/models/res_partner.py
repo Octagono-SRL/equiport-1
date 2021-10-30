@@ -18,9 +18,9 @@ class ResPartner(models.Model):
         for rec in self:
             search_vat = self.search(
                 [('vat', '=', rec.vat), ('vat_type', '=', rec.vat_type), ('vat', 'not in', [False, '']),
+                 ('id', 'not in', rec.parent_id.child_ids.ids),
                  ('id', '!=', rec.id), ('id', '!=', rec.parent_id.id), ('id', 'not in', rec.child_ids.ids)])
             if search_vat and len(search_vat) == 1:
-                print(rec.vat, rec.name)
                 raise ValidationError(
                     "Ya existe un contacto con este numero de identificacion: {0}".format(search_vat.name))
             elif search_vat and len(search_vat) > 1:
