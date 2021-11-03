@@ -45,19 +45,22 @@ class AccountMove(models.Model):
 
     @api.depends('journal_id', 'l10n_latam_document_type_id', 'l10n_latam_document_type_id.alert_number')
     def _compute_document_type_alert(self):
-        for invoice in self.filtered(lambda s: s.is_invoice()):
-            prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
-            alert_number = invoice.l10n_latam_document_type_id.alert_number
-            if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id and \
-                    invoice.move_type in ['out_invoice', 'out_refund', 'out_receipt']:
-                sequence_number = False
-                if invoice.l10n_latam_document_number:
+        for invoice in self:
+            if invoice.is_invoice():
+                prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
+                alert_number = invoice.l10n_latam_document_type_id.alert_number
+                if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id and \
+                        invoice.move_type in ['out_invoice', 'out_refund', 'out_receipt']:
                     sequence_number = False
-                    if len(invoice.l10n_latam_document_number.split(prefix_code)) > 1:
-                        sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1])
-                if sequence_number:
-                    if sequence_number >= alert_number:
-                        invoice.document_type_alert = True
+                    if invoice.l10n_do_fiscal_number:
+                        sequence_number = False
+                        if len(invoice.l10n_do_fiscal_number.split(prefix_code)) > 1:
+                            sequence_number = int(invoice.l10n_do_fiscal_number.split(prefix_code)[1])
+                    if sequence_number:
+                        if sequence_number >= alert_number:
+                            invoice.document_type_alert = True
+                        else:
+                            invoice.document_type_alert = False
                     else:
                         invoice.document_type_alert = False
                 else:
@@ -78,10 +81,10 @@ class AccountMove(models.Model):
             if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id and \
                     invoice.move_type in ['out_invoice', 'out_refund', 'out_receipt']:
                 sequence_number = False
-                if invoice.l10n_latam_document_number:
+                if invoice.l10n_do_fiscal_number:
                     sequence_number = False
-                    if len(invoice.l10n_latam_document_number.split(prefix_code)) > 1:
-                        sequence_number = int(invoice.l10n_latam_document_number.split(prefix_code)[1])
+                    if len(invoice.l10n_do_fiscal_number.split(prefix_code)) > 1:
+                        sequence_number = int(invoice.l10n_do_fiscal_number.split(prefix_code)[1])
                 if sequence_number:
                     if sequence_number >= last_number:
                         raise ValidationError(
