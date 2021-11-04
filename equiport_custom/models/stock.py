@@ -68,6 +68,15 @@ class StockPicking(models.Model):
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 
+    @api.onchange('is_gate_service')
+    def set_domain_gate_picking_type(self):
+        if self.is_gate_service:
+            return {
+                'domain': {
+                    'picking_type_id': [('is_gate_operation', '=', True)],
+                }
+            }
+
     @api.constrains('vat_driver')
     def nif_length_constrain(self):
         if (self.is_rental and self.vat_driver and len(
@@ -292,6 +301,12 @@ class StockWarehouse(models.Model):
     is_gate_stock = fields.Boolean(string="Almacen Gate In / Gate Out")
     is_mobile_stock = fields.Boolean(string="Almacen movil")
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string="Vehiculo Almacen")
+
+
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    is_gate_operation = fields.Boolean(related='warehouse_id.is_gate_stock', string="Operacion Gate In / Gate Out")
 
 
 class StockLocation(models.Model):
