@@ -186,23 +186,30 @@ class StockPicking(models.Model):
     def request_access(self):
         sale_id = self.sale_id
         if self.picking_type_code == 'outgoing' and sale_id and not self.is_gate_service:
-            if sale_id.partner_id.allowed_credit:
-                raise ValidationError(f"El documento de origen no ha sido facturado. "
-                                      f"Documento de referencia **{sale_id.name}**.")
-            else:
+            if not sale_id.partner_id.allowed_credit:
                 if len(sale_id.invoice_ids) < 1:
                     raise ValidationError(f"El documento de origen no ha sido facturado. "
                                           f"Documento de referencia **{sale_id.name}**.")
                 else:
                     checks = []
+                    pay_checks = []
                     for inv in sale_id.invoice_ids:
                         if inv.state != 'posted':
                             checks.append(True)
+                        elif inv.payment_state != 'paid':
+                            pay_checks.append(True)
                         else:
+                            pay_checks.append(False)
                             checks.append(False)
                     if all(checks):
                         raise ValidationError(f"El documento de origen no tiene facturas confirmadas. "
                                               f"Documento de referencia **{sale_id.name}**.")
+                    elif all(pay_checks):
+                        raise ValidationError(f"El documento de origen no ha sido totalmente pagado. "
+                                              f"Documento de referencia **{sale_id.name}**.")
+
+                # raise ValidationError(f"El documento de origen no ha sido facturado. "
+                #                       f"Documento de referencia **{sale_id.name}**.")
 
         report_binary = self.generate_report_file(self.id)
         attachment_name = "SA_" + self.name
