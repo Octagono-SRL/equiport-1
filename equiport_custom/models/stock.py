@@ -68,12 +68,12 @@ class StockPicking(models.Model):
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 
-    @api.onchange('is_gate_service')
+    @api.onchange('is_gate_service', 'name', 'partner_id')
     def set_domain_gate_picking_type(self):
         if self.is_gate_service:
             return {
                 'domain': {
-                    'picking_type_id': [('is_gate_operation', '=', True)],
+                    'picking_type_id': [('is_gate_operation', '=', True)]
                 }
             }
 
