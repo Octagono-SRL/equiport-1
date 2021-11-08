@@ -26,12 +26,15 @@ class RentalOrder(models.Model):
 
     def _compute_inventory_flag(self):
         for rec in self:
-            if self.env.user.has_group('equiport_custom.rental_stock_picking'):
-                rec.is_inventory_user = True
-                rec.x_css = '<style>.o_form_button_edit, .oe_subtotal_footer, .o_form_button_create, .btn-secondary, .o-discussion {display: none !important;}</style>'
-            else:
-                rec.is_inventory_user = False
-                rec.x_css = False
+            rec.x_css = False
+            rec.is_inventory_user = False
+            # TODO Habilitar la parte de abajo una vez se termine el proceso de prueba
+            # if self.env.user.has_group('equiport_custom.rental_stock_picking'):
+            #     rec.is_inventory_user = True
+            #     rec.x_css = '<style>.o_form_button_edit, .oe_subtotal_footer, .o_form_button_create, .btn-secondary, .o-discussion {display: none !important;}</style>'
+            # else:
+            #     rec.is_inventory_user = False
+            #     rec.x_css = False
 
     def update_existing_rental_subscriptions(self):
         """

@@ -30,16 +30,16 @@ class FleetVehicle(models.Model):
     product_unit_id = fields.Many2one(comodel_name='product.product', string="Unidad",
                                       domain="[('unit_type', '=', unit_type), ('unit_model_id', '=', unit_model_id)]")
     unit_type = fields.Selection(
-        [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')],
+        [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis'), ('utility', 'Utilitario')],
         tracking=True, string="Tipo de unidad", default='vehicle')
     unit_brand_id = fields.Many2one('unit.model.brand', related="unit_model_id.brand_id", store=True, readonly=False,
                                     string="Marca de unidad")
     unit_model_id = fields.Many2one(comodel_name='unit.model', tracking=True,
                                     string="Modelo de unidad", domain="[('unit_type', '=', unit_type)]")
 
-    container_type = fields.Selection(related='product_unit_id.container_type', string="Tipo de contenedor")
+    container_type_id = fields.Many2one(related='product_unit_id.container_type_id', string="Tipo de contenedor")
 
-    unit_size = fields.Selection(related='product_unit_id.unit_size', string="Tamaño")
+    unit_size_id = fields.Many2one(related='product_unit_id.unit_size_id', string="Tamaño")
 
     unit_lot_id = fields.Many2one(
         'stock.production.lot', 'Serial', tracking=True,
@@ -101,7 +101,7 @@ class FleetVehicle(models.Model):
         self.product_unit_id = False
         self.unit_lot_id = False
         if self.unit_type != 'vehicle':
-            self.model_year = self.product_unit_id.unit_year
+            self.model_year = self.unit_lot_id.unit_year
 
     def _get_hourmeter(self):
         FleetVehicalHourometer = self.env['fleet.unit.hourmeter']

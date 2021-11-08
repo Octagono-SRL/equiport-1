@@ -4,13 +4,12 @@ from werkzeug import urls
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError, AccessError
-from collections import defaultdict
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    _l10n_do_sequence_field = "ref"
+    _l10n_do_sequence_field = "l10n_do_fiscal_number"
     _l10n_do_sequence_fixed_regex = r"^(?P<prefix1>.*?)(?P<seq>\d{0,8})$"
 
     def _get_l10n_do_cancellation_type(self):
@@ -106,6 +105,12 @@ class AccountMove(models.Model):
         help="Technical field that compute if internal generated fiscal sequence "
         "is enabled to be set manually.",
     )
+    l10n_do_fiscal_number = fields.Char(
+        "Fiscal Number",
+        index=True,
+        copy=False,
+        help="Stored field equivalent of l10n_latam_document number",
+    )
 
     def init(self):
 
@@ -192,12 +197,8 @@ class AccountMove(models.Model):
     def _compute_company_in_contingency(self):
         for invoice in self:
             ecf_invoices = self.search(
-                [
-                    ("is_ecf_invoice", "=", True),
-                    ("l10n_latam_manual_document_number", "=", False),
-                ],
-                limit=1,
-            )
+                [("is_ecf_invoice", "=", True)], limit=1
+            ).filtered(lambda i: not i.l10n_latam_manual_document_number)
             invoice.l10n_do_company_in_contingency = bool(
                 ecf_invoices and not invoice.company_id.l10n_do_ecf_issuer
             )
@@ -206,55 +207,90 @@ class AccountMove(models.Model):
     @api.depends_context("l10n_do_ecf_service_env")
     def _compute_l10n_do_electronic_stamp(self):
 
-        for invoice in self.filtered(
+        l10n_do_ecf_invoice = self.filtered(
             lambda i: i.is_ecf_invoice
+            and not i.l10n_latam_manual_document_number
             and i.l10n_do_ecf_security_code
-            and i.l10n_do_ecf_sign_date
-        ):
+        )
+
+        for invoice in l10n_do_ecf_invoice:
 
             ecf_service_env = self.env.context.get("l10n_do_ecf_service_env", "CerteCF")
             doc_code_prefix = invoice.l10n_latam_document_type_id.doc_code_prefix
-            has_sign_date = doc_code_prefix != "E32" or (
-                doc_code_prefix == "E32" and invoice.amount_total_signed >= 250000
+            is_rfc = (  # Es un Resumen Factura Consumo
+                doc_code_prefix == "E32" and invoice.amount_total_signed < 250000
             )
 
-            qr_string = "https://ecf.dgii.gov.do/%s/ConsultaTimbre?" % ecf_service_env
-            qr_string += "RncEmisor=%s&" % invoice.company_id.vat or ""
-            qr_string += (
-                "RncComprador=%s&" % invoice.commercial_partner_id.vat
-                if invoice.l10n_latam_document_type_id.doc_code_prefix[1:] != "43"
-                else invoice.company_id.vat
+            qr_string = "https://%s.dgii.gov.do/%s/ConsultaTimbre%s?" % (
+                "fc" if is_rfc else "ecf",
+                ecf_service_env,
+                "FC" if is_rfc else "",
             )
-            qr_string += "ENCF=%s&" % invoice.ref or ""
-            qr_string += "FechaEmision=%s&" % (
-                invoice.invoice_date or fields.Date.today()
-            ).strftime("%d-%m-%Y")
+            qr_string += "RncEmisor=%s&" % invoice.company_id.vat or ""
+            if not is_rfc:
+                qr_string += (
+                    "RncComprador=%s&" % invoice.commercial_partner_id.vat
+                    if invoice.l10n_latam_document_type_id.doc_code_prefix[1:] != "43"
+                    else invoice.company_id.vat
+                )
+            qr_string += "ENCF=%s&" % invoice.l10n_do_fiscal_number or ""
+            if not is_rfc:
+                qr_string += "FechaEmision=%s&" % (
+                    invoice.invoice_date or fields.Date.today()
+                ).strftime("%d-%m-%Y")
             qr_string += "MontoTotal=%s&" % (
                 "%f" % abs(invoice.amount_total_signed)
             ).rstrip("0").rstrip(".")
-
-            # DGII doesn't want FechaFirma if Consumo Electronico and < 250K
-            # ¯\_(ツ)_/¯
-            if has_sign_date:
-                qr_string += (
-                    "FechaFirma=%s&"
-                    % fields.Datetime.context_timestamp(
-                        self.with_context(tz="America/Santo_Domingo"),
-                        invoice.l10n_do_ecf_sign_date,
-                    ).strftime("%d-%m-%Y %H:%M:%S")
+            if not is_rfc:
+                qr_string += "FechaFirma=%s&" % invoice.l10n_do_ecf_sign_date.strftime(
+                    "%d-%m-%Y%%20%H:%M:%S"
                 )
 
             qr_string += "CodigoSeguridad=%s" % invoice.l10n_do_ecf_security_code or ""
 
             invoice.l10n_do_electronic_stamp = urls.url_quote_plus(qr_string)
 
-    @api.depends("ref")
+        (self - l10n_do_ecf_invoice).l10n_do_electronic_stamp = False
+
+    @api.constrains("name", "journal_id", "state", "l10n_do_fiscal_number")
+    def _check_unique_sequence_number(self):
+        l10n_do_invoices = self.filtered(
+            lambda inv: inv.l10n_latam_use_documents
+            and inv.country_code == "DO"
+            and inv.is_sale_document()
+            and inv.state == "posted"
+        )
+        if l10n_do_invoices:
+            self.flush(["name", "journal_id", "move_type", "state", "l10n_do_fiscal_number"])
+            self._cr.execute(
+                """
+                SELECT move2.id, move2.l10n_do_fiscal_number
+                FROM account_move move
+                INNER JOIN account_move move2 ON
+                    move2.l10n_do_fiscal_number = move.l10n_do_fiscal_number
+                    AND move2.journal_id = move.journal_id
+                    AND move2.move_type = move.move_type
+                    AND move2.id != move.id
+                WHERE move.id IN %s AND move2.state = 'posted'
+            """,
+                [tuple(l10n_do_invoices.ids)],
+            )
+            res = self._cr.fetchone()
+            if res:
+                raise ValidationError(
+                    _("There is already a sale invoice with fiscal number %s")
+                    % self.l10n_do_fiscal_number
+                )
+
+        super(AccountMove, (self - l10n_do_invoices))._check_unique_sequence_number()
+
+    @api.depends("l10n_do_fiscal_number")
     def _compute_l10n_latam_document_number(self):
         l10n_do_recs = self.filtered(
             lambda x: x.country_code == "DO" and x.l10n_latam_use_documents
         )
         for rec in l10n_do_recs:
-            rec.l10n_latam_document_number = rec.ref
+            rec.l10n_latam_document_number = rec.l10n_do_fiscal_number
 
         super(AccountMove, self - l10n_do_recs)._compute_l10n_latam_document_number()
 
@@ -264,6 +300,7 @@ class AccountMove(models.Model):
             lambda inv: inv.country_code == "DO"
             and self.move_type[-6:] in ("nvoice", "refund")
             and inv.l10n_latam_use_documents
+            and not inv.is_ecf_invoice
         )
 
         if len(fiscal_invoice) > 1:
@@ -302,7 +339,7 @@ class AccountMove(models.Model):
     def _inverse_l10n_latam_document_number(self):
         for rec in self.filtered("l10n_latam_document_type_id"):
             if not rec.l10n_latam_document_number:
-                rec.ref = ""
+                rec.l10n_do_fiscal_number = ""
             else:
                 document_type_id = rec.l10n_latam_document_type_id
                 if document_type_id.l10n_do_ncf_type:
@@ -314,7 +351,7 @@ class AccountMove(models.Model):
 
                 if rec.l10n_latam_document_number != document_number:
                     rec.l10n_latam_document_number = document_number
-                rec.ref = document_number
+                rec.l10n_do_fiscal_number = document_number
         super(
             AccountMove, self.filtered(lambda m: m.country_code != "DO")
         )._inverse_l10n_latam_document_number()
@@ -400,6 +437,8 @@ class AccountMove(models.Model):
         res = super(AccountMove, self)._reverse_move_vals(
             default_values=default_values, cancel=cancel
         )
+        if self.country_code != "DO":
+            return res
 
         if self.country_code == "DO":
             res["l10n_do_origin_ncf"] = self.l10n_latam_document_number
@@ -444,6 +483,68 @@ class AccountMove(models.Model):
             )
 
         return super(AccountMove, self)._is_manual_document_number(journal=journal)
+
+    def _get_debit_line_tax(self, debit_date):
+
+        if self.move_type == "out_invoice":
+            return (
+                self.company_id.account_sale_tax_id
+                or self.env.ref("l10n_do.tax_18_sale")
+                if (debit_date - self.invoice_date).days <= 30
+                and self.partner_id.l10n_do_dgii_tax_payer_type != "special"
+                else self.env.ref("l10n_do.tax_0_sale") or False
+            )
+        else:
+            return self.company_id.account_purchase_tax_id or self.env.ref(
+                "l10n_do.tax_0_purch"
+            )
+
+    def _move_autocomplete_invoice_lines_create(self, vals_list):
+
+        ctx = self.env.context
+        refund_type = ctx.get("refund_type")
+        refund_debit_type = ctx.get("l10n_do_debit_type", refund_type)
+        if refund_debit_type and refund_debit_type in ("percentage", "fixed_amount"):
+            for vals in vals_list:
+                del vals["line_ids"]
+                origin_invoice_id = self.browse(self.env.context.get("active_ids"))
+                taxes = (
+                    [
+                        (
+                            6,
+                            0,
+                            [
+                                origin_invoice_id._get_debit_line_tax(
+                                    vals["invoice_date"]
+                                ).id
+                            ],
+                        )
+                    ]
+                    if ctx.get("l10n_do_debit_type", False)
+                    else [(5, 0)]
+                )
+                price_unit = (
+                    ctx.get("amount")
+                    if refund_debit_type == "fixed_amount"
+                    else origin_invoice_id.amount_untaxed
+                    * (ctx.get("percentage") / 100)
+                )
+                vals["invoice_line_ids"] = [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": ctx.get("reason") or _("Refund"),
+                            "price_unit": price_unit,
+                            "quantity": 1,
+                            "tax_ids": taxes,
+                        },
+                    )
+                ]
+
+        return super(AccountMove, self)._move_autocomplete_invoice_lines_create(
+            vals_list
+        )
 
     def _post(self, soft=True):
 
@@ -505,6 +606,11 @@ class AccountMove(models.Model):
         where_string, param = super(AccountMove, self)._get_last_sequence_domain(
             relaxed
         )
+
+        if self.l10n_latam_use_documents and self.country_code == "DO":
+            where_string = where_string.replace(
+                "AND sequence_prefix !~ %(anti_regex)s ", ""
+            )
         if self._context.get("is_l10n_do_seq", False):
             where_string = where_string.replace("journal_id = %(journal_id)s AND", "")
             where_string += (
@@ -532,33 +638,9 @@ class AccountMove(models.Model):
             record.l10n_do_sequence_number = int(matching.group(1) or 0)
 
     def _get_last_sequence(self, relaxed=False):
+
         if not self._context.get("is_l10n_do_seq", False):
-            self.ensure_one()
-            if self._sequence_field not in self._fields or not self._fields[self._sequence_field].store:
-                raise ValidationError(_('%s is not a stored field', self._sequence_field))
-            where_string, param = self._get_last_sequence_domain(relaxed)
-            if self.id or self.id.origin:
-                where_string += " AND id != %(id)s "
-                param['id'] = self.id or self.id.origin
-
-            query = """
-                        UPDATE {table} SET write_date = write_date WHERE id = (
-                            SELECT id FROM {table}
-                            {where_string}
-                            AND sequence_prefix = (SELECT sequence_prefix FROM {table} {where_string} ORDER BY id DESC LIMIT 1)
-                            ORDER BY sequence_number DESC
-                            LIMIT 1
-                        )
-                        RETURNING {field};
-                    """.format(
-                table=self._table,
-                where_string=where_string,
-                field=self._sequence_field,
-            )
-
-            self.flush([self._sequence_field, 'sequence_number', 'sequence_prefix'])
-            self.env.cr.execute(query, param)
-            return (self.env.cr.fetchone() or [None])[0]
+            return super(AccountMove, self)._get_last_sequence(relaxed=relaxed)
 
         self.ensure_one()
         if (
@@ -606,108 +688,13 @@ class AccountMove(models.Model):
         if (
             self.l10n_latam_use_documents
             and self.is_ecf_invoice
-            and values.get("type") in ("out_refund", "in_refund")
+            and values.get("move_type") in ("out_refund", "in_refund")
         ):
             values["l10n_latam_document_type_id"] = self.env.ref(
                 "l10n_do_accounting.ecf_credit_note_client"
             ).id
 
         return super(AccountMove, self).new(values, origin, ref)
-
-    @api.depends("posted_before", "state", "journal_id", "date")
-    def _compute_name(self):
-        #region l10n_latam_invoice_document
-        """ Change the way that the use_document moves name is computed:
-
-        * If move use document but does not have document type selected then name = '/' to do not show the name.
-        * If move use document and are numbered manually do not compute name at all (will be set manually)
-        * If move use document and is in draft state and has not been posted before we restart name to '/' (this is
-           when we change the document type) """
-        without_doc_type = self.filtered(lambda x: x.journal_id.l10n_latam_use_documents and not x.l10n_latam_document_type_id)
-        manual_documents = self.filtered(lambda x: x.journal_id.l10n_latam_use_documents and x.l10n_latam_manual_document_number)
-        (without_doc_type + manual_documents.filtered(lambda x: not x.name or x.name and x.state == 'draft' and not x.posted_before)).name = '/'
-        # if we change document or journal and we are in draft and not posted, we clean number so that is recomputed in super
-        self.filtered(
-            lambda x: x.journal_id.l10n_latam_use_documents and x.l10n_latam_document_type_id
-            and not x.l10n_latam_manual_document_number and x.state == 'draft' and not x.posted_before).name = '/'
-
-        # endregion
-        # region account
-        def journal_key(move):
-            return (move.journal_id, move.journal_id.refund_sequence and move.move_type)
-
-        def date_key(move):
-            return (move.date.year, move.date.month)
-
-        grouped = defaultdict(  # key: journal_id, move_type
-            lambda: defaultdict(  # key: first adjacent (date.year, date.month)
-                lambda: {
-                    'records': self.env['account.move'],
-                    'format': False,
-                    'format_values': False,
-                    'reset': False
-                }
-            )
-        )
-        self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
-        highest_name = self[0]._get_last_sequence() if self else False
-        # Group the moves by journal and month
-        for move in self:
-            if not highest_name and move == self[0] and not move.posted_before:
-                # In the form view, we need to compute a default sequence so that the user can edit
-                # it. We only check the first move as an approximation (enough for new in form view)
-                pass
-            elif (move.name and move.name != '/') or move.state != 'posted':
-                try:
-                    if not move.posted_before:
-                        move._constrains_date_sequence()
-                    # Has already a name or is not posted, we don't add to a batch
-                    continue
-                except ValidationError:
-                    # Has never been posted and the name doesn't match the date: recompute it
-                    pass
-            group = grouped[journal_key(move)][date_key(move)]
-            if not group['records']:
-                # Compute all the values needed to sequence this whole group
-                move._set_next_sequence()
-                group['format'], group['format_values'] = move._get_sequence_format_param(move.name)
-                group['reset'] = move._deduce_sequence_number_reset(move.name)
-            group['records'] += move
-
-        # Fusion the groups depending on the sequence reset and the format used because `seq` is
-        # the same counter for multiple groups that might be spread in multiple months.
-        final_batches = []
-        for journal_group in grouped.values():
-            journal_group_changed = True
-            for date_group in journal_group.values():
-                if (journal_group_changed or final_batches[-1]['format'] != date_group['format'] or dict(final_batches[-1]['format_values'], seq=0) != dict(date_group['format_values'], seq=0)):
-                    final_batches += [date_group]
-                    journal_group_changed = False
-                elif date_group['reset'] == 'never':
-                    final_batches[-1]['records'] += date_group['records']
-                elif (date_group['reset'] == 'year' and final_batches[-1]['records'][0].date.year == date_group['records'][0].date.year):
-                    final_batches[-1]['records'] += date_group['records']
-                else:
-                    final_batches += [date_group]
-
-        # Give the name based on previously computed values
-        for batch in final_batches:
-            for move in batch['records']:
-                move.name = batch['format'].format(**batch['format_values'])
-                batch['format_values']['seq'] += 1
-            batch['records']._compute_split_sequence()
-
-        self.filtered(lambda m: not m.name).name = '/'
-        # endregion
-        #region l10n_do_accounting
-        for move in self.filtered(
-            lambda x: x.country_code == "DO"
-            and x.l10n_latam_document_type_id
-            and not x.l10n_latam_manual_document_number
-            and not x.l10n_do_enable_first_sequence
-        ):
-            move.with_context(is_l10n_do_seq=True)._set_next_sequence()
-        #endregion
 
     def _get_sequence_format_param(self, previous):
 
@@ -730,40 +717,27 @@ class AccountMove(models.Model):
         self.ensure_one()
 
         if not self._context.get("is_l10n_do_seq", False):
-            self.ensure_one()
-            last_sequence = self._get_last_sequence()
-            new = not last_sequence
-            if new:
-                last_sequence = self._get_last_sequence(relaxed=True) or self._get_starting_sequence()
+            return super(AccountMove, self)._set_next_sequence()
 
-            format, format_values = self._get_sequence_format_param(last_sequence)
-            if new:
-                # format_values['seq'] = 0
-                format_values['year'] = self[self._sequence_date_field].year % (10 ** format_values['year_length'])
-                format_values['month'] = self[self._sequence_date_field].month
-            format_values['seq'] = format_values['seq'] + 1
+        last_sequence = self._get_last_sequence()
+        new = not last_sequence
+        if new:
+            last_sequence = (
+                self._get_last_sequence(relaxed=True) or self._get_starting_sequence()
+            )
 
-            self[self._sequence_field] = format.format(**format_values)
-            self._compute_split_sequence()
-        else:
-            last_sequence = self._get_last_sequence()
-            new = not last_sequence
-            if new:
-                last_sequence = (
-                    self._get_last_sequence(relaxed=True) or self._get_starting_sequence()
-                )
+        format, format_values = self._get_sequence_format_param(last_sequence)
+        if new:
+            format_values["seq"] = 0
+        format_values["seq"] = format_values["seq"] + 1
 
-            format, format_values = self._get_sequence_format_param(last_sequence)
-            # if new:
-            #     format_values["seq"] = 0
-            format_values["seq"] = format_values["seq"] + 1
-
+        if self.state != "draft":
             self[
                 self._l10n_do_sequence_field
             ] = self.l10n_latam_document_type_id._format_document_number(
                 format.format(**format_values)
             )
-            self._compute_split_sequence()
+        self._compute_split_sequence()
 
     def _get_name_invoice_report(self):
         self.ensure_one()

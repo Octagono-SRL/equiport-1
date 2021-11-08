@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_saleorder_document_equiport_inherit" inherit_id="sale.report_saleorder_document">
+            <!--            <xpath expr="//div[hasclass('page')]/div[hasclass('oe_structure')]]" position="replace"/>-->
+
+            <xpath expr="//div[hasclass('page')]/h2" position="attributes">
+                <attribute name="style">
+                    font-size: 1.5rem;
+                </attribute>
+            </xpath>
+
+            <xpath expr="//t[@t-set='address']/p[@t-if='doc.partner_id.vat']" position="attributes">
+                <attribute name="class">
+                    m-0
+                </attribute>
+            </xpath>
+            <xpath expr="//t[@t-set='address']" position="inside">
+                <t t-set="child_id" t-value="doc.partner_id.child_ids.filtered(lambda s: s.type == 'contact')"/>
+                <p t-if="doc.partner_id.phone" class="m-0">Teléfono: <span t-field="doc.partner_id.vat"/></p>
+                <p t-if="doc.partner_id.email" class="m-0">Email: <span t-field="doc.partner_id.email"/></p>
+                <p t-if="doc.partner_id.company_type == 'company' and child_id" class="m-0">Contacto: <span t-esc="child_id[0].name"/></p>
+            </xpath>
+
+            <xpath expr="//div[hasclass('page')]/div[@id='informations']"
+                   position="inside">
+                    <t t-if="doc.currency_id.name == 'DOP'">
+                        <div class="col-auto col-3 mw-100 mb-2">
+                            <strong>Moneda:</strong>
+                            <p class="m-0"><span t-esc="doc.currency_id.name"/></p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="col-auto col-3 mw-100 mb-2">
+                            <strong>Moneda:</strong>
+                            <p class="m-0"><span t-esc="doc.currency_id.name"/></p>
+                        </div>
+                        <div class="col-auto col-3 mw-100 mb-2">
+                            <strong>Tasa de cambio:</strong>
+                            <p class="m-0"><span t-esc="doc.currency_id.currency_rate" t-options='{"widget": "float", "precision": 2}'/></p>
+                        </div>
+                    </t>
+            </xpath>
+
+            <xpath expr="//div[hasclass('page')]/div[@id='informations']/div[@t-if='doc.user_id.name']"
+                   position="after">
+                <div t-if="is_rental_order" class="col-auto col-3 mw-100 mb-2">
+                    <strong>Concepto:</strong>
+                    <p class="m-0">Alquiler</p>
+                </div>
+                <div t-else="" class="col-auto col-3 mw-100 mb-2">
+                    <strong>Concepto:</strong>
+                    <p class="m-0">Venta</p>
+                </div>
+            </xpath>
+
+            <xpath expr="//div[hasclass('page')]" position="inside">
+                <p id="print_date">
+                    Fecha de impresión:
+                    <span t-esc="datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')"/>
+                </p>
+            </xpath>
+
+            <xpath expr="//div[hasclass('page')]/p[@id='fiscal_position_remark']" position="after">
+                <div class="text-center" style="padding-bottom:10rem;margin-top:15rem">
+                    <table border="0" width="100%" style="border: none; border-collapse: collapse;">
+                        <tr style="border: none;">
+                            <th style="border: none;">_________________________________________________</th>
+                            <th style="border: none;"></th>
+                            <th style="border: none;">_________________________________________________</th>
+                            <th style="border: none;"></th>
+                            <th style="border: none;">_________________________________________________</th>
+                        </tr>
+                        <tr style="border: none;">
+                            <td style="border: none;">Autorizado por</td>
+                            <td style="border: none;"></td>
+                            <td style="border: none;">Despachado Por</td>
+                            <td style="border: none;"></td>
+                            <td style="border: none;">Firma De Cliente</td>
+                        </tr>
+                    </table>
+                </div>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

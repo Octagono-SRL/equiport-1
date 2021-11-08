@@ -8,6 +8,7 @@
                 <tree string="Marca de unidad">
                     <field name="brand_id"/>
                     <field name="name"/>
+                    <field name="active" widget="boolean_toggle"/>
                 </tree>
             </field>
         </record>
@@ -17,6 +18,15 @@
             <field name="model">unit.model</field>
             <field name="arch" type="xml">
                 <form>
+                    <div class="oe_button_box" name="expense_button_box">
+                        <button name="toggle_active"
+                                type="object"
+                                confirm="(Un)archiving a project automatically (un)archives its tasks and issues. Do you want to proceed?"
+                                class="oe_stat_button"
+                                icon="fa-archive">
+                            <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
                     <sheet>
                         <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
                                 attrs="{'invisible': [('active', '=', True)]}"/>
@@ -48,6 +58,7 @@
                 <tree string="Marca de unidad" editable="bottom">
                     <field name="name"/>
                     <field name="unit_type"/>
+                    <field name="active" widget="boolean_toggle"/>
                 </tree>
             </field>
         </record>
@@ -57,7 +68,18 @@
             <field name="model">unit.model.brand</field>
             <field name="arch" type="xml">
                 <form>
+                    <div class="oe_button_box" name="expense_button_box">
+                        <button name="toggle_active"
+                                type="object"
+                                confirm="(Un)archiving a project automatically (un)archives its tasks and issues. Do you want to proceed?"
+                                class="oe_stat_button"
+                                icon="fa-archive">
+                            <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
                     <sheet>
+                        <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
+                                attrs="{'invisible': [('active', '=', True)]}"/>
                         <group>
                             <div>
                                 <field name="image_128" widget="image" class="oe_avatar"/>
@@ -113,6 +135,7 @@
             <field name="arch" type="xml">
                 <tree string="Marca de unidad" editable="bottom">
                     <field name="name"/>
+                    <field name="active" widget="boolean_toggle"/>
                 </tree>
             </field>
         </record>
@@ -122,7 +145,18 @@
             <field name="model">tool.brand</field>
             <field name="arch" type="xml">
                 <form>
+                    <div class="oe_button_box" name="expense_button_box">
+                        <button name="toggle_active"
+                                type="object"
+                                confirm="(Un)archiving a project automatically (un)archives its tasks and issues. Do you want to proceed?"
+                                class="oe_stat_button"
+                                icon="fa-archive">
+                            <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
                     <sheet>
+                        <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
+                                attrs="{'invisible': [('active', '=', True)]}"/>
                         <group>
                             <div>
                                 <field name="image_128" widget="image" class="oe_avatar"/>
@@ -179,6 +213,18 @@
             <field name="view_mode">kanban,tree,form</field>
         </record>
 
+        <record model="ir.actions.act_window" id="action_unit_model_type">
+            <field name="name">Tipo de Unidad</field>
+            <field name="res_model">unit.model.type</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_unit_model_size">
+            <field name="name">Tamaño de Unidad</field>
+            <field name="res_model">unit.model.size</field>
+            <field name="view_mode">tree</field>
+        </record>
+
         <record model="ir.actions.act_window" id="action_tool_brand">
             <field name="name">Marca de Herramientas</field>
             <field name="res_model">tool.brand</field>
@@ -197,10 +243,22 @@
                   groups="stock.group_stock_manager"
                   sequence="59"/>
 
+        <menuitem id="unit_model_type_menuitem"
+                  action='equiport_custom.action_unit_model_type'
+                  parent="stock.menu_product_in_config_stock"
+                  groups="stock.group_stock_manager"
+                  sequence="61"/>
+
+        <menuitem id="unit_model_size_menuitem"
+                  action='equiport_custom.action_unit_model_size'
+                  parent="stock.menu_product_in_config_stock"
+                  groups="stock.group_stock_manager"
+                  sequence="62"/>
+
         <menuitem id="unit_model_brand_menuitem"
                   action="equiport_custom.action_unit_model_brand"
                   parent="stock.menu_product_in_config_stock"
                   groups="stock.group_stock_manager"
-                  sequence="61"/>
+                  sequence="63"/>
     </data>
 </odoo>

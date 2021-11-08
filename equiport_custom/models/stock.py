@@ -68,6 +68,15 @@ class StockPicking(models.Model):
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 
+    @api.onchange('is_gate_service', 'name', 'partner_id')
+    def set_domain_gate_picking_type(self):
+        if self.is_gate_service:
+            return {
+                'domain': {
+                    'picking_type_id': [('is_gate_operation', '=', True)]
+                }
+            }
+
     @api.constrains('vat_driver')
     def nif_length_constrain(self):
         if (self.is_rental and self.vat_driver and len(
@@ -186,23 +195,30 @@ class StockPicking(models.Model):
     def request_access(self):
         sale_id = self.sale_id
         if self.picking_type_code == 'outgoing' and sale_id and not self.is_gate_service:
-            if sale_id.partner_id.allowed_credit:
-                raise ValidationError(f"El documento de origen no ha sido facturado. "
-                                      f"Documento de referencia **{sale_id.name}**.")
-            else:
+            if not sale_id.partner_id.allowed_credit:
                 if len(sale_id.invoice_ids) < 1:
                     raise ValidationError(f"El documento de origen no ha sido facturado. "
                                           f"Documento de referencia **{sale_id.name}**.")
                 else:
                     checks = []
+                    pay_checks = []
                     for inv in sale_id.invoice_ids:
                         if inv.state != 'posted':
                             checks.append(True)
+                        elif inv.payment_state != 'paid':
+                            pay_checks.append(True)
                         else:
+                            pay_checks.append(False)
                             checks.append(False)
                     if all(checks):
                         raise ValidationError(f"El documento de origen no tiene facturas confirmadas. "
                                               f"Documento de referencia **{sale_id.name}**.")
+                    elif all(pay_checks):
+                        raise ValidationError(f"El documento de origen no ha sido totalmente pagado. "
+                                              f"Documento de referencia **{sale_id.name}**.")
+
+                # raise ValidationError(f"El documento de origen no ha sido facturado. "
+                #                       f"Documento de referencia **{sale_id.name}**.")
 
         report_binary = self.generate_report_file(self.id)
         attachment_name = "SA_" + self.name
@@ -287,6 +303,12 @@ class StockWarehouse(models.Model):
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string="Vehiculo Almacen")
 
 
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    is_gate_operation = fields.Boolean(related='warehouse_id.is_gate_stock', string="Operacion Gate In / Gate Out")
+
+
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
@@ -298,6 +320,18 @@ class StockProductionLot(models.Model):
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
     assigned_tire = fields.Boolean(string="esta asignado?")
+    positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
+    unit_type = fields.Selection(related='product_id.unit_type')
+    unit_year = fields.Char(string="Año de unidad")
+    unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
+
+    @api.depends('product_qty', 'product_id')
+    def _compute_positive_qty(self):
+        for rec in self:
+            if rec.product_qty > 0:
+                rec.positive_qty = True
+            else:
+                rec.positive_qty = False
 
     # Gate service
     is_gate_product = fields.Boolean(string="Servicio Gate In / Gate Out", compute='compute_gate_product')

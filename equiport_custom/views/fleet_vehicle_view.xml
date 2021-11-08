@@ -36,14 +36,14 @@
                                     icon="fa-tachometer"
                                     context="{'xml_id':'fleet_unit_hourmeter_action', 'xml_origin': 'hourmeter'}"
                                     help="Muestra los registros de Horometro de la unidad"
-                                    attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
                                 <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button"
                                     icon="fa-circle"
                                     context="{'xml_id':'fleet_vehicle_log_tires_action', 'xml_origin': 'tires'}"
                                     help="Historial de asignacion de neumaticos"
-                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis', 'vehicle'])]}">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis', 'vehicle', 'utility'])]}">
                                 <field name="tires_count" widget="statinfo" string="Neumaticos"/>
                             </button>
                         </div>
@@ -60,7 +60,7 @@
                         <!--                        Modificacion modelo y registro unidad-->
 
                         <field name="company_id" invisible="1"/>
-                        <div class="oe_title" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                        <div class="oe_title" attrs="{'invisible': [('unit_type', 'not in', ['vehicle', 'utility'])]}">
                             <label for="model_id" class="oe_edit_only" options="{'no_create': 1, 'no_edit': 1}"/>
                             <h1>
                                 <field name="model_id" placeholder="e.g. Model S"
@@ -79,7 +79,7 @@
                             </group>
                         </div>
 
-                        <div class="oe_title" attrs="{'invisible': [('unit_type', '=', 'vehicle')]}">
+                        <div class="oe_title" attrs="{'invisible': [('unit_type', 'in', ['vehicle', 'utility'])]}">
                             <label for="unit_model_id" class="oe_edit_only"/>
                             <h1>
                                 <field name="unit_model_id" placeholder="e.g. Model S"
@@ -140,12 +140,12 @@
                             </group>
 
                             <group string="Unidad" attrs="{'invisible': [('unit_type', '=', 'vehicle')]}">
-                                <label for="hourmeter" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}"/>
-                                <div class="o_row" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
+                                <label for="hourmeter" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
+                                <div class="o_row" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
                                     <field name="hourmeter"/>
                                     <field name="hourmeter_unit"/>
                                 </div>
-                                <field name="hourmeter_hr_cost" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}"/>
+                                <field name="hourmeter_hr_cost" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
                                 <field name="acquisition_date"/>
                                 <field name="vin_sn" string="Número de parte"/>
                                 <field name="car_value" widget="monetary"/>
@@ -163,25 +163,25 @@
                                 <field name="doors"
                                        attrs="{'invisible': ['|', ('vehicle_type', '!=', 'car'), ('unit_type', '!=', 'vehicle')]}"/>
                                 <field name="color"/>
-                                <field name="container_type"
+                                <field name="container_type_id"
                                        attrs="{'invisible':[('unit_type', '!=', 'container')]}"/>
-                                <field name="unit_size" widget="selection_badge"
+                                <field name="unit_size_id"
                                        attrs="{'invisible':[('unit_type', 'not in', ['container', 'chassis'])]}"/>
                                 <field name="model_year"/>
                             </group>
                             <group string="Motor"
-                                   attrs="{'invisible': [('vehicle_type', '!=', 'car'), '|',('unit_type', '=', 'vehicle'),('unit_type', '!=', 'gen_set')]}">
+                                   attrs="{'invisible': [('vehicle_type', '!=', 'car'), '|',('unit_type', '=', 'vehicle'),('unit_type', 'not in', ['gen_set', 'utility'])]}">
                                 <field name="transmission" attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}"/>
                                 <field name="fuel_type"/>
                                 <label for="performance"/>
                                 <div class="o_row" name="performance">
                                     <field name="performance"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    km/g</span><span attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">g/Hr</span>
+                                    km/g</span><span attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">g/Hr</span>
                                 </div>
                                 <label for="co2"/>
                                 <div class="o_row" name="co2">
                                     <field name="co2"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    g/km</span><span attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">g/Hr</span>
+                                    g/km</span><span attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">g/Hr</span>
                                 </div>
                                 <field name="horsepower"/>
                                 <field name="horsepower_tax" widget="monetary"/>
@@ -346,8 +346,8 @@
                         <field name="odometer"/>
                         <field name="odometer_unit"/>
                     </div>
-                    <label for="hourmeter" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}"/>
-                    <div class="o_row" attrs="{'invisible': [('unit_type', '!=', 'gen_set')]}">
+                    <label for="hourmeter" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
+                    <div class="o_row" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
                         <field name="hourmeter"/>
                         <field name="hourmeter_unit"/>
                     </div>

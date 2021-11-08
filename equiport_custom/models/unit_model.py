@@ -12,7 +12,7 @@ class UnitModel(models.Model):
                                help='')
     unit_type = fields.Selection(related='brand_id.unit_type', string="Tipo de unidad")
     image_128 = fields.Image(related='brand_id.image_128', readonly=True)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(default=True, string="Activo")
     # unit_type = fields.Selection([('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis')], default='container', required=True, string="Tipo de unidad")
 
     @api.depends('name', 'brand_id')
@@ -35,6 +35,7 @@ class UnitModelBrand(models.Model):
     image_128 = fields.Image("Logo", max_width=128, max_height=128)
     model_count = fields.Integer(compute="_compute_model_count", string="", store=True)
     model_ids = fields.One2many('unit.model', 'brand_id')
+    active = fields.Boolean(default=True, string="Activo")
 
     @api.depends('model_ids')
     def _compute_model_count(self):
@@ -49,5 +50,22 @@ class ToolBrand(models.Model):
 
     name = fields.Char('Nombre', required=True)
     image_128 = fields.Image("Logo", max_width=128, max_height=128)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(default=True, string="Activo")
 
+
+class UnitType(models.Model):
+    _name = 'unit.model.type'
+
+    name = fields.Char(string='Tipo de unidad', required=True)
+    active = fields.Boolean(default=True, string="Activo")
+
+
+class UnitSize(models.Model):
+    _name = 'unit.model.size'
+
+    unit_type = fields.Selection([('container', 'Contenedor'), ('chassis', 'Chasis')],
+                                 default='container', string="Tipo de unidad")
+
+    name = fields.Char(string='Tamaño de unidad', required=True)
+
+    active = fields.Boolean(default=True, string="Activo")

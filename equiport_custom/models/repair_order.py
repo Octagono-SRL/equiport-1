@@ -25,6 +25,10 @@ class RepairOrder(models.Model):
     product_fleet_name = fields.Char(related='product_id.display_name', string="Nombre producto flota")
     is_fuel_replenishment = fields.Boolean(string="Reposición de combustible", compute='compute_is_fuel_replenishment', store=True)
 
+    order_type = fields.Selection([('maintenance_fleet', 'Mantenimiento Flota'),
+                                   ('repair_fleet', 'Reparación Flota'),
+                                   ('repair', 'Reparación')], string="Tipo de Servicio", compute="compute_category_order_type", store=True)
+
     @api.depends('is_fleet_origin', 'operations')
     def compute_is_fuel_replenishment(self):
         fuel_product = self.env.ref('equiport_custom.fuel_product')
@@ -34,8 +38,18 @@ class RepairOrder(models.Model):
             else:
                 rec.is_fuel_replenishment = False
 
+    @api.depends('vehicle_service_log_id')
+    def compute_category_order_type(self):
+        for rec in self:
+            if rec.vehicle_service_log_id:
+                if rec.vehicle_service_log_id.category == 'maintenance':
+                    rec.order_type = 'maintenance_fleet'
+                elif rec.vehicle_service_log_id.category == 'repair':
+                    rec.order_type = 'repair_fleet'
+            else:
+                rec.order_type = 'repair'
 
-    # endregion
+# endregion
 
     # Gathering repair info
     inspection_date = fields.Date(string="Fecha inspección")

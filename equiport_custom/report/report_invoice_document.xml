@@ -13,12 +13,135 @@
                         </td>
                     </tr>
                     <tr style="">
-                       <td>Itbis Ret.</td>
+                        <td>Itbis Ret.</td>
                         <td class="text-right o_price_total">
                             <span class="text-nowrap" t-esc="o.negative_amount_tax"/>
                         </td>
                     </tr>
                 </t>
+            </xpath>
+
+            <xpath expr="//div[hasclass('page')]/div[hasclass('clearfix')]/div[@id='total']/div/table/tr[hasclass('o_subtotal')]" position="before">
+                <tr class="border-black o_subtotal" style="">
+                    <td><strong>Subtotal sin descuento</strong></td>
+                    <t t-set="lines" t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True)"/>
+                    <t t-set="net_total" t-value="0"/>
+                    <t t-foreach="lines" t-as="line">
+                        <t t-set="net_total" t-value="net_total + line.price_unit"/>
+                    </t>
+                    <td class="text-right">
+                        <span t-esc="o.currency_id.symbol"/> <span t-esc="net_total"/>
+                    </td>
+                </tr>
+                <tr class="border-black o_subtotal" style="">
+                    <td><strong>Descuento</strong></td>
+                    <t t-set="discount_lines" t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True).filtered(lambda l: l.discount > 0)"/>
+                    <t t-set="discount" t-value="0"/>
+                    <t t-foreach="discount_lines" t-as="line">
+                        <t t-set="discount" t-value="discount + ((line.discount / 100) * line.price_unit)"/>
+                    </t>
+                    <td class="text-right">
+                        <span t-esc="o.currency_id.symbol"/> <span t-esc="discount"/>
+                    </td>
+                </tr>
+            </xpath>
+
+            <xpath expr="//div[hasclass('page')]/div[@id='qrcode']" position="after">
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <div class="text-center" style="padding-bottom:60px">
+                    <table border="0" width="100%" style="border: none; border-collapse: collapse;">
+                        <tr style="border: none;">
+                            <th style="border: none;">__________________________________________________</th>
+                            <th style="border: none;"></th>
+                            <th style="border: none;">__________________________________________________</th>
+                        </tr>
+                        <tr style="border: none;">
+                            <td style="border: none;">PREPARADO POR</td>
+                            <td style="border: none;"></td>
+                            <td style="border: none;">RECIBO CONFORME</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td style="border: none;"><span t-esc="o.invoice_user_id.name"/></td>
+                            <td style="border: none;"></td>
+                            <td style="border: none;">Cliente/nombre, Cédula/Sello</td>
+                        </tr>
+                    </table>
+                </div>
+            </xpath>
+        </template>
+
+        <template id="report_invoice_document_l10n_equiport_inherited"
+                  inherit_id="l10n_do_accounting.report_invoice_document_inherited">
+            <xpath expr="//div[@id='receiver_info']" position="replace">
+                <div id="receiver_info" class="row mt32 mb32">
+                    <t t-set="vat_len" t-value="len(o.partner_id.vat) if o.partner_id.vat else 0"/>
+                    <div class="col-auto col-7 mw-100 mb-2">
+                        <strong>
+                            Cliente
+                        </strong>
+                        <br/>
+                        <strong>
+                            <t t-if="vat_len == 9">RNC:</t>
+                            <t t-elif="vat_len == 11">Cédula:</t>
+                            <t t-else="">ID Cliente:</t>
+                        </strong>
+                        <span class="m-0" t-esc="o.partner_id.vat or ''"/>
+                        <br/>
+                        <strong>
+                            <t t-if="vat_len == 9">Razón Social:</t>
+                            <t t-else="">Nombre:</t>
+                        </strong>
+                        <t t-if="o.partner_id.is_company or not o.partner_id.parent_id">
+                            <span class="m-0" t-field="o.partner_id.name"/>
+                            <br/>
+                            <t t-if="o.partner_id.phone">
+                                <strong>Tel.:</strong>
+                                <span t-field="o.partner_id.phone"/>
+                                <t t-if="o.partner_id.mobile">
+                                    <span> / </span>
+                                </t>
+                            </t>
+                            <t t-if="o.partner_id.mobile">
+                                <strong>Cel.:</strong>
+                                <span t-field="o.partner_id.mobile" widget="phone"/>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <t t-set="commercial_partner_id"
+                               t-value="o.partner_id.commercial_partner_id"/>
+                            <span class="m-0" t-field="commercial_partner_id.name"/>
+                            <br/>
+                            <strong>Contacto:</strong>
+                            <span t-field="o.partner_id.name"/>
+                            <br/>
+                            <t t-if="commercial_partner_id.phone">
+                                <strong>Tel.:</strong>
+                                <span t-field="commercial_partner_id.phone"/>
+                                <t t-if="commercial_partner_id.mobile">
+                                    <span>/</span>
+                                </t>
+                            </t>
+                            <t t-if="commercial_partner_id.mobile">
+                                <strong>Cel.:</strong>
+                                <span t-field="commercial_partner_id.mobile"
+                                      widget="phone"/>
+                            </t>
+                        </t>
+                        <span t-if="o.partner_id.street" class="m-0" t-field="o.partner_id"
+                              t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                    </div>
+                    <div class="col-auto col-2 mw-100 mb-2" t-if="o.invoice_origin" name="origin">
+                        <strong>Origen:</strong>
+                        <p class="m-0" t-field="o.invoice_origin"/>
+                    </div>
+                    <div class="col-auto col-2 mw-100 mb-2" t-if="o.ref" name="reference">
+                        <strong>Referencia:</strong>
+                        <p class="m-0" t-field="o.ref"/>
+                    </div>
+                </div>
             </xpath>
         </template>
 

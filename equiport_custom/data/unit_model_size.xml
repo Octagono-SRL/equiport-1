@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="container_unit_model_size_20" model="unit.model.size">
+            <field name="name">20</field>
+            <field name="unit_type">container</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="container_unit_model_size_40" model="unit.model.size">
+            <field name="name">40</field>
+            <field name="unit_type">container</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="container_unit_model_size_45" model="unit.model.size">
+            <field name="name">45</field>
+            <field name="unit_type">container</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="chassis_unit_model_size_20" model="unit.model.size">
+            <field name="name">20</field>
+            <field name="unit_type">chassis</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="chassis_unit_model_size_40" model="unit.model.size">
+            <field name="name">40</field>
+            <field name="unit_type">chassis</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="chassis_unit_model_size_45" model="unit.model.size">
+            <field name="name">45</field>
+            <field name="unit_type">chassis</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>
