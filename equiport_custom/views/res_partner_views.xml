@@ -117,6 +117,15 @@
 
                 </xpath>
 
+            </field>
+        </record>
+
+        <record id="partner_view_button_subscriptions_count_equiport_inherit" model="ir.ui.view">
+            <field name="name">partner.view.button.subscriptions_count.equiport.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="sale_subscription.res_partner_view_inherit_sale_subscription"/>
+            <field name="arch" type="xml">
+
                 <field name="subscription_count" position="attributes">
                     <attribute name="string">Renta</attribute>
                 </field>
