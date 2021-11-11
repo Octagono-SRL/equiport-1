@@ -507,7 +507,7 @@ class DgiiReport(models.Model):
                     'identification_type': rnc_ced[1] if rnc_ced else False,
                     'expense_type': inv.l10n_do_expense_type
                     if inv.l10n_do_expense_type else False,
-                    'fiscal_invoice_number': inv.l10n_latam_document_number,
+                    'fiscal_invoice_number': inv.l10n_do_fiscal_number,
                     'modified_invoice_number': inv.l10n_do_origin_ncf if
                     inv.move_type == 'in_refund' else False,
                     'invoice_date': inv.invoice_date,
@@ -838,7 +838,7 @@ class DgiiReport(models.Model):
                     'line': line,
                     'rnc_cedula': rnc_ced[0] if rnc_ced else False,
                     'identification_type': rnc_ced[1] if rnc_ced else False,
-                    'fiscal_invoice_number': inv.l10n_latam_document_number,
+                    'fiscal_invoice_number': inv.l10n_do_fiscal_number,
                     'modified_invoice_number':
                         inv.l10n_do_origin_ncf if inv.l10n_do_origin_ncf and
                         inv.l10n_do_origin_ncf[-10:-8] in ['01', '02', '14', '15'] else
@@ -966,7 +966,7 @@ class DgiiReport(models.Model):
                     'dgii_report_id': rec.id,
                     'line': line,
                     'invoice_partner_id': inv.partner_id.id,
-                    'fiscal_invoice_number': inv.l10n_latam_document_number,
+                    'fiscal_invoice_number': inv.l10n_do_fiscal_number,
                     'invoice_date': inv.invoice_date,
                     'anulation_type': inv.l10n_do_cancellation_type,
                     'invoice_id': inv.id
