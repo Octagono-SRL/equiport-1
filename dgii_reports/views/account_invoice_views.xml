@@ -10,7 +10,7 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='other_info']" position="after">
-                <page name="dgii_fields" string="DGII" groups="account.group_account_user" attrs="{'invisible':[('move_type', 'in',['in_invoice', 'in_refund'])]}">
+                <page name="dgii_fields" string="DGII" groups="account.group_account_user" attrs="{'invisible':[('move_type', 'not in',['out_invoice', 'out_refund'])]}">
                     <group>
                         <group col="3" string="Withholding" groups="account.group_account_manager">
                             <field name="payment_date" string="Withholding date"/>
@@ -61,7 +61,7 @@
                        attrs="{'invisible': [('is_exterior', '=', False)], 'readonly': [('service_type', '=', False)], 'required': [('service_type', '!=', False)]}"/>
             </xpath>
             <xpath expr="//page[@name='other_info']" position="after">
-                <page name="dgii_fields" string="DGII" groups="account.group_account_user" attrs="{'invisible':[('move_type', 'in',['out_invoice', 'out_refund'])]}">
+                <page name="dgii_fields" string="DGII" groups="account.group_account_user" attrs="{'invisible':[('move_type', 'not in',['in_invoice', 'in_refund'])]}">
                     <group>
                         <group col="3" string="Taxes" groups="account.group_account_manager">
                             <field name="invoiced_itbis" string="Invoiced ITBIS"/>
