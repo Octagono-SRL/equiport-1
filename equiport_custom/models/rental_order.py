@@ -68,7 +68,8 @@ class RentalOrder(models.Model):
 
                 # Asignando fecha de subcripcion
                 for line in lines:
-                    next_date = datetime.datetime.combine(subscription.recurring_next_date, line.return_date.time())
+                    use_time = line.return_date.time() if line.return_date else datetime.datetime.now().time()
+                    next_date = datetime.datetime.combine(subscription.recurring_next_date, use_time)
                     line.write({
                         'return_date': next_date,
                     })
@@ -128,7 +129,8 @@ class RentalOrder(models.Model):
                 })
                 # Asignando fecha de subcripcion
                 for line in lines:
-                    next_date = datetime.datetime.combine(subscription.recurring_next_date, line.return_date.time())
+                    use_time = line.return_date.time() if line.return_date else datetime.datetime.now().time()
+                    next_date = datetime.datetime.combine(subscription.recurring_next_date, use_time)
                     line.write({
                         'return_date': next_date,
                     })
