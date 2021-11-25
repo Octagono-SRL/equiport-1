@@ -563,9 +563,11 @@ class DgiiReport(models.Model):
 
         p_date = payment_id.payment_date
         i_date = invoice_id.invoice_date
-
-        return True if (p_date.year <= i_date.year) and (
-            p_date.month <= i_date.month) else False
+        if p_date and i_date:
+            return True if (p_date.year <= i_date.year) and (
+                p_date.month <= i_date.month) else False
+        else:
+            return False
 
     def _get_sale_payments_forms(self, invoice_id):
         payments_dict = self._get_payments_dict()
