@@ -21,10 +21,12 @@
                 </t>
             </xpath>
 
-            <xpath expr="//div[hasclass('page')]/div[hasclass('clearfix')]/div[@id='total']/div/table/tr[hasclass('o_subtotal')]" position="before">
+            <xpath expr="//div[hasclass('page')]/div[hasclass('clearfix')]/div[@id='total']/div/table/tr[hasclass('o_subtotal')]"
+                   position="before">
                 <tr class="border-black o_subtotal" style="">
                     <td><strong>Subtotal sin descuento</strong></td>
-                    <t t-set="lines" t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True)"/>
+                    <t t-set="lines"
+                       t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True)"/>
                     <t t-set="net_total" t-value="0"/>
                     <t t-foreach="lines" t-as="line">
                         <t t-set="net_total" t-value="net_total + line.price_unit"/>
@@ -35,7 +37,8 @@
                 </tr>
                 <tr class="border-black o_subtotal" style="">
                     <td><strong>Descuento</strong></td>
-                    <t t-set="discount_lines" t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True).filtered(lambda l: l.discount > 0)"/>
+                    <t t-set="discount_lines"
+                       t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True).filtered(lambda l: l.discount > 0)"/>
                     <t t-set="discount" t-value="0"/>
                     <t t-foreach="discount_lines" t-as="line">
                         <t t-set="discount" t-value="discount + ((line.discount / 100) * line.price_unit)"/>
@@ -46,32 +49,42 @@
                 </tr>
             </xpath>
 
-            <xpath expr="//div[hasclass('page')]/div[@id='qrcode']" position="after">
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <div class="text-center" style="padding-bottom:60px">
-                    <table border="0" width="100%" style="border: none; border-collapse: collapse;">
-                        <tr style="border: none;">
-                            <th style="border: none;">__________________________________________________</th>
-                            <th style="border: none;"></th>
-                            <th style="border: none;">__________________________________________________</th>
-                        </tr>
-                        <tr style="border: none;">
-                            <td style="border: none;">PREPARADO POR</td>
-                            <td style="border: none;"></td>
-                            <td style="border: none;">RECIBO CONFORME</td>
-                        </tr>
-                        <tr style="border: none;">
-                            <td style="border: none;"><span t-esc="o.invoice_user_id.name"/></td>
-                            <td style="border: none;"></td>
-                            <td style="border: none;">Cliente/nombre, Cédula/Sello</td>
-                        </tr>
-                    </table>
-                </div>
+        </template>
+        <template id="report_invoice_with_payments_equiport_inherit" inherit_id="account.report_invoice_with_payments">
+            <xpath expr="//t[@t-call='web.html_container']/t[@t-foreach='docs']/t[@t-set='lang']" position="before">
+                <t t-set="origin_document" t-value="'invoice'"/>
             </xpath>
         </template>
+
+
+        <template id="external_layout_boxed_equiport_inherit" inherit_id="web.external_layout_boxed">
+            <xpath expr="//div[@t-attf-class='footer o_boxed_footer o_company_#{company.id}_layout']/div[hasclass('text-center')]"
+                   position="before">
+                <t t-if="origin_document == 'invoice'">
+                    <br/>
+                    <div class="text-center" style="padding-bottom:5px;">
+                        <table border="0" width="100%" style="border: none; border-collapse: collapse;">
+                            <tr style="border: none;">
+                                <th style="border: none;">__________________________________________________</th>
+                                <th style="border: none;"></th>
+                                <th style="border: none;">__________________________________________________</th>
+                            </tr>
+                            <tr style="border: none;">
+                                <td style="border: none;">PREPARADO POR</td>
+                                <td style="border: none;"></td>
+                                <td style="border: none;">RECIBO CONFORME</td>
+                            </tr>
+                            <tr style="border: none;">
+                                <td style="border: none;"><span t-esc="o.invoice_user_id.name"/></td>
+                                <td style="border: none;"></td>
+                                <td style="border: none;">Cliente/nombre, Cédula/Sello</td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+
 
         <template id="report_invoice_document_l10n_equiport_inherited"
                   inherit_id="l10n_do_accounting.report_invoice_document_inherited">
