@@ -35,7 +35,7 @@
                 </xpath>
 
                 <header position="after">
-                    <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', '!=', 'outgoing'),('is_rental','=', True)]}">
+                    <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental','=', True)]}">
                         <button name="request_access" string="Solicitar autorización" type="object"
                                 class="oe_highlight"
                                 groups="base.group_user"
