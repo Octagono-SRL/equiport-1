@@ -375,6 +375,8 @@ class RentalOrder(models.Model):
     @api.onchange('partner_id')
     def check_rent_documents(self):
         if self.is_rental_order:
+            if not self.rental_subscription_id:
+                self.rental_template_id = self.env.ref('sale_subscription.monthly_subscription').id
             if self.partner_id and not self.partner_id.allowed_rental:
                 if not self.partner_id.commercial_register and not self.partner_id.leasing_contract:
                     return {'value': {}, 'warning': {'title': 'Contacto sin documentos',
