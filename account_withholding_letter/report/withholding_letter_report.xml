@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!--    <report-->
+<!--        string="Reporte Carta de Retención"-->
+<!--        id="withholding_letter_report"-->
+<!--        model="generate.withholding.letter.wizard"-->
+<!--        report_type="qweb-pdf"-->
+<!--        name="account_withholding_letter.account_withholding_letter_document"-->
+<!--        file="account_withholding_letter.account_withholding_letter_document"-->
+<!--    />-->
+
+    <record id="withholding_letter_report" model="ir.actions.report">
+            <field name="name">Carta de reteneción</field>
+            <field name="model">generate.withholding.letter.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">account_withholding_letter.account_withholding_letter_document</field>
+            <field name="report_file">account_withholding_letter.account_withholding_letter_document</field>
+            <field name="binding_model_id" ref="account_withholding_letter.model_generate_withholding_letter_wizard"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    <template id="account_withholding_letter_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="article">
+                    <div class="">
+                        <span t-esc="datetime.datetime.now().strftime('%d %B %Y')"/>
+                    </div>
+                    <p>Señores,</p>
+                    <p>Dirección General de Impuestos Internos</p>
+                    <br/><br/><br/>
+                    <h4 class="text-center">Certificación</h4>
+                    <br/><br/><br/>
+
+                    <p>Distinguidos Señores:</p>
+
+                    <p>
+                        En cumplimiento de las disposiciones fiscales
+                        <span t-if="o.invoice_ids[0].invoiced_itbis == o.invoice_ids[0].withholded_itbis">
+                            que de acuerdo a lo establecido en el código tributario (Ley 11-92),
+                        </span>
+                        <span t-else="">
+                            establecidas en la Normal General 02-2005 en sus articulos 3 y 5,
+                        </span>
+                        y a solicitud de la empresa <span t-esc="o.invoice_ids[0].partner_id.name"/>, con RNC
+                        <span t-esc="o.invoice_ids[0].partner_id.vat"/>
+                        tenemos a bien expedir esta certificación por concepto de retencion
+                        <t t-if="o.invoice_ids[0].income_withholding > 0">
+                            de
+                            <span t-if="o.invoice_ids[0].income_withholding > 0" t-esc="' {}% ISR '.format(round((abs(o.invoice_ids[0].income_withholding) / o.invoice_ids[0].amount_untaxed) * 100))"/>
+                            <t t-if="o.invoice_ids[0].withholded_itbis > 0">
+                                <span t-esc="'y el {}% de ITBIS '.format(round((o.invoice_ids[0].withholded_itbis / o.invoice_ids[0].invoiced_itbis) * 100))"/>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            de
+                            <t t-if="o.invoice_ids[0].withholded_itbis > 0">
+                            <span t-esc="' {}% de ITBIS '.format(round((o.invoice_ids[0].withholded_itbis / o.invoice_ids[0].invoiced_itbis) * 100))"/>
+                        </t>
+                        </t>
+<!--                        <span t-if="o.invoice_ids[0].invoiced_itbis == o.invoice_ids[0].withholded_itbis and len(o.invoice_ids[0].tax_line_ids) > 1" t-esc="o.tax_id.description.replace('-', '') + ' y el 100% del ITBIS'"/>-->
+
+                        , en sus facturas por Servicios Prestados, durante el mes de
+                        <span t-field="o.month"/> de <span t-field="o.year"/>,
+                        cuyos valores fueron declarados y pagados tal como lo establece el código.
+                    </p>
+
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th><strong>Fecha</strong></th>
+                                <th><strong>NCF</strong></th>
+                                <th class="text-right"><strong>Monto</strong></th>
+                                <th class="text-right"><strong>ITBIS</strong></th>
+                                <th class="text-right"><strong>ISR</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.invoice_ids" t-as="inv">
+                                <td>
+                                    <span t-field="inv.invoice_date"/>
+                                </td>
+                                <td>
+                                    <span t-field="inv.l10n_latam_document_number"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="inv.amount_total"
+                                          t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="inv.withholded_itbis"
+                                          t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="inv.income_withholding"
+                                          t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+<!--                        <p>La presente certificación se expide a solicitud de la parte interesada</p>-->
+                        <p>Sin más nada por el momento, se despide</p>
+<!--                        <hr style="border-top: dashed 1px;"/>-->
+                        <h1 style="margin-top:50px; padding-top:10px; text-align: left;font-size:16px;border-top:0px dashed black;">Contador</h1>
+                        <p style="margin-top:0; padding-top:10px; text-align: left;font-size:14px;border-top:0px dashed black;"><span t-esc="o.invoice_ids[0].company_id.name"/></p>
+                        <hr style="margin-top:60px; border-top: solid 2px black;width:25%;"/>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
+
