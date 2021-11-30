@@ -90,6 +90,54 @@ class StockPicking(models.Model):
             if task_id.is_fsm and sale_id.tasks_count <= 1 and task_id.main_cause == 'wear':
                 fsm_invoice_available = False
 
+        if self.picking_type_code == 'outgoing':
+            for ml in self.move_line_ids:
+                if sale_id:
+                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
+                    if ml.qty_done > sale_order_line_id.product_uom_qty:
+                        raise ValidationError("No puede exceder la cantidad especificada en la orden")
+
+            for ml in self.move_line_ids_without_package:
+                if sale_id:
+                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
+                    if ml.qty_done > sale_order_line_id.product_uom_qty:
+                        raise ValidationError("No puede exceder la cantidad especificada en la orden")
+
+        elif self.picking_type_code == 'internal':
+
+            error_message_lines = []
+            for ml in self.move_line_ids:
+                free_qty = sum(ml.product_id.stock_quant_ids.filtered(
+                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'inventory_quantity'))
+                if ml.qty_done > free_qty:
+                    if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
+                        error_message_lines.append(
+                            _(" - Producto: %s", ml.product_id.name))
+
+            for ml in self.move_line_ids_without_package:
+                free_qty = sum(ml.product_id.stock_quant_ids.filtered(
+                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'inventory_quantity'))
+                if ml.qty_done > free_qty:
+                    if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
+                        error_message_lines.append(
+                            _(" - Producto: %s", ml.product_id.name))
+
+            for ml in self.move_line_nosuggest_ids:
+                free_qty = sum(ml.product_id.stock_quant_ids.filtered(
+                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'inventory_quantity'))
+                if ml.qty_done > free_qty:
+                    if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
+                        error_message_lines.append(
+                            _(" - Producto: %s", ml.product_id.name))
+
+            if error_message_lines:
+                raise ValidationError(
+                    _('No tiene cantidades disponibles.\nLos siguientes no estan disponibles:\n') + '\n'.join(
+                        error_message_lines))
+
         if not self.sale_id.partner_id.allowed_credit:
             if fsm_invoice_available and not sale_id.is_fsm:
                 if self.picking_type_code == 'outgoing' and sale_id and sale_id.invoice_ids:
@@ -333,6 +381,26 @@ class StockProductionLot(models.Model):
             else:
                 rec.positive_qty = False
 
+    @api.constrains('name')
+    def check_general_unique_lot(self):
+
+        for rec in self:
+            domain = [('product_id', 'in', rec.product_id.ids),
+                      ('company_id', 'in', rec.company_id.ids),
+                      ('name', 'in', rec.mapped('name')),
+                      ('id', '!=', rec.ids)]
+
+            records = self.search(domain)
+            error_message_lines = []
+            for item in records:
+                error_message_lines.append(
+                    _(" - Producto: %s, Número de Referencia Interna: %s", item.product_id.name, rec.name))
+
+            if error_message_lines:
+                raise ValidationError(
+                    _('El número de referencia interna debe ser unico por compañia.\nLos siguientes contienen duplicados:\n') + '\n'.join(
+                        error_message_lines))
+
     # Gate service
     is_gate_product = fields.Boolean(string="Servicio Gate In / Gate Out", compute='compute_gate_product')
     external_owner = fields.Boolean(string="Unidad Externa")
@@ -364,6 +432,14 @@ class StockProductionLot(models.Model):
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado", default="available")
+
+    def change_state(self):
+        states = list(map(lambda s: s[0], self._fields.get('rent_state').selection))
+        idx = states.index(self.rent_state)
+
+        self.write({
+            'rent_state': states[idx + 1 if idx < (len(states) - 1) else 0]
+        })
 
 
 class StockMoveLine(models.Model):

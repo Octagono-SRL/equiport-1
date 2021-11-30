@@ -75,7 +75,7 @@
                                 <td style="border: none;">RECIBO CONFORME</td>
                             </tr>
                             <tr style="border: none;">
-                                <td style="border: none;"><span t-esc="o.invoice_user_id.name"/></td>
+                                <td style="border: none;"><span t-esc="o.create_uid.name"/></td>
                                 <td style="border: none;"></td>
                                 <td style="border: none;">Cliente/nombre, Cédula/Sello</td>
                             </tr>
