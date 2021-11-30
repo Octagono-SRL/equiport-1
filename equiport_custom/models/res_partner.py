@@ -50,10 +50,11 @@ class ResPartner(models.Model):
 
     @api.constrains("vat_type", "vat")
     def nif_length_constrain(self):
-        if self.vat_type == 'vat_base' and self.vat and len(self.vat) != 11:
-            raise ValidationError("Verifique la longitud de la Cédula. Deben ser 11 digitos")
-        elif self.vat_type == 'vat_nif' and self.vat and len(self.vat) != 9:
-            raise ValidationError("Verifique la longitud del RNC. Deben ser 9 digitos")
+        for rec in self:
+            if rec.vat_type == 'vat_base' and rec.vat and len(rec.vat) != 11:
+                raise ValidationError("Verifique la longitud de la Cédula. Deben ser 11 digitos")
+            elif rec.vat_type == 'vat_nif' and rec.vat and len(rec.vat) != 9:
+                raise ValidationError("Verifique la longitud del RNC. Deben ser 9 digitos")
 
     def allow_rental(self):
         self.allowed_rental = True

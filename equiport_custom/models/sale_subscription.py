@@ -34,7 +34,8 @@ class SaleSubscription(models.Model):
             if lines:
                 # Asignando fecha de subcripcion a lineas de alquiler
                 for line in lines:
-                    next_date = datetime.combine(self.recurring_next_date, line.return_date.time())
+                    next_date = datetime.combine(self.recurring_next_date,
+                                                 line.return_date.time() if line.return_date else datetime.now().time())
 
                     line.write({
                         'return_date': next_date,
