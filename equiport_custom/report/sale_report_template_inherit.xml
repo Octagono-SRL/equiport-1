@@ -45,7 +45,7 @@
 
             <xpath expr="//div[hasclass('page')]/div[@id='informations']/div[@t-if='doc.user_id.name']"
                    position="after">
-                <div t-if="is_rental_order" class="col-auto col-3 mw-100 mb-2">
+                <div t-if="doc.is_rental_order" class="col-auto col-3 mw-100 mb-2">
                     <strong>Concepto:</strong>
                     <p class="m-0">Alquiler</p>
                 </div>

@@ -36,8 +36,8 @@
                            attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
                     <field name="booking"
                            attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
-                    <field name="storage_rate"
-                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+<!--                    <field name="storage_rate"-->
+<!--                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>-->
                 </xpath>
 
                 <xpath expr="//notebook/page[@id='invoice_tab']/group[hasclass('oe_subtotal_footer')]/field[@name='amount_by_group']" position="before">

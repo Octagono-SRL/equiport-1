@@ -42,7 +42,7 @@
                             <group colspan="2" name="owner_info" string="Información de propietario">
                                 <field name="external_owner" readonly="1"/>
                                 <field name="owner_partner_id" readonly="1"/>
-                                <field name="storage_rate" readonly="1"/>
+<!--                                <field name="storage_rate" readonly="1"/>-->
 
                             </group>
                             <group name="gate_in_info" string="Información de entrada del servicio">
