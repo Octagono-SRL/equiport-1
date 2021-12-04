@@ -5,17 +5,20 @@
             <table class="table table-sm mt48" t-if="o.move_line_ids and o.is_gate_service"
                    name="stock_move_line_gate_info">
                 <t t-set="has_serial_number" t-value="False"/>
-                <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')"
-                   groups="stock.group_lot_on_delivery_slip"/>
+                <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')"/>
                 <thead>
                     <tr>
-                        <th class="text-center" scope="col" colspan="2"><strong>Información Servicio Gate</strong></th>
+                        <th class="text-center" scope="col" colspan="2">
+                            <strong>Información Servicio Gate</strong>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <t t-foreach="o.move_line_ids" t-as="line">
                         <tr>
-                            <th scope="col"><span t-esc="line.product_id.display_name"/></th>
+                            <th scope="col">
+                                <span t-esc="line.product_id.display_name"/>
+                            </th>
                             <t t-if="has_serial_number">
                                 <th scope="col">
                                     <span t-esc="line.lot_id.name"/>
@@ -92,21 +95,31 @@
                         <table class="table table-cover border-custom" name="stock_picking_client_info">
                             <tr>
                                 <th class="border-custom bold-custom" scope="row" name="partner_driver">Conductor</th>
-                                <td><t t-esc="o.partner_driver"/></td>
+                                <td>
+                                    <t t-esc="o.partner_driver"/>
+                                </td>
                             </tr>
                             <tr>
                                 <th class="border-custom bold-custom" scope="row" name="card_driver">Carnet del
-                                    conductor</th>
-                                <td><t t-esc="o.card_driver"/></td>
+                                    conductor
+                                </th>
+                                <td>
+                                    <t t-esc="o.card_driver"/>
+                                </td>
                             </tr>
                             <tr>
                                 <th class="border-custom bold-custom" scope="row" name="vat_driver">Cédula</th>
-                                <td><t t-esc="o.vat_driver"/></td>
+                                <td>
+                                    <t t-esc="o.vat_driver"/>
+                                </td>
                             </tr>
                             <tr>
                                 <th class="border-custom bold-custom" scope="row" name="partner_truck">Placa del
-                                    camión</th>
-                                <td><t t-esc="o.partner_truck"/></td>
+                                    camión
+                                </th>
+                                <td>
+                                    <t t-esc="o.partner_truck"/>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -115,7 +128,7 @@
             </div>
 
 
-            <div t-if="o.state in ['assigned', 'done']"  class="text-muted">
+            <div t-if="o.state in ['assigned', 'done']" class="text-muted">
                 <style>
                     table.recibido {position:relative; top:200px; margin-top:35px;width:100%
                     !important;border:0px
@@ -140,6 +153,10 @@
                 </table>
             </div>
 
+        </xpath>
+
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/t[@groups='stock.group_lot_on_delivery_slip']" position="replace">
+            <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')"/>
         </xpath>
 
     </template>

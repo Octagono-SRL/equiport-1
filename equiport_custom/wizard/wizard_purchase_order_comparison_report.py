@@ -21,7 +21,7 @@ class ComparisonReportWizard(models.TransientModel):
     def _get_data_details(self):
         model_orders = self.env['purchase.order']
         records = model_orders.search([
-            ('state', 'in', ['purchase', 'done']),
+            ('state', 'in', ['purchase', 'done', 'to approve']),
             ('date_approve', '>=', self.date_start),
             ('date_approve', '<=', self.date_end)
         ])
@@ -30,10 +30,10 @@ class ComparisonReportWizard(models.TransientModel):
             products = list(set(line.product_id for line in records.mapped('order_line')))
             partners = list(set(line.partner_id for line in records.mapped('order_line')))
             for order in records:
-                products = []
+                products_order = []
                 for line in order.order_line:
-                    if line.product_id not in products:
-                        products.append(line.product_id)
+                    if line.product_id not in products_order:
+                        products_order.append(line.product_id)
                         products_set.append({
                             'partner_id': line.partner_id,
                             'order_id': line.order_id,
@@ -75,7 +75,7 @@ class ComparisonReportWizard(models.TransientModel):
         # Recolectando y procesando informacion
         model_orders = self.env['purchase.order']
         data = model_orders.search([
-            ('state', 'in', ['purchase', 'done']),
+            ('state', 'in', ['purchase', 'done', 'to approve']),
             ('date_approve', '>=', self.date_start),
             ('date_approve', '<=', self.date_end)
         ])
@@ -87,7 +87,7 @@ class ComparisonReportWizard(models.TransientModel):
                     info = list(filter(lambda r: r['partner_id'] == par and r['product_id'] == prod, products_set))
 
                     if not info:
-                        break
+                        continue
 
                     info.sort(key=lambda s: s['date_approve'], reverse=True)
 

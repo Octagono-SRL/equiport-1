@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!--        SET ORIGIN FACTURACION-->
+        <template id="report_invoice_with_payments_equiport_inherit" inherit_id="account.report_invoice_with_payments">
+            <xpath expr="//t[@t-call='web.html_container']/t[@t-foreach='docs']/t[@t-set='lang']" position="before">
+                <t t-set="origin_document" t-value="'invoice'"/>
+            </xpath>
+        </template>
+        <!--        SET ORIGIN REPARACION-->
+        <template id="report_repairorder2_equiport_inherit" inherit_id="repair.report_repairorder2">
+            <xpath expr="//t[@t-call='web.html_container']/t[@t-foreach='docs']/t[@t-call='repair.report_repairorder']"
+                   position="before">
+<!--                asdfghjkl;'lkjhgfgdfghjkl;kjhgfdfghjkl;'lkjhgf-->
+                <t t-set="origin_document" t-value="'repair'"/>
+            </xpath>
+        </template>
+
+
+        <template id="external_layout_boxed_equiport_inherit" inherit_id="web.external_layout_boxed">
+            <!--            <xpath expr="//div[@t-attf-class='article o_report_layout_boxed o_company_#{company.id}_layout']"-->
+            <!--                   position="inside">-->
+            <!--            <xpath expr="//div[@t-attf-class='footer o_boxed_footer o_company_#{company.id}_layout']"-->
+            <!--                   position="before">-->
+            <xpath expr="//div[@t-attf-class='footer o_boxed_footer o_company_#{company.id}_layout']/div[hasclass('text-center')]"
+                   position="replace">
+                <div>
+                    <!--        region FACTURACION-->
+<!--                    <t t-set="origin_document" t-value="'invoice'"/>-->
+                    <t t-if="origin_document == 'invoice'">
+                        <br/>
+                        <div class="text-center" style="padding-bottom:5px;">
+                            <table border="0" width="100%" style="border: none; border-collapse: collapse;">
+                                <tr style="border: none;">
+                                    <th style="border: none;">__________________________________________________</th>
+                                    <th style="border: none;"></th>
+                                    <th style="border: none;">__________________________________________________</th>
+                                </tr>
+                                <tr style="border: none;">
+                                    <td style="border: none;">PREPARADO POR</td>
+                                    <td style="border: none;"></td>
+                                    <td style="border: none;">RECIBO CONFORME</td>
+                                </tr>
+                                <tr style="border: none;">
+                                    <td style="border: none;">
+                                        <span t-esc="o.create_uid.name"/>
+                                    </td>
+                                    <td style="border: none;"></td>
+                                    <td style="border: none;">Cliente/nombre, Cédula/Sello</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                    <!--        endregion-->
+
+                    <!--                region REPAIR-->
+                    <t t-elif="origin_document == 'repair'">
+                        <br/>
+                        <div class="text-center" style="padding-bottom:5px">
+                            <table border="0" width="100%" style="border: none; border-collapse: collapse;">
+                                <tr style="border: none;">
+                                    <th style="border: none;">_____________________________________________</th>
+                                    <th style="border: none;"></th>
+                                    <th style="border: none;">_____________________________________________</th>
+                                    <th style="border: none;"></th>
+                                    <th style="border: none;">_____________________________________________</th>
+                                </tr>
+                                <tr style="border: none;">
+                                    <td style="border: none;">DESPACHADO</td>
+                                    <td style="border: none;"></td>
+                                    <td style="border: none;">RECIBIDO</td>
+                                    <td style="border: none;"></td>
+                                    <td style="border: none;">AUTORIZADO POR</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                    <!--                endregion-->
+
+                </div>
+                <div class="text-center">
+                    <div t-if="report_type == 'pdf'">
+                        Page:
+                        <span class="page"/>
+                        /
+                        <span class="topage"/>
+                    </div>
+                </div>
+
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

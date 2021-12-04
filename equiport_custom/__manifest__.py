@@ -82,6 +82,7 @@
         'views/fleet_vehicle_log_views.xml',
         'views/unit_model_type.xml',
         'views/unit_model_size.xml',
+        'report/report_external_layout.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
         'report/report_deliveryslip.xml',
