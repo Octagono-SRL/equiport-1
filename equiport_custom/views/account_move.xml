@@ -24,6 +24,10 @@
                     </div>
                 </xpath>
 
+                <field name="narration" position="attributes">
+                    <attribute name="required">1</attribute>
+                </field>
+
                 <xpath expr="//field[@name='ref']" position="attributes">
                     <attribute name="help">Documento que Afecta la factura</attribute>
                 </xpath>

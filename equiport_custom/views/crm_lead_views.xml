@@ -52,6 +52,10 @@
                         </div>
                     </button>
                 </button>
+
+                <field name="contact_name" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </field>
             </field>
         </record>
 
