@@ -107,11 +107,11 @@ class ProjectTask(models.Model):
                         'Horómetro': False,
                     })
 
-                if not task.container_type:
+                if not task.container_type_id:
                     validate_fields.update({
                         'Tipo de contenedor': False,
                     })
-                if not task.container_long or not task.chassis_long:
+                if not task.container_long_id or not task.chassis_long_id:
                     validate_fields.update({
                         'Longitud de las unidades': False,
                     })
@@ -125,7 +125,7 @@ class ProjectTask(models.Model):
                     validate_fields.update({
                         'Horas trabajadas': False,
                     })
-                if task.container_type == 'cooled':
+                if task.container_type_id == self.env.ref('container_model_freeze'):
                     if not task.before_temp or not task.after_temp or not task.before_oxy or not task.after_oxy or not task.before_vent or not task.after_vent or not task.before_carb or not task.after_carb or not task.before_diox or not task.after_diox or not task.before_humid or not task.after_humid:
                         validate_fields.update({
                             'Configuración de la nevera': False,
