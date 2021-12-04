@@ -63,8 +63,7 @@ class StockPicking(models.Model):
     access_requested = fields.Boolean(string="Acceso Solicitado", tracking=True)
 
     is_rental = fields.Boolean(string="Proviene de una orden de alquiler", default=False)
-    is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate",
-                                     default=lambda s: (s.sale_id.is_gate_service or False))
+    is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate")
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 

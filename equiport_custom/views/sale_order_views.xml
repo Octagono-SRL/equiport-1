@@ -48,8 +48,8 @@
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="before">
-                    <field name="storage_rate"
-                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
+<!--                    <field name="storage_rate"-->
+<!--                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>-->
                 </xpath>
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="attributes">

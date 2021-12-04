@@ -12,14 +12,14 @@
             <field name="taxes_id" eval="False"/>
         </record>
 
-        <record id="storage_rate_product" model="product.product">
-            <field name="name">Servicio de estadia</field>
-            <field name="type">service</field>
-            <field name="list_price">40</field>
-            <field name="uom_id" ref="uom.product_uom_day"/>
-            <field name="uom_po_id" ref="uom.product_uom_day"/>
-            <field name="image_1920" type="base64" file="sale_timesheet/static/img/product_product_time_product.png"/>
-        </record>
+<!--        <record id="storage_rate_product" model="product.product">-->
+<!--            <field name="name">Servicio de estadia</field>-->
+<!--            <field name="type">service</field>-->
+<!--            <field name="list_price">40</field>-->
+<!--            <field name="uom_id" ref="uom.product_uom_day"/>-->
+<!--            <field name="uom_po_id" ref="uom.product_uom_day"/>-->
+<!--            <field name="image_1920" type="base64" file="sale_timesheet/static/img/product_product_time_product.png"/>-->
+<!--        </record>-->
 
         <record id="toll_tax_product" model="product.product">
             <field name="name">Peaje</field>

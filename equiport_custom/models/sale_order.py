@@ -29,93 +29,96 @@ class SaleOrder(models.Model):
                 else:
                     rec.is_fsm = False
 
-    def _create_invoices(self, grouped=False, final=False, date=None):
-        res = super(SaleOrder, self)._create_invoices()
-        if res.is_gate_service:
+    # TODO Desabilido Proceso Gate In/Out
+    # def _create_invoices(self, grouped=False, final=False, date=None):
+    #     res = super(SaleOrder, self)._create_invoices()
+    #     if res.is_gate_service:
+    #
+    #         invoice_lines = []
+    #         for inv_line in res.invoice_line_ids.filtered(
+    #                 lambda il: not il.product_id.is_gate_service and il.display_type == False):
+    #             if inv_line.storage_rate > 0:
+    #                 name_string = ""
+    #                 total_days = 0
+    #                 for serial in inv_line.reserved_lot_ids:
+    #                     start = serial.gate_in_date
+    #                     end = serial.gate_out_date or datetime.datetime.now()
+    #                     diff = end - start
+    #
+    #                     name_string += f'{serial.name} - {diff.days} días'
+    #                     total_days += diff.days
+    #
+    #                 val = (0, 0, {
+    #                     'product_id': self.env.ref('equiport_custom.storage_rate_product').id,
+    #                     'name': f'{inv_line.product_id.name}\n'
+    #                             f'seriares: {name_string}',
+    #                     'quantity': total_days,
+    #                     'price_unit': inv_line.storage_rate,
+    #                 })
+    #                 invoice_lines.append(val)
+    #
+    #         res.update({'invoice_line_ids': invoice_lines})
+    #
+    #     return res
 
-            invoice_lines = []
-            for inv_line in res.invoice_line_ids.filtered(
-                    lambda il: not il.product_id.is_gate_service and il.display_type == False):
-                if inv_line.storage_rate > 0:
-                    name_string = ""
-                    total_days = 0
-                    for serial in inv_line.reserved_lot_ids:
-                        start = serial.gate_in_date
-                        end = serial.gate_out_date or datetime.datetime.now()
-                        diff = end - start
+    # def _prepare_invoice(self):
+    #     invoice_vals = super(SaleOrder, self)._prepare_invoice()
+    #     if self.is_gate_service:
+    #         invoice_vals.update({
+    #             'is_gate_service': True,
+    #         })
+    #     return invoice_vals
 
-                        name_string += f'{serial.name} - {diff.days} días'
-                        total_days += diff.days
-
-                    val = (0, 0, {
-                        'product_id': self.env.ref('equiport_custom.storage_rate_product').id,
-                        'name': f'{inv_line.product_id.name}\n'
-                                f'seriares: {name_string}',
-                        'quantity': total_days,
-                        'price_unit': inv_line.storage_rate,
-                    })
-                    invoice_lines.append(val)
-
-            res.update({'invoice_line_ids': invoice_lines})
-
-        return res
-
-    def _prepare_invoice(self):
-        invoice_vals = super(SaleOrder, self)._prepare_invoice()
-        if self.is_gate_service:
-            invoice_vals.update({
-                'is_gate_service': True,
-            })
-        return invoice_vals
-
-    def action_cancel(self):
-        res = super(SaleOrder, self).action_cancel()
-        if len(self.picking_ids) > 1 and self.is_gate_service:
-            in_picking_ids = self.env['stock.picking']
-            out_picking_ids = self.env['stock.picking']
-            for picking in self.picking_ids:
-                if picking.picking_type_code == 'outgoing':
-                    out_picking_ids += picking
-                elif picking.picking_type_code == 'incoming':
-                    in_picking_ids += picking
-
-            if any(in_p.state == 'done' for in_p in in_picking_ids):
-                raise ValidationError(
-                    "No se puede cancelar. Se ha validado la recepcion de las unidades en este documento")
-
-        return res
+    # def action_cancel(self):
+    #     res = super(SaleOrder, self).action_cancel()
+    #     if len(self.picking_ids) > 1 and self.is_gate_service:
+    #         in_picking_ids = self.env['stock.picking']
+    #         out_picking_ids = self.env['stock.picking']
+    #         for picking in self.picking_ids:
+    #             if picking.picking_type_code == 'outgoing':
+    #                 out_picking_ids += picking
+    #             elif picking.picking_type_code == 'incoming':
+    #                 in_picking_ids += picking
+    #
+    #         if any(in_p.state == 'done' for in_p in in_picking_ids):
+    #             raise ValidationError(
+    #                 "No se puede cancelar. Se ha validado la recepcion de las unidades en este documento")
+    #
+    #     return res
 
     @api.depends('order_line')
     def compute_is_gate_service(self):
         for so in self:
             so.is_gate_service = any(line.product_id.is_gate_service for line in so.order_line)
 
-    @api.onchange('is_gate_service')
-    def set_client_warehouse(self):
+    # TODO Desabilido Proceso Gate In/Out
+    # @api.onchange('is_gate_service')
+    # def set_client_warehouse(self):
+    #
+    #     if self.is_gate_service:
+    #         self.warehouse_id = self.env.ref('equiport_custom.client_equiport_stock_warehouse').id
+    #     else:
+    #         self.warehouse_id = self.env.ref('stock.warehouse0').id
 
-        if self.is_gate_service:
-            self.warehouse_id = self.env.ref('equiport_custom.client_equiport_stock_warehouse').id
-        else:
-            self.warehouse_id = self.env.ref('stock.warehouse0').id
-
-    @api.onchange('is_gate_service')
-    def add_gate_section(self):
-        gate_service = self.order_line.filtered(lambda l: l.product_id.is_gate_service)
-        section_line = self.order_line.filtered(lambda l: l.name == 'Unidades')
-        if gate_service and self.is_gate_service and not section_line:
-            self.section_gate_service_seq = gate_service.sequence + 1
-            order_lines = []
-            val = (0, 0, {
-                'display_type': 'line_section',
-                'name': 'Unidades',
-                'sequence': self.section_gate_service_seq,
-            })
-            order_lines.append(val)
-            self.update({'order_line': order_lines})
-        elif not gate_service and not self.is_gate_service and len(self.order_line) > 0:
-            if section_line:
-                section_line.unlink()
-                self.section_gate_service_seq = 0
+    # TODO Desabilido Proceso Gate In/Out
+    # @api.onchange('is_gate_service')
+    # def add_gate_section(self):
+    #     gate_service = self.order_line.filtered(lambda l: l.product_id.is_gate_service)
+    #     section_line = self.order_line.filtered(lambda l: l.name == 'Unidades')
+    #     if gate_service and self.is_gate_service and not section_line:
+    #         self.section_gate_service_seq = gate_service.sequence + 1
+    #         order_lines = []
+    #         val = (0, 0, {
+    #             'display_type': 'line_section',
+    #             'name': 'Unidades',
+    #             'sequence': self.section_gate_service_seq,
+    #         })
+    #         order_lines.append(val)
+    #         self.update({'order_line': order_lines})
+    #     elif not gate_service and not self.is_gate_service and len(self.order_line) > 0:
+    #         if section_line:
+    #             section_line.unlink()
+    #             self.section_gate_service_seq = 0
 
     @api.onchange('partner_id')
     def check_credit_warning(self):
@@ -183,31 +186,32 @@ class SaleOrder(models.Model):
 class RentalOrderLine(models.Model):
     _inherit = ['sale.order.line']
 
+    # TODO Desabilido Proceso Gate In/Out
     storage_rate = fields.Float(string="Tasa de estadia")
 
     # Domain for gate products
 
-    @api.onchange('product_id')
-    def set_domain_for_gate_products(self):
-        res = {}
-        domain = [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                  ('company_id', '=', self.company_id)]
-        gate_domain = [('sale_ok', '=', False), ('rent_ok', '=', False), ('purchase_ok', '=', False), '|',
-                       ('company_id', '=', False),
-                       ('company_id', '=', self.company_id)]
-
-        if self.order_id.is_gate_service:
-            res['domain'] = {'product_id': gate_domain}
-        else:
-            res['domain'] = {'product_id': domain}
-        return res
-
-    def _prepare_invoice_line(self, **optional_values):
-        res = super(RentalOrderLine, self)._prepare_invoice_line(**optional_values)
-
-        if self.order_id.is_gate_service:
-            res.update(
-                storage_rate=self.storage_rate,
-            )
-
-        return res
+    # @api.onchange('product_id')
+    # def set_domain_for_gate_products(self):
+    #     res = {}
+    #     domain = [('sale_ok', '=', True), '|', ('company_id', '=', False),
+    #               ('company_id', '=', self.company_id)]
+    #     gate_domain = [('sale_ok', '=', False), ('rent_ok', '=', False), ('purchase_ok', '=', False), '|',
+    #                    ('company_id', '=', False),
+    #                    ('company_id', '=', self.company_id)]
+    #
+    #     if self.order_id.is_gate_service:
+    #         res['domain'] = {'product_id': gate_domain}
+    #     else:
+    #         res['domain'] = {'product_id': domain}
+    #     return res
+    #
+    # def _prepare_invoice_line(self, **optional_values):
+    #     res = super(RentalOrderLine, self)._prepare_invoice_line(**optional_values)
+    #
+    #     if self.order_id.is_gate_service:
+    #         res.update(
+    #             storage_rate=self.storage_rate,
+    #         )
+    #
+    #     return res

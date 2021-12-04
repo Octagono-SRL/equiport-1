@@ -90,41 +90,42 @@ class AccountMove(models.Model):
                         raise ValidationError(
                             "Los comprobantes de este tipo estan agotados. Comuniquese con administración. La confirmacion de facturas de este tipo esta bloqueada")
 
-            if invoice.is_gate_service:
-
-                storage_rate_service = self.env.ref('equiport_custom.storage_rate_product')
-
-                # Borrando lineas a actualizar
-
-                storage_rate_lines = invoice.invoice_line_ids.filtered(lambda l: l.product_id == storage_rate_service)
-                storage_rate_lines.unlink()
-
-                # XXXXXXXXXXXXXXXXXXXXXXXX
-
-                invoice_lines = []
-                for inv_line in invoice.invoice_line_ids.filtered(
-                        lambda il: not il.product_id.is_gate_service and il.display_type == False):
-                    if inv_line.storage_rate > 0:
-                        name_string = ""
-                        total_days = 0
-                        for serial in inv_line.reserved_lot_ids:
-                            start = serial.gate_in_date
-                            end = serial.gate_out_date or datetime.datetime.now()
-                            diff = end - start
-
-                            name_string += f'{serial.name} - {diff.days} días'
-                            total_days += diff.days
-
-                        val = (0, 0, {
-                            'product_id': storage_rate_service.id,
-                            'name': f'{inv_line.product_id.name}\n'
-                                    f'seriares: {name_string}',
-                            'quantity': total_days,
-                            'price_unit': inv_line.storage_rate,
-                        })
-                        invoice_lines.append(val)
-
-                invoice.update({'invoice_line_ids': invoice_lines})
+            # TODO Desabilido Proceso Gate In/Out
+            # if invoice.is_gate_service:
+            #
+            #     storage_rate_service = self.env.ref('equiport_custom.storage_rate_product')
+            #
+            #     # Borrando lineas a actualizar
+            #
+            #     storage_rate_lines = invoice.invoice_line_ids.filtered(lambda l: l.product_id == storage_rate_service)
+            #     storage_rate_lines.unlink()
+            #
+            #     # XXXXXXXXXXXXXXXXXXXXXXXX
+            #
+            #     invoice_lines = []
+            #     for inv_line in invoice.invoice_line_ids.filtered(
+            #             lambda il: not il.product_id.is_gate_service and il.display_type == False):
+            #         if inv_line.storage_rate > 0:
+            #             name_string = ""
+            #             total_days = 0
+            #             for serial in inv_line.reserved_lot_ids:
+            #                 start = serial.gate_in_date
+            #                 end = serial.gate_out_date or datetime.datetime.now()
+            #                 diff = end - start
+            #
+            #                 name_string += f'{serial.name} - {diff.days} días'
+            #                 total_days += diff.days
+            #
+            #             val = (0, 0, {
+            #                 'product_id': storage_rate_service.id,
+            #                 'name': f'{inv_line.product_id.name}\n'
+            #                         f'seriares: {name_string}',
+            #                 'quantity': total_days,
+            #                 'price_unit': inv_line.storage_rate,
+            #             })
+            #             invoice_lines.append(val)
+            #
+            #     invoice.update({'invoice_line_ids': invoice_lines})
 
         res = super(AccountMove, self).action_post()
 
