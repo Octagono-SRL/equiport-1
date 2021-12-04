@@ -164,6 +164,11 @@ class RentalOrder(models.Model):
         if self.is_rental_order and self.rental_template_id:
             if not self.rental_subscription_id:
                 self.create_rental_subscriptions()
+
+        if self.is_rental_order:
+            if not self.partner_id.allowed_rental:
+                if not self.partner_id.commercial_register or not self.partner_id.leasing_contract:
+                    raise ValidationError("El contacto no tiene los documentos necesarios para continuar.")
         res = super(RentalOrder, self).action_confirm()
         return res
 
