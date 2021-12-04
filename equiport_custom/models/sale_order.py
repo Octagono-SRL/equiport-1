@@ -10,7 +10,7 @@ class SaleOrder(models.Model):
 
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out", compute='compute_is_gate_service')
     fsm_invoice_available = fields.Boolean(string="Facturación interna", compute='compute_fsm_invoice_available')
-    is_fsm = fields.Boolean(string="Es servicio de campo", compute='compute_fsm_invoice_available')
+    is_fsm = fields.Boolean(string="Es rescate", compute='compute_fsm_invoice_available')
     section_gate_service_seq = fields.Integer(string="Sectión Gate Service")
 
     @api.depends('tasks_ids')

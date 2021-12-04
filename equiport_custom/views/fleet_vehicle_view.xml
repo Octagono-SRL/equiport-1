@@ -43,7 +43,7 @@
                                     icon="fa-circle"
                                     context="{'xml_id':'fleet_vehicle_log_tires_action', 'xml_origin': 'tires'}"
                                     help="Historial de asignacion de neumaticos"
-                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis', 'vehicle', 'utility'])]}">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis'])]}">
                                 <field name="tires_count" widget="statinfo" string="Neumaticos"/>
                             </button>
                         </div>
@@ -132,7 +132,7 @@
                                 <field name="acquisition_date" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
                                 <field name="vehicle_token"/>
                                 <field name="custom_type"/>
-                                <field name="vin_sn"/>
+                                <field name="vin_sn" string="Número de chasis"/>
                                 <field name="car_value" widget="monetary"/>
                                 <field name="net_car_value" widget="monetary"/>
                                 <field name="residual_value" widget="monetary"/>

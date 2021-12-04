@@ -158,7 +158,7 @@ class AccountMove(models.Model):
                         if sale_order.is_rental_order:
                             rec.flow_origin = "Alquiler"
                         elif sale_order.is_fsm:
-                            rec.flow_origin = "Servicio de campo"
+                            rec.flow_origin = "Rescate"
                         else:
                             rec.flow_origin = "Ventas"
 

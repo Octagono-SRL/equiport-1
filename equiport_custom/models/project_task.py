@@ -26,8 +26,8 @@ class ProjectTask(models.Model):
     transport_name = fields.Char(string="Nombre del transporte")
     rescue_truck_id = fields.Many2one('stock.warehouse', string="Camion de rescate",
                                       domain="[('is_mobile_stock', '=', True)]")
-    consumption = fields.Float(string="Consumo en rescate")
-    performance = fields.Float(string="Rendiminto del viaje")
+    consumption = fields.Float(string="Galónes consumidos")
+    performance = fields.Float(string="Rendiminto del viaje (%)")
     driver_name = fields.Char(string="Nombre del chofer")
     rescue_location = fields.Char(string="Lugar de rescate")
     employee_worker_ids = fields.Many2many(comodel_name='hr.employee', relation='external_service_employee_rel',
@@ -36,8 +36,10 @@ class ProjectTask(models.Model):
     @api.onchange('consumption', 'rescue_truck_id')
     def get_truck_performance(self):
         vehicle_id = self.rescue_truck_id.vehicle_id
-        if self.consumption > 0 and self.rescue_truck_id:
-            self.performance = (vehicle_id.performance / self.consumption) * 100
+        if self.consumption > 0 and self.rescue_truck_id and self.km_travelled >= 0:
+            actual_consumption = self.km_travelled / self.consumption
+            if actual_consumption > 0:
+                self.performance = (vehicle_id.performance / actual_consumption) * 100
         if vehicle_id.performance <= 0 and self.rescue_truck_id:
             self.performance = 0
             return {
