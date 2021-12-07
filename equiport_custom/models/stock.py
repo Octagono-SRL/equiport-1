@@ -229,7 +229,63 @@ class StockPicking(models.Model):
     def grant_access(self):
         self.access_granted = True
 
+    def write(self, vals):
+        for rec in self:
+            if rec.origin and 'origin' not in vals and rec.is_rental:
+                sale_id = self.env['sale.order'].search([('name', '=', rec.origin)])
+                vals['sale_id'] = sale_id.id if sale_id else False
+            actual_sale_id = rec.sale_id.id
+            if 'sale_id' in vals and rec.is_rental:
+                if not vals.get('sale_id') and actual_sale_id:
+                    vals['sale_id'] = actual_sale_id
+                else:
+                    sale_id = self.env['sale.order'].search([('name', '=', rec.origin)])
+                    vals['sale_id'] = sale_id.id if sale_id else False
+        res = super(StockPicking, self).write(vals)
+
+        return res
+
     def button_confirm(self):
+        sale_id = self.sale_id
+        if not sale_id:
+            find_sale_id = self.env['sale.order'].search([('name', '=', self.origin)])
+            self.sale_id = find_sale_id.id if find_sale_id else False
+
+        # region Rental Order
+        if self.is_rental and sale_id and sale_id.is_rental_order:
+            if self.picking_type_code == 'outgoing':
+                for line in sale_id.order_line:
+                    line.pickup_date = datetime.datetime.now()
+                    line.product_id_change()
+                if sale_id.rental_subscription_id:
+                    date_today = fields.Date.context_today(self)
+                    recurring_invoice_day = date_today.day
+                    recurring_next_date = self.env['sale.subscription']._get_recurring_next_date(
+                        sale_id.rental_template_id.recurring_rule_type, sale_id.rental_template_id.recurring_interval,
+                        date_today, recurring_invoice_day
+                    )
+                    sale_id.rental_subscription_id.write({
+                        'date_start': date_today,
+                        'recurring_next_date': recurring_next_date,
+                        'recurring_invoice_day': recurring_invoice_day
+                    })
+
+                    sale_id.update_existing_rental_subscriptions()
+            elif self.picking_type_code == 'incoming':
+                returned = True
+                for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                    if line.product_uom_qty > 0 and line.qty_delivered < line.qty_returned:
+                        returned = False
+                if sale_id.rental_subscription_id and returned:
+                    sale_id.rental_subscription_id.set_close()
+                else:
+                    for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                        if line.return_date and line.product_uom_qty > 0 and line.qty_delivered == line.qty_returned:
+                            line.product_uom_qty = 0
+                    sale_id.update_existing_rental_subscriptions()
+
+        # endregion
+
         if self.picking_type_code == 'incoming':
             for line in self.move_ids_without_package:
                 if line.rent_state:
@@ -445,7 +501,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado")
@@ -465,9 +521,19 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado")
+
+    def write(self, vals):
+
+        res = super(StockMove, self).write(vals)
+
+        for rec in self:
+            if rec.picking_id.picking_type_code == 'incoming' and rec.picking_id.is_rental and rec.rent_state:
+                rec.picking_id.button_confirm()
+
+        return res
 
     storage_rate = fields.Float(string="Tasa de estadia")

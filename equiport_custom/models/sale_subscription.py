@@ -42,16 +42,23 @@ class SaleSubscription(models.Model):
                     })
                     line.product_id_change()
 
+                    # Actualizando descripciones
+                    actual_desc = line.name
+                    if line.product_id.type == 'product':
+                        desc_list = actual_desc.split(line.get_rental_order_line_description() or ' ')
+                        if len(desc_list) == 2 and desc_list[1] == '':
+                            line.name = desc_list[0]
+
                     # actualizando lineas de subscripcion
                     sub_line = self.recurring_invoice_line_ids.filtered(
                         lambda l: l.rental_order_line_id == line
                     )
-                    if sub_line:
+                    if sub_line and len(sub_line) > 0:
                         sub_line[0].name = line.name
                         sub_line[0].quantity = line.product_uom_qty
 
                     # Actualizando precio de lineas nuevas
-                    if line.new_rental_addition:
+                    if line.new_rental_addition and len(sub_line) > 0:
                         sub_line[0].price_unit = line.price_unit
 
 
