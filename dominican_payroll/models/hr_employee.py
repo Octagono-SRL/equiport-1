@@ -34,12 +34,12 @@ class HrEmployee(models.Model):
     #     res = recs.sudo().name_get()
     #     return res
 
-    @api.model
-    def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
-        if args is None:
-            args = []
-        domain = args + ['|', ('name', operator, name), ('employee_code', operator, name)]
-        return self._search(domain, limit=limit, access_rights_uid=name_get_uid)
+    # @api.model
+    # def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+    #     if args is None:
+    #         args = []
+    #     domain = args + ['|', ('name', operator, name), ('employee_code', operator, name)]
+    #     return self._search(domain, limit=limit, access_rights_uid=name_get_uid)
 
     @api.model
     def convert_to_date(self, dstr):
