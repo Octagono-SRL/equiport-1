@@ -185,9 +185,9 @@ class ProjectTask(models.Model):
     chassis_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'chassis')], string="Long. Chasis")
     th_gen_set = fields.Boolean(string="¿Hay Gen Set?")
     th_freeze = fields.Boolean(string="Nevera?")
-    container_type = fields.Char(related='chassis_long_id.name')
+    container_type = fields.Char(related='chassis_long_id.name', string="Tamaño chasis")
     container_type_id = fields.Many2one(comodel_name='unit.model.type', string="Tipo de contenedor")
-    container_long = fields.Char(related='container_long_id.name')
+    container_long = fields.Char(related='container_long_id.name', string="Tamaño contenedor")
     container_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'container')], string="Long. Contenedor")
 
     @api.onchange('chassis_long')
