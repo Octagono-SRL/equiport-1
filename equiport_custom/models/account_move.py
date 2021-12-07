@@ -19,6 +19,7 @@ class AccountMove(models.Model):
         'l10n_latam_tax_ids.amount_currency',
         'amount_total',
         'state',
+        'currency_id',
         'fiscal_position_id')
     def _compute_sign_amount_tax(self):
         for rec in self:
@@ -27,12 +28,13 @@ class AccountMove(models.Model):
             tax_lines = rec.l10n_latam_tax_ids.filtered(lambda i: i.tax_line_id.tax_group_id.name == "ITBIS")
             if rec.is_inbound(True):
                 for line in tax_lines:
-                    positive += line.credit
-                    negative += line.debit
+                    positive += rec.company_currency_id._convert(line.credit, rec.currency_id, rec.company_id, rec.date)
+                    negative += rec.company_currency_id._convert(line.debit, rec.currency_id, rec.company_id, rec.date)
             elif rec.move_type == 'entry' or rec.is_outbound():
                 for line in tax_lines:
-                    positive += line.debit
-                    negative += line.credit
+                    positive += rec.company_currency_id._convert(line.debit, rec.currency_id, rec.company_id, rec.date)
+                    negative += rec.company_currency_id._convert(line.credit, rec.currency_id, rec.company_id, rec.date)
+
             rec.negative_amount_tax = negative
             rec.positive_amount_tax = positive
 

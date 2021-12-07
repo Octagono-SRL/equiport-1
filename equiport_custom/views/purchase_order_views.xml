@@ -24,7 +24,7 @@
                     <button name="allow_confirm" type="object"
                             attrs="{'invisible':['|', ('allowed_confirm', '=', True),('request_approval', '=', False)]}"
                             groups="purchase.group_purchase_manager" string="Aprobar compra" class="oe_highlight"
-                            help="Autorizar cancelar esta orden"/>
+                            help="Autorizar esta orden"/>
                     <button name="allow_cancel" type="object"
                             attrs="{'invisible':['|', ('allowed_cancel', '=', True),('cancel_reason', '=', False)]}"
                             groups="purchase.group_purchase_manager" string="Aprobar cancelación" class="oe_highlight"
