@@ -140,12 +140,15 @@
                             </group>
 
                             <group string="Unidad" attrs="{'invisible': [('unit_type', '=', 'vehicle')]}">
-                                <label for="hourmeter" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
-                                <div class="o_row" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                                <label for="hourmeter"
+                                       attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
+                                <div class="o_row"
+                                     attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
                                     <field name="hourmeter"/>
                                     <field name="hourmeter_unit"/>
                                 </div>
-                                <field name="hourmeter_hr_cost" attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
+                                <field name="hourmeter_hr_cost"
+                                       attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"/>
                                 <field name="acquisition_date"/>
                                 <field name="vin_sn" string="Número de parte"/>
                                 <field name="car_value" widget="monetary"/>
@@ -175,13 +178,18 @@
                                 <field name="fuel_type"/>
                                 <label for="performance"/>
                                 <div class="o_row" name="performance">
-                                    <field name="performance"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    km/g</span><span attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">g/Hr</span>
+                                    <field name="performance"/><span
+                                        attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                                    km/g</span><span
+                                        attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                                    g/Hr</span>
                                 </div>
                                 <label for="co2"/>
                                 <div class="o_row" name="co2">
                                     <field name="co2"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    g/km</span><span attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">g/Hr</span>
+                                    g/km</span><span
+                                        attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                                    g/Hr</span>
                                 </div>
                                 <field name="horsepower"/>
                                 <field name="horsepower_tax" widget="monetary"/>
@@ -261,7 +269,8 @@
                         </group>
 
                         <notebook>
-                            <page name="config_service_alert" string="Alertas" attrs="{'invisible': [('category', 'not in', ['service', 'repair', 'maintenance'])]}">
+                            <page name="config_service_alert" string="Alertas"
+                                  attrs="{'invisible': [('category', 'not in', ['service', 'repair', 'maintenance'])]}">
                                 <group col="3">
                                     <group>
                                         <field name="date_service"/>
@@ -330,9 +339,9 @@
                            attrs="{'readonly': True, 'invisible': [('category', 'not in', ['repair', 'maintenance'])]}"/>
                 </xpath>
 
-<!--                <xpath expr="//field[@name='service_type_id']" position="attributes">-->
-<!--                    <attribute name="domain">[('category', 'in', ['service', 'repair', 'maintenance'])]</attribute>-->
-<!--                </xpath>-->
+                <!--                <xpath expr="//field[@name='service_type_id']" position="attributes">-->
+                <!--                    <attribute name="domain">[('category', 'in', ['service', 'repair', 'maintenance'])]</attribute>-->
+                <!--                </xpath>-->
 
                 <field name="purchaser_id" position="attributes">
                     <attribute name="attrs">{'invisible': [('unit_type', '!=', 'vehicle')]}</attribute>
@@ -374,15 +383,36 @@
                 </xpath>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-danger">
-                        (((current_date &gt;= date_waited) and (odometer > km_waited)) or ((current_date &gt; date_waited) and (hourmeter > hr_waited) and (unit_type == 'gen_set'))) and (check_done == False) and (check_notify == True)
+                        (((current_date &gt;= date_waited) and (odometer > km_waited)) or ((current_date &gt;
+                        date_waited) and (hourmeter > hr_waited) and (unit_type == 'gen_set'))) and (check_done ==
+                        False) and (check_notify == True)
                     </attribute>
                     <attribute name="decoration-warning">
-                        ((current_date >= date_waited) or (odometer > km_waited) or ((hourmeter > hr_waited) and (unit_type == 'gen_set'))) and (check_done == False) and (check_notify == True)
+                        ((current_date >= date_waited) or (odometer > km_waited) or ((hourmeter > hr_waited) and
+                        (unit_type == 'gen_set'))) and (check_done == False) and (check_notify == True)
                     </attribute>
                 </xpath>
 
             </field>
         </record>
+
+
+        <record id="action_fleet_production_lot_form" model="ir.actions.act_window">
+            <field name="name">Referencias internas</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.view_production_lot_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('stock.view_production_lot_form')})]"/>
+            <field name="search_view_id" ref="stock.search_product_lot_filter"/>
+            <field name="context">{'search_default_group_by_product': 1, 'display_complete': True,
+                                   'default_company_id': allowed_company_ids[0]}</field>
+        </record>
+
+        <menuitem action="action_fleet_production_lot_form" id="menu_fleet_production_lot_form"
+                  parent="fleet.menu_root" groups="stock.group_production_lot"
+                  sequence="101"/>
 
 
     </data>
