@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="sequence_rescue_service" model="ir.sequence">
             <field name="name">Servicio de Rescate</field>
             <field name="code">project.task</field>

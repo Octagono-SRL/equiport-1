@@ -9,17 +9,26 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                     <header>
-                        <button name="change_state" type="object" class="btn btn-danger" confirm="Realizar esta Opcion puede afectar con el flujo de operaciones. ¿Seguro que desea continuar?" string="Cambiar estado" groups="stock.group_stock_manager"/>
+                        <button name="change_state" type="object"
+                                attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', False)]}"
+                                class="btn btn-danger"
+                                confirm="Realizar esta Opcion puede afectar con el flujo de operaciones. ¿Seguro que desea continuar?"
+                                string="Cambiar estado" groups="stock.group_stock_manager"/>
                         <field name="rent_state" widget="statusbar"
                                statusbar_visible="available,rented,to_check,to_repair,to_wash,damaged"
-                               attrs="{'invisible': [('rent_ok','=',False)]}"/>
+                               attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', False)]}"/>
                     </header>
                 </xpath>
                 <div class="oe_button_box" name="button_box" position="before">
                     <field name="rent_ok" invisible="1"/>
                     <field name="unit_type" invisible="1"/>
                     <field name="is_gate_product" invisible="1"/>
+                    <field name="is_tire_lot" invisible="1"/>
                 </div>
+
+                <field name="product_id" position="after">
+                    <field name="tire_state_id" attrs="{'invisible': [('is_tire_lot', '=', False)]}"/>
+                </field>
 
                 <xpath expr="//sheet/notebook" position="inside">
 
@@ -42,7 +51,7 @@
                             <group colspan="2" name="owner_info" string="Información de propietario">
                                 <field name="external_owner" readonly="1"/>
                                 <field name="owner_partner_id" readonly="1"/>
-<!--                                <field name="storage_rate" readonly="1"/>-->
+                                <!--                                <field name="storage_rate" readonly="1"/>-->
 
                             </group>
                             <group name="gate_in_info" string="Información de entrada del servicio">

@@ -424,6 +424,7 @@ class StockProductionLot(models.Model):
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
     is_tire_lot = fields.Boolean(related='product_id.is_tire_product')
+    tire_state_id = fields.Many2one(string="Estado de neúmatico", comodel_name='tire.state')
     assigned_tire = fields.Boolean(string="esta asignado?")
     positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
     unit_type = fields.Selection(related='product_id.unit_type')
@@ -548,3 +549,10 @@ class StockMove(models.Model):
         return res
 
     storage_rate = fields.Float(string="Tasa de estadia")
+
+
+class TireState(models.Model):
+    _name = 'tire.state'
+
+    name = fields.Char(string="Titulo", required=True)
+    active = fields.Boolean(string="Archivado", default=True)
