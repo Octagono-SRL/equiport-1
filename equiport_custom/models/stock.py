@@ -64,6 +64,7 @@ class StockPicking(models.Model):
 
     is_rental = fields.Boolean(string="Proviene de una orden de alquiler", default=False)
     is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate")
+    is_fsm = fields.Boolean(related='sale_id.is_fsm', string="Proviene de un Rescate")
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
 
@@ -422,6 +423,7 @@ class StockProductionLot(models.Model):
     _inherit = 'stock.production.lot'
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
+    is_tire_lot = fields.Boolean(related='product_id.is_tire_product')
     assigned_tire = fields.Boolean(string="esta asignado?")
     positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
     unit_type = fields.Selection(related='product_id.unit_type')
@@ -435,6 +437,15 @@ class StockProductionLot(models.Model):
                 rec.positive_qty = True
             else:
                 rec.positive_qty = False
+
+    @api.onchange('product_id', 'name', 'positive_qty')
+    def set_domain_gate_picking_type(self):
+        if self._context.get('fleet_menu'):
+            return {
+                'domain': {
+                    'product_id': [('is_tire_product', '=', True)]
+                }
+            }
 
     @api.constrains('name')
     def check_general_unique_lot(self):

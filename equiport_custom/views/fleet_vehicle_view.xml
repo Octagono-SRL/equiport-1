@@ -398,7 +398,7 @@
 
 
         <record id="action_fleet_production_lot_form" model="ir.actions.act_window">
-            <field name="name">Referencias internas</field>
+            <field name="name">Referencias Neúmaticos</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">stock.production.lot</field>
             <field name="view_ids"
@@ -406,7 +406,8 @@
                           (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.view_production_lot_tree')}),
                           (0, 0, {'view_mode': 'form', 'view_id': ref('stock.view_production_lot_form')})]"/>
             <field name="search_view_id" ref="stock.search_product_lot_filter"/>
-            <field name="context">{'search_default_group_by_product': 1, 'display_complete': True,
+            <field name="domain">[('is_tire_lot', '=', True)]</field>
+            <field name="context">{'search_default_group_by_product': 1, 'display_complete': True, 'fleet_menu': True,
                                    'default_company_id': allowed_company_ids[0]}</field>
         </record>
 

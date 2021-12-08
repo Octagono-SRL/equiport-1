@@ -73,6 +73,17 @@ class ResCompany(models.Model):
     tire_product_category = fields.Many2many(comodel_name='product.category', relation='tires_product_category_rel')
     category_count = fields.Integer(string="Numero de categorias", compute='_compute_category_count')
 
+    def write(self, values):
+        result = super(ResCompany, self).write(values)
+        if 'tire_product_category' in values:
+            product_ids = self.env['product.template'].search([])
+            for pro in product_ids:
+                if pro.categ_id in self.tire_product_category:
+                    pro.is_tire_product = True
+                else:
+                    pro.is_tire_product = False
+        return result
+
     @api.depends('tire_product_category')
     def _compute_category_count(self):
         for rec in self:

@@ -32,10 +32,11 @@
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="is_rental" invisible="1"/>
                     <field name="is_gate_service" invisible="1"/>
+                    <field name="is_fsm" invisible="1"/>
                 </xpath>
 
                 <header position="after">
-                    <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental','=', True)]}">
+                    <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', 'not in', ['outgoing', 'internal']),'|', ('is_rental','=', True), ('is_fsm','=', True)]}">
                         <button name="request_access" string="Solicitar autorización" type="object"
                                 class="oe_highlight"
                                 groups="base.group_user"
