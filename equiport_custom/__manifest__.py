@@ -38,6 +38,7 @@
         'sale_timesheet',
         'l10n_latam_invoice_document',
         'l10n_do_accounting',
+        'dgii_reports'
     ],
 
     # always loaded
@@ -51,6 +52,7 @@
         'data/product_product_data.xml',
         'data/damage_option_data.xml',
         'data/ir_con_data.xml',
+        'data/ir_sequence.xml',
         'data/fleet_service_data.xml',
         'data/unit_model_size.xml',
         'data/unit_model_type.xml',
@@ -82,6 +84,8 @@
         'views/fleet_vehicle_log_views.xml',
         'views/unit_model_type.xml',
         'views/unit_model_size.xml',
+        'views/dgii_report_views.xml',
+        'views/account_payment_views.xml',
         'report/report_external_layout.xml',
         'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',

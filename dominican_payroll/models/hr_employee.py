@@ -24,15 +24,15 @@ class HrEmployee(models.Model):
     def get_approved_loans(self):
         return self.loan_ids.filtered(lambda loan: loan.state == 'approved')
 
-    # @api.model
-    # def name_search(self, name='', args=None, operator='ilike', limit=100):
-    #     recs = self.search([
-    #         '|',
-    #         ('name', operator, name),
-    #         ('employee_code', operator, name),
-    #     ], limit=limit)
-    #     res = recs.sudo().name_get()
-    #     return res
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        recs = self.search([
+            '|',
+            ('name', operator, name),
+            ('employee_code', operator, name),
+        ], limit=limit)
+        res = recs.sudo().name_get()
+        return res
 
     # @api.model
     # def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):

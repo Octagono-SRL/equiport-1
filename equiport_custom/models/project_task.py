@@ -11,7 +11,19 @@ class ProjectTask(models.Model):
 
     extra_user1_id = fields.Many2one(comodel_name='hr.employee', string="Técnico 1")
     extra_user2_id = fields.Many2one(comodel_name='hr.employee', string="Técnico 2")
+    truck_required = fields.Boolean(string="Camion no requerido", compute='compute_truck_required')
     fsm_invoice_available = fields.Boolean(string="Facturación interna", compute='compute_fsm_invoice_available')
+
+    # number = fields.Char(string="Secuencia", default='/')
+
+    @api.depends('name', 'is_fsm')
+    def compute_truck_required(self):
+        for rec in self:
+            if self.env.user.has_group('equiport_custom.group_commercial_user') or self.env.user.has_group(
+                    'equiport_custom.group_commercial_manager'):
+                rec.truck_required = False
+            else:
+                rec.truck_required = True
 
     @api.depends('main_cause')
     def compute_fsm_invoice_available(self):
@@ -20,6 +32,23 @@ class ProjectTask(models.Model):
                 rec.fsm_invoice_available = False
             else:
                 rec.fsm_invoice_available = True
+
+    @api.model
+    def default_get(self, fields):
+        result = super(ProjectTask, self).default_get(fields)
+        if self._context.get('fsm_mode'):
+            result['name'] = '/'
+        return result
+
+    @api.model
+    def create(self, vals):
+        # To avoid consuming a sequence number when clicking on 'Create', we preprend it if the
+        # the name starts with '/'.
+        vals['name'] = vals.get('name') or '/'
+        if vals['name'].startswith('/'):
+            vals['name'] = (self.env['ir.sequence'].next_by_code('project.task') or '/') + vals['name']
+            vals['name'] = vals['name'][:-1] if vals['name'].endswith('/') and vals['name'] != '/' else vals['name']
+        return super(ProjectTask, self).create(vals)
 
     # Form rescue and assistant
 
@@ -127,7 +156,7 @@ class ProjectTask(models.Model):
                     validate_fields.update({
                         'Horas trabajadas': False,
                     })
-                if task.container_type_id == self.env.ref('container_model_freeze'):
+                if task.container_type_id == self.env.ref('equiport_custom.container_model_freeze'):
                     if not task.before_temp or not task.after_temp or not task.before_oxy or not task.after_oxy or not task.before_vent or not task.after_vent or not task.before_carb or not task.after_carb or not task.before_diox or not task.after_diox or not task.before_humid or not task.after_humid:
                         validate_fields.update({
                             'Configuración de la nevera': False,
@@ -182,13 +211,15 @@ class ProjectTask(models.Model):
     km_travelled = fields.Float(string="Km recorridos")
     main_cause = fields.Selection([('bad_use', 'Mal uso'), ('wear', 'Deterioro')], string="Causa rescate")
     chassis_long = fields.Char(related='chassis_long_id.name')
-    chassis_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'chassis')], string="Long. Chasis")
+    chassis_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'chassis')],
+                                      string="Long. Chasis")
     th_gen_set = fields.Boolean(string="¿Hay Gen Set?")
     th_freeze = fields.Boolean(string="Nevera?")
     container_type = fields.Char(related='chassis_long_id.name', string="Tamaño chasis")
     container_type_id = fields.Many2one(comodel_name='unit.model.type', string="Tipo de contenedor")
     container_long = fields.Char(related='container_long_id.name', string="Tamaño contenedor")
-    container_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'container')], string="Long. Contenedor")
+    container_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'container')],
+                                        string="Long. Contenedor")
 
     @api.onchange('chassis_long')
     def set_unit_chassis_long(self):
