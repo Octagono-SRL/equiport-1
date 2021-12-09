@@ -44,7 +44,7 @@
 
                         <button name="grant_access" string="Conceder autorización" type="object"
                                 class="oe_highlight"
-                                groups="stock.group_stock_manager"
+                                groups="equiport_custom.grand_picking_access"
                                 attrs="{'invisible': ['|', ('access_requested', '=', False),('access_granted', '=', True) ]}"/>
                     </header>
 

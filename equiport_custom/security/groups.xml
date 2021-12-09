@@ -7,6 +7,10 @@
             <field name="name">Permitir transferencias, ajustes de inventario, desecho y costes en destino.</field>
         </record>
 
+        <record id="grand_picking_access" model="res.groups">
+            <field name="name">Concede acceso a los conduces</field>
+        </record>
+
         <record id="supervisor_stock_order_point" model="res.groups">
             <field name="name">Encargado de terminal (Valida y realiza las reposiciones de material).</field>
         </record>
