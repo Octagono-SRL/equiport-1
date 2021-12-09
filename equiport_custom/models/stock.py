@@ -108,8 +108,8 @@ class StockPicking(models.Model):
             error_message_lines = []
             for ml in self.move_line_ids:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'inventory_quantity'))
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -117,8 +117,8 @@ class StockPicking(models.Model):
 
             for ml in self.move_line_ids_without_package:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'inventory_quantity'))
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -126,8 +126,8 @@ class StockPicking(models.Model):
 
             for ml in self.move_line_nosuggest_ids:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'inventory_quantity'))
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
