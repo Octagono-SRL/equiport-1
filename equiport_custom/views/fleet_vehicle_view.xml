@@ -66,12 +66,12 @@
                                 <field name="model_id" placeholder="e.g. Model S"
                                        attrs="{'required': [('unit_type', '=', 'vehicle')]}"/>
                             </h1>
-                            <label for="license_plate" class="oe_edit_only"/>
+                            <label for="license_plate" class="oe_edit_only" string="Placa"/>
                             <h2>
                                 <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
                             </h2>
                             <label for="tag_ids" class="oe_edit_only"/>
-                            <field name="tag_ids" widget="many2many_tags"
+                            <field name="tag_ids" attrs="{'required': [('unit_type', '=', 'vehicle')]}" widget="many2many_tags"
                                    options="{'color_field': 'color', 'no_create_edit': True, 'no_create': 1, 'no_edit': 1}"/>
 
                             <group>
@@ -83,7 +83,7 @@
                             <label for="unit_model_id" class="oe_edit_only"/>
                             <h1>
                                 <field name="unit_model_id" placeholder="e.g. Model S"
-                                       attrs="{'required': [('unit_type', '!=', 'vehicle')]}"
+                                       attrs="{'required': False}"
                                        options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                             </h1>
                             <label for="product_unit_id" class="oe_edit_only"/>

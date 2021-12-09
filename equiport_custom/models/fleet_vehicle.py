@@ -28,7 +28,7 @@ class FleetVehicle(models.Model):
     vehicle_token = fields.Char(string="Ficha")
 
     product_unit_id = fields.Many2one(comodel_name='product.product', string="Unidad",
-                                      domain="[('unit_type', '=', unit_type), ('unit_model_id', '=', unit_model_id)]")
+                                      domain="[('unit_type', '=', unit_type)]")
     unit_type = fields.Selection(
         [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis'), ('utility', 'Utilitario')],
         tracking=True, string="Tipo de unidad", default='vehicle')
@@ -131,8 +131,8 @@ class FleetVehicle(models.Model):
                 record.name = (record.model_id.brand_id.name or '') + '/' + (record.model_id.name or '') + '/' + (
                         record.license_plate or _('No Plate'))
             else:
-                record.name = (record.unit_model_id.brand_id.name or '') + '/' + (
-                        record.unit_model_id.name or '') + '/' + (record.product_unit_id.name or '') + '/' + (
+                record.name = ((record.unit_model_id.brand_id.name + '/') if record.unit_model_id.brand_id.name else '') + (
+                        (record.unit_model_id.name + '/') if record.unit_model_id.name else '') + ((record.product_unit_id.name + '/') if record.product_unit_id.name else '') + (
                                       record.unit_lot_id.name or 'Sin Serial')
 
     def _compute_count_all(self):
@@ -270,7 +270,7 @@ class FleetTireSet(models.Model):
                                      domain="[('product_id', '=', product_id), ('assigned_tire', '=', False)]")
 
     # assigned_tire
-    
+
     def write(self, vals):
         if 'product_lot_id' in vals:
             lot_id = vals['product_lot_id']
