@@ -131,18 +131,25 @@ class PurchaseOrder(models.Model):
             else:
                 rec.is_approval_group = False
 
+    def get_currency_amount(self, amount):
+        company_id = self.company_id
+        company_currency_id = company_id.currency_id
+        return company_currency_id._convert(amount, self.currency_id, self.company_id, self.date_order)
+
     @api.depends('amount_total', 'company_id.active_op_approval')
     def _check_approval_need(self):
         for rec in self:
             company_id = rec.company_id
+            company_currency_id = company_id.currency_id
             op_approval = company_id.active_op_approval
+
             if op_approval:
-                if company_id.op_ini_level <= rec.amount_total:
+                if rec.get_currency_amount(company_id.op_ini_level) <= rec.amount_total:
                     rec.approval_needed = True
                     rec.approval_level = 'one'
-                if company_id.op_mid_level <= rec.amount_total:
+                if rec.get_currency_amount(company_id.op_mid_level) <= rec.amount_total:
                     rec.approval_level = 'two'
-                if company_id.op_top_level <= rec.amount_total:
+                if rec.get_currency_amount(company_id.op_top_level) <= rec.amount_total:
                     rec.approval_level = 'three'
             else:
                 rec.approval_needed = False
@@ -214,11 +221,11 @@ class PurchaseOrder(models.Model):
         op_approval = company_id.active_op_approval
         responsible = self.env['res.partner']
         if op_approval:
-            if company_id.op_ini_level <= self.amount_total:
+            if self.get_currency_amount(company_id.op_ini_level) <= self.amount_total:
                 responsible += company_id.op_ini_user_id.partner_id
-            if company_id.op_mid_level <= self.amount_total:
+            if self.get_currency_amount(company_id.op_mid_level) <= self.amount_total:
                 responsible += company_id.op_mid_user_id.partner_id
-            if company_id.op_top_level <= self.amount_total:
+            if self.get_currency_amount(company_id.op_top_level) <= self.amount_total:
                 responsible += company_id.op_top_user_id.partner_id
 
             partners = responsible
@@ -331,7 +338,7 @@ class PurchaseOrder(models.Model):
         company_id = self.company_id
         op_approval = company_id.active_op_approval
         if op_approval and not self.allowed_confirm:
-            if company_id.op_ini_level <= self.amount_total:
+            if self.get_currency_amount(company_id.op_ini_level) <= self.amount_total:
                 raise ValidationError("No es posible confirmar. Solicite una aprobación por el monto actual.")
 
         res = super(PurchaseOrder, self).button_confirm()

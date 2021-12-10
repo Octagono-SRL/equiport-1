@@ -272,6 +272,9 @@ class StockPicking(models.Model):
                     })
 
                     sale_id.update_existing_rental_subscriptions()
+
+                    for line in sale_id.mapped('invoice_ids.invoice_line_ids'):
+                        line._get_stock_reserved_lot_ids()
             elif self.picking_type_code == 'incoming':
                 returned = True
                 for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
