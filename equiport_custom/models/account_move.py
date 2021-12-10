@@ -219,7 +219,7 @@ class AccountMoveLine(models.Model):
     _inherit = ['account.move.line']
 
     reserved_lot_ids = fields.Many2many(compute='_get_stock_reserved_lot_ids', comodel_name='stock.production.lot',
-                                        relation='invoice_reserved_lot_rel', domain="[('product_id','=',product_id)]",
+                                        relation='invoice_reserved_lot_rel', domain="[('product_id','=',product_id)]",store=True,
                                         copy=False, string="Números de serie")
     # Gate Service
     storage_rate = fields.Float(string="Tasa de estadia")
@@ -244,7 +244,7 @@ class AccountMoveLine(models.Model):
             rec.stamp = stamp_string
             rec.boat = boat_string
 
-    @api.depends('sale_line_ids')
+    @api.depends('sale_line_ids', 'name', 'move_id.state', 'move_id.flow_origin')
     def _get_stock_reserved_lot_ids(self):
         for rec in self:
             rec.reserved_lot_ids = [(6, 0, rec.mapped('sale_line_ids.move_ids.lot_ids').ids)]

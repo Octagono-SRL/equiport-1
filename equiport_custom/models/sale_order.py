@@ -206,12 +206,11 @@ class RentalOrderLine(models.Model):
     #         res['domain'] = {'product_id': domain}
     #     return res
     #
-    # def _prepare_invoice_line(self, **optional_values):
-    #     res = super(RentalOrderLine, self)._prepare_invoice_line(**optional_values)
-    #
-    #     if self.order_id.is_gate_service:
-    #         res.update(
-    #             storage_rate=self.storage_rate,
-    #         )
-    #
-    #     return res
+    def _prepare_invoice_line(self, **optional_values):
+        res = super(RentalOrderLine, self)._prepare_invoice_line(**optional_values)
+        if self.move_ids:
+            res.update(
+                reserved_lot_ids=[(6, 0, self.mapped('move_ids.lot_ids').ids)],
+            )
+
+        return res
