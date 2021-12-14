@@ -11,8 +11,9 @@ class AccountPayment(models.Model):
     rental_order_id = fields.Many2one(comodel_name='sale.order', string="Orden de alquiler",
                                       domain=[('is_rental_order', '=', True)])
 
-    ncf_reference = fields.Char(string="Referencia de Pago", compute='compute_payment_reference', store=True,
-                                default=lambda s: s.default_payment_reference())
+    ncf_reference = fields.Char(string="Referencia de Pago", compute='compute_payment_reference', store=True)
+    # ncf_reference = fields.Char(string="Referencia de Pago", compute='compute_payment_reference', store=True,
+    #                             default=lambda s: s.default_payment_reference())
 
     @api.depends('name', 'reconciled_invoices_count', 'reconciled_invoice_ids', 'reconciled_bill_ids',
                  'reconciled_bills_count', 'rental_order_id', 'is_rental_deposit')
@@ -27,13 +28,13 @@ class AccountPayment(models.Model):
             else:
                 rec.ncf_reference = ''
 
-    def default_payment_reference(self):
-        ncf_reference = ''
-        if self.reconciled_bill_ids:
-            ncf_reference = ', '.join(i.l10n_do_fiscal_number for i in self.reconciled_bill_ids)
-        elif self.reconciled_invoice_ids:
-            ncf_reference = ', '.join(i.l10n_do_fiscal_number for i in self.reconciled_invoice_ids)
-        elif self.is_rental_deposit and self.rental_order_id:
-            ncf_reference = self.rental_order_id.name
-
-        return ncf_reference
+    # def default_payment_reference(self):
+    #     ncf_reference = ''
+    #     if self.reconciled_bill_ids:
+    #         ncf_reference = ', '.join(i.l10n_do_fiscal_number for i in self.reconciled_bill_ids)
+    #     elif self.reconciled_invoice_ids:
+    #         ncf_reference = ', '.join(i.l10n_do_fiscal_number for i in self.reconciled_invoice_ids)
+    #     elif self.is_rental_deposit and self.rental_order_id:
+    #         ncf_reference = self.rental_order_id.name
+    #
+    #     return ncf_reference
