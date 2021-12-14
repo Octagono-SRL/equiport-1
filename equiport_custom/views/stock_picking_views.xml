@@ -15,17 +15,17 @@
 
                 <xpath expr="//notebook/page[@name='extra']/group/group[@name='other_infos']" position="before">
                     <group string="Datos del cliente" name="other_partner_infos"
-                           attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)]}">
+                           attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental', '=', False), ('is_gate_service', '=', False)]}">
                         <field name="partner_driver"
-                               attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
+                               attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), '|', ('picking_type_code', 'in', ['outgoing', 'internal']),('is_gate_service', '=', True)]}"/>
                         <field name="license_card_driver"
-                               attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
+                               attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), '|', ('picking_type_code', 'in', ['outgoing', 'internal']),('is_gate_service', '=', True)]}"/>
                         <field name="card_driver"
-                               attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
+                               attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), '|', ('picking_type_code', 'in', ['outgoing', 'internal']),('is_gate_service', '=', True)]}"/>
                         <field name="vat_driver"
-                               attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
+                               attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), '|', ('picking_type_code', 'in', ['outgoing', 'internal']),('is_gate_service', '=', True)]}"/>
                         <field name="partner_truck"
-                               attrs="{'invisible': [('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), ('is_gate_service', '=', True)]}"/>
+                               attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal']),('is_rental', '=', False), ('is_gate_service', '=', False)], 'required':['|', ('is_rental', '=', True), '|', ('picking_type_code', 'in', ['outgoing', 'internal']),('is_gate_service', '=', True)]}"/>
                     </group>
                 </xpath>
 

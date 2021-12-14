@@ -156,7 +156,7 @@ class ProjectTask(models.Model):
                     validate_fields.update({
                         'Horas trabajadas': False,
                     })
-                if task.container_type_id == self.env.ref('container_model_freeze'):
+                if task.container_type_id == self.env.ref('equiport_custom.container_model_freeze'):
                     if not task.before_temp or not task.after_temp or not task.before_oxy or not task.after_oxy or not task.before_vent or not task.after_vent or not task.before_carb or not task.after_carb or not task.before_diox or not task.after_diox or not task.before_humid or not task.after_humid:
                         validate_fields.update({
                             'Configuración de la nevera': False,
