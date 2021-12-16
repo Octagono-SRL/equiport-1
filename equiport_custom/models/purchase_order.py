@@ -149,8 +149,10 @@ class PurchaseOrder(models.Model):
                     rec.approval_level = 'one'
                 if rec.get_currency_amount(company_id.op_mid_level) <= rec.amount_total:
                     rec.approval_level = 'two'
+                    rec.approval_needed = True
                 if rec.get_currency_amount(company_id.op_top_level) <= rec.amount_total:
                     rec.approval_level = 'three'
+                    rec.approval_needed = True
             else:
                 rec.approval_needed = False
                 rec.approval_level = False

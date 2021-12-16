@@ -17,7 +17,7 @@ class SaleOrder(models.Model):
     def compute_fsm_invoice_available(self):
         for rec in self:
             rec.fsm_invoice_available = True
-            if rec.tasks_count <= 1:
+            if rec.tasks_count >= 1:
                 for task_id in rec.tasks_ids:
                     if task_id.is_fsm and task_id.main_cause == 'wear':
                         rec.fsm_invoice_available = False
@@ -28,6 +28,8 @@ class SaleOrder(models.Model):
                     rec.is_fsm = True
                 else:
                     rec.is_fsm = False
+            else:
+                rec.is_fsm = False
 
     # TODO Desabilido Proceso Gate In/Out
     # def _create_invoices(self, grouped=False, final=False, date=None):
