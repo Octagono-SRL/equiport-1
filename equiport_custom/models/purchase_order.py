@@ -143,6 +143,9 @@ class PurchaseOrder(models.Model):
             company_currency_id = company_id.currency_id
             op_approval = company_id.active_op_approval
 
+            if rec.amount_total <= 0:
+                rec.approval_level = False
+
             if op_approval:
                 if rec.get_currency_amount(company_id.op_ini_level) <= rec.amount_total:
                     rec.approval_needed = True
