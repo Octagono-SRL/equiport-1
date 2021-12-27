@@ -67,6 +67,42 @@ class StockPicking(models.Model):
     is_fsm = fields.Boolean(related='sale_id.is_fsm', string="Proviene de un Rescate")
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
+    material_picking = fields.Boolean(string="Conduce de materiales")
+    material_not_allow_save = fields.Boolean(string="Conduce de materiales Permitir guardar")
+
+    @api.onchange('material_picking', 'move_ids_without_package', 'move_lines')
+    def check_not_unit_in_material_picking(self):
+        if self.material_picking:
+            message_err = []
+            for ml in self.move_line_ids:
+                if ml.product_id.unit_type:
+                    message_err.append(" - Producto: %s" % ml.product_id.name)
+            for ml in self.move_ids_without_package:
+                if ml.product_id.unit_type:
+                    message_err.append(" - Producto: %s" % ml.product_id.name)
+            for ml in self.move_line_ids_without_package:
+                if ml.product_id.unit_type:
+                    message_err.append(" - Producto: %s" % ml.product_id.name)
+            if len(message_err) > 0:
+                self.material_not_allow_save = True
+                return {
+                    'warning': {'title': "Advertencia",
+                                'message': 'Los siguientes no son materiales:\n' + '\n'.join(
+                                    message_err)},
+                }
+            else:
+                self.material_not_allow_save = False
+
+    @api.constrains('material_picking')
+    def constrains_not_unit_in_material_picking(self):
+        for rec in self:
+            if rec.material_picking and rec.material_not_allow_save:
+                raise ValidationError('Retire los productos que no sean materiales o modifique la operación')
+
+    @api.onchange('picking_type_code')
+    def set_material_picking_false(self):
+        if self.picking_type_code != 'internal':
+            self.material_picking = False
 
     @api.onchange('is_gate_service', 'name', 'partner_id')
     def set_domain_gate_picking_type(self):
@@ -150,18 +186,18 @@ class StockPicking(models.Model):
 
         # region Gate Service
         if self.is_gate_service:
-            if self.picking_type_code == 'incoming':
-                for line in self.move_line_nosuggest_ids:
-                    if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
-                        continue
-                    else:
-                        raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
-                                              "\n"
-                                              "* Número de reserva\n"
-                                              "* Sello\n"
-                                              "* Barco\n"
-                                              "* Linea naviera\n")
-            elif self.picking_type_code == 'outgoing':
+            # if self.picking_type_code == 'incoming':
+                # for line in self.move_line_nosuggest_ids:
+                #     if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
+                #         continue
+                #     else:
+                #         raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
+                #                               "\n"
+                #                               "* Número de reserva\n"
+                #                               "* Sello\n"
+                #                               "* Barco\n"
+                #                               "* Linea naviera\n")
+            if self.picking_type_code == 'outgoing':
                 for line in self.move_line_nosuggest_ids:
                     if line.out_booking and line.out_boat and line.out_stamp and line.out_navy_line:
                         continue
