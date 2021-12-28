@@ -76,6 +76,9 @@ class AccountMove(models.Model):
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
 
     def action_post(self):
+        for inv in self.filtered(lambda m: m.move_type == 'out_refund'):
+            if self.user_has_groups("!equiport_custom.group_general_manager,!equiport_custom.group_commercial_manager,!equiport_custom.group_account_manager,!equiport_custom.group_admin_manager"):
+                raise ValidationError("No tiene permitido validar este documento, contacte con alguno de los gerentes encargados.")
 
         for invoice in self.filtered(lambda s: s.is_invoice()):
             prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix

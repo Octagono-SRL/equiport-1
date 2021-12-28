@@ -214,6 +214,8 @@ class FleetVehicleLogTires(models.Model):
     _description = 'Historial de asignacion de neumaticos'
     _order = 'date desc'
 
+    sequence = fields.Integer(help='Secuencia del neumatico', string="Secuencia", default=1)
+    sequence_number = fields.Integer(help='Posición de neumatico', string="Posición", default=1)
     name = fields.Char(compute='_compute_vehicle_log_tire_name', store=True)
     date = fields.Date(string="Fecha de registro", default=fields.Date.context_today)
     tires_number = fields.Integer(string='Numero de neumaticos', default=4, required=True)
