@@ -8,6 +8,9 @@
             <field name="inherit_id" ref="stock.view_warehouse"/>
             <field name="arch" type="xml">
                 <xpath expr="//notebook/page[@name='warehouse_config']/group/group[@name='group_resupply']" position="after">
+                    <group name="gate_config">
+                        <field name="is_gate_stock"/>
+                    </group>
                     <group name="move_config">
                         <field name="is_mobile_stock"/>
                         <field name="vehicle_id" domain="[('unit_type', '=', 'vehicle')]" attrs="{'invisible':[('is_mobile_stock', '=', False)], 'required':[('is_mobile_stock', '=', True)]}"/>
