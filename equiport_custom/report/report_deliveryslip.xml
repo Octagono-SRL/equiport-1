@@ -27,11 +27,6 @@
                         </tr>
                         <tr>
                             <th scope="row">Número de reserva</th>
-                            <t t-if="o.picking_type_code == 'incoming'">
-                                <td>
-                                    <span t-if="line.in_booking" t-esc="line.in_booking"/>
-                                </td>
-                            </t>
                             <t t-if="o.picking_type_code == 'outgoing'">
                                 <td>
                                     <span t-if="line.out_booking" t-esc="line.out_booking"/>
@@ -40,11 +35,6 @@
                         </tr>
                         <tr>
                             <th scope="row">Sello</th>
-                            <t t-if="o.picking_type_code == 'incoming'">
-                                <td>
-                                    <span t-if="line.in_stamp" t-esc="line.in_stamp"/>
-                                </td>
-                            </t>
                             <t t-if="o.picking_type_code == 'outgoing'">
                                 <td>
                                     <span t-if="line.out_stamp" t-esc="line.out_stamp"/>
@@ -53,11 +43,6 @@
                         </tr>
                         <tr>
                             <th scope="row">Barco</th>
-                            <t t-if="o.picking_type_code == 'incoming'">
-                                <td>
-                                    <span t-if="line.in_boat" t-esc="line.in_boat"/>
-                                </td>
-                            </t>
                             <t t-if="o.picking_type_code == 'outgoing'">
                                 <td>
                                     <span t-if="line.out_boat" t-esc="line.out_boat"/>
@@ -66,11 +51,6 @@
                         </tr>
                         <tr>
                             <th scope="row">Linea</th>
-                            <t t-if="o.picking_type_code == 'incoming'">
-                                <td>
-                                    <span t-if="line.in_navy_line" t-esc="line.in_navy_line"/>
-                                </td>
-                            </t>
                             <t t-if="o.picking_type_code == 'outgoing'">
                                 <td>
                                     <span t-if="line.out_navy_line" t-esc="line.out_navy_line"/>
@@ -155,10 +135,118 @@
 
         </xpath>
 
-        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/t[@groups='stock.group_lot_on_delivery_slip']" position="replace">
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/t[@groups='stock.group_lot_on_delivery_slip']"
+               position="replace">
             <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')"/>
         </xpath>
 
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_table']/thead" position="before">
+            <t t-set="has_units" t-value="False"/>
+            <t t-set="has_units" t-value="o.move_line_ids.mapped('product_id.unit_type')"/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_table']/thead/tr/th[@name='th_sm_product']"
+               position="after">
+            <t name="th_sm_unit" t-if="all(has_units)">
+                <th><strong>Detalles de unidad</strong></th>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_table']/tbody" position="replace">
+            <tbody>
+                <t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                <tr t-foreach="lines" t-as="move">
+                    <td>
+                        <span t-field="move.product_id"/>
+                        <p t-if="move.description_picking != move.product_id.name">
+                            <span t-field="move.description_picking"/>
+                        </p>
+                    </td>
+                    <t t-if="all(has_units)">
+                        <td>
+                            <p>
+                                <t t-if="move.product_id.unit_type in ['container', 'chassis']">
+                                    <t>Unidad: <span t-field="move.product_id.unit_type"/></t>
+                                    <t>Tamaño: <span t-field="move.product_id.unit_size_id"/></t>
+                                    <br/>
+                                    <t t-if="move.product_id.unit_type == 'container'">
+                                        <t>Tipo: <span t-field="move.product_id.container_type_id"/></t>
+                                    </t>
+                                    <t t-if="move.product_id.unit_brand_id">Marca: <span
+                                            t-field="move.product_id.unit_brand_id"/></t>
+                                    <t t-if="move.product_id.unit_model_id">Modelo: <span
+                                            t-field="move.product_id.unit_model_id"/></t>
+                                </t>
+                                <t t-else="">
+                                    <t>Unidad: <span t-field="move.product_id.unit_type"/></t>
+                                    <t t-if="move.product_id.unit_brand_id">Marca: <span
+                                            t-field="move.product_id.unit_brand_id"/></t>
+                                    <t t-if="move.product_id.unit_model_id">Modelo: <span
+                                            t-field="move.product_id.unit_model_id"/></t>
+                                </t>
+
+                            </p>
+                        </td>
+                    </t>
+                    <td>
+                        <span t-field="move.product_uom_qty"/>
+                        <span t-field="move.product_uom"/>
+                    </td>
+                </tr>
+            </tbody>
+        </xpath>
+        <!--        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_table']" position="attributes">-->
+        <!--            <attribute name="t-if">o.state not in ['assigned', 'done']</attribute>-->
+        <!--        </xpath>-->
+        <!--        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']" position="attributes">-->
+        <!--            <attribute name="t-if">o.move_line_ids and o.state in ['assigned', 'done']</attribute>-->
+        <!--        </xpath>-->
+
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/thead" position="before">
+            <t t-set="has_units" t-value="False"/>
+            <t t-set="has_units" t-value="o.move_line_ids.mapped('product_id.unit_type')"/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/thead/tr/t[@name='lot_serial']"
+               position="after">
+            <t name="th_sm_unit" t-if="all(has_units)">
+                <th><strong>Detalles de unidad</strong></th>
+            </t>
+        </xpath>
+
+    </template>
+
+    <template id="stock_report_delivery_has_serial_move_line_equiport_inherit"
+              inherit_id="stock.stock_report_delivery_has_serial_move_line">
+
+        <xpath expr="//t[@name='move_line_lot']" position="after">
+            <t t-if="all(has_units)">
+                <td>
+                    <p>
+                        <t t-if="move_line.product_id.unit_type in ['container', 'chassis']">
+                            <t>Unidad: <span t-field="move_line.product_id.unit_type"/></t>
+                            <t>Tamaño: <span t-field="move_line.product_id.unit_size_id"/></t>
+                            <br/>
+                            <t t-if="move_line.product_id.unit_type == 'container'">
+                                <t>Tipo: <span t-field="move_line.product_id.container_type_id"/></t>
+                            </t>
+                            <t t-if="move_line.product_id.unit_brand_id">Marca: <span
+                                    t-field="move_line.product_id.unit_brand_id"/></t>
+                            <t t-if="move_line.product_id.unit_model_id">Modelo: <span
+                                    t-field="move_line.product_id.unit_model_id"/></t>
+                        </t>
+                        <t t-else="">
+                            <t>Unidad: <span t-field="move_line.product_id.unit_type"/></t>
+                            <t t-if="move_line.product_id.unit_brand_id">Marca: <span
+                                    t-field="move_line.product_id.unit_brand_id"/></t>
+                            <t t-if="move_line.product_id.unit_model_id">Modelo: <span
+                                    t-field="move_line.product_id.unit_model_id"/></t>
+                        </t>
+
+                    </p>
+                </td>
+            </t>
+        </xpath>
     </template>
 
 </odoo>
