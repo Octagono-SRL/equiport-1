@@ -60,8 +60,10 @@
                     </t>
                 </tbody>
             </table>
-
             <div class="row">
+                <div class="col-6">
+                    <p t-field="o.note"/>
+                </div>
                 <style>
                     .border-custom{
                     border: 1px solid black !important;
@@ -70,8 +72,8 @@
                     font-weight: bold !important;
                     }
                 </style>
-                <div t-if="o.partner_driver" class="col-12 d-flex justify-content-end">
-                    <div class="clearfix col-4">
+                <div t-if="o.partner_driver" class="col-6">
+                    <div class="clearfix">
                         <table class="table table-cover border-custom" name="stock_picking_client_info">
                             <tr>
                                 <th class="border-custom bold-custom" scope="row" name="partner_driver">Conductor</th>
