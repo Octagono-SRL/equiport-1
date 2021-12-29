@@ -214,8 +214,6 @@ class FleetVehicleLogTires(models.Model):
     _description = 'Historial de asignacion de neumaticos'
     _order = 'date desc'
 
-    sequence = fields.Integer(help='Secuencia del neumatico', string="Secuencia", default=1)
-    sequence_number = fields.Integer(help='Posición de neumatico', string="Posición", default=1)
     name = fields.Char(compute='_compute_vehicle_log_tire_name', store=True)
     date = fields.Date(string="Fecha de registro", default=fields.Date.context_today)
     tires_number = fields.Integer(string='Numero de neumaticos', default=4, required=True)
@@ -238,7 +236,7 @@ class FleetVehicleLogTires(models.Model):
             self.tires_number = 4
         empty_spaces = []
         for n in range(self.tires_number):
-            empty_spaces.append((0, 0, {}))
+            empty_spaces.append((0, 0, {'sequence_number': n+1}))
 
         self.tires_set_ids = empty_spaces
 
@@ -265,11 +263,17 @@ class FleetTireSet(models.Model):
     _description = 'Modulo para set de neumatico y numero de serie'
 
     name = fields.Char(compute='_compute_name', store=True)
+    sequence = fields.Integer(help='Secuencia del neumatico', string="Secuencia", default=1)
+    sequence_number = fields.Integer(help='Posición de neumatico', string="Posición")
     vehicle_log_tires_id = fields.Many2one(comodel_name='fleet.vehicle.log.tires',
                                            string='Registro de cambio de neumatico')
     product_id = fields.Many2one(comodel_name='product.product', string='Neumatico')
     product_lot_id = fields.Many2one(comodel_name='stock.production.lot', string='Referencia de neumatico',
                                      domain="[('product_id', '=', product_id), ('assigned_tire', '=', False)]")
+
+    @api.onchange('sequence')
+    def keep_sequence_order(self):
+        self.sequence_number = self.sequence
 
     # assigned_tire
 
