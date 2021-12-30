@@ -9,6 +9,51 @@ from odoo.exceptions import ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    # region Service Picking
+    receivable_service = fields.Boolean(string="Recibir servicios", compute='_compute_receivable_service')
+    service_picking_ids = fields.One2many(comodel_name='stock.service.picking', inverse_name='purchase_order_id',
+                                          string="Conduces de servicio")
+    service_receipt_count = fields.Integer(
+        compute='_compute_service_picking_count', string="Número de conduces")
+
+    def action_view_service_receipt(self):
+        '''
+        This function returns an action that display existing delivery orders
+        of given sales order ids. It can either be a in a list or in a form
+        view, if there is only one delivery order to show.
+        '''
+        action = self.env["ir.actions.actions"]._for_xml_id("equiport_custom.stock_service_picking_act_window")
+
+        pickings = self.mapped('service_picking_ids')
+        if len(pickings) > 1:
+            action['domain'] = [('id', 'in', pickings.ids)]
+        elif pickings:
+            form_view = [(self.env.ref('equiport_custom.stock_service_picking_form_view').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = pickings.id
+        return action
+
+    @api.depends('service_picking_ids')
+    def _compute_service_picking_count(self):
+        for rec in self:
+            rec.service_receipt_count = len(rec.service_picking_ids)
+
+    @api.depends('order_line', 'state')
+    def _compute_receivable_service(self):
+        for rec in self:
+            services = rec.order_line.filtered(lambda
+                                                   l: l.product_id.type == 'service' and l.product_uom_qty != l.qty_received and l.receivable_service)
+
+            if services and len(services) > 0:
+                rec.receivable_service = True
+            else:
+                rec.receivable_service = False
+
+    # endregion
+
     # region Solicitud de Cancelacion
     allowed_cancel = fields.Boolean(string="Cancelación aprobada", tracking=True)
     allowed_cancel_sign = fields.Binary(copy=False)
@@ -296,21 +341,24 @@ class PurchaseOrder(models.Model):
             if 'allowed_confirm_sign_one' in vals:
                 vals['allowed_confirm_date_sign_one'] = datetime.datetime.now()
                 if self.allowed_confirm_signed_by:
-                   vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by, self.op_ini_user_id.display_name)
+                    vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by,
+                                                                          self.op_ini_user_id.display_name)
                 else:
                     vals['allowed_confirm_signed_by'] = self.op_ini_user_id.display_name
 
             if 'allowed_confirm_sign_two' in vals:
                 vals['allowed_confirm_date_sign_two'] = datetime.datetime.now()
                 if self.allowed_confirm_signed_by:
-                   vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by, self.op_mid_user_id.display_name)
+                    vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by,
+                                                                          self.op_mid_user_id.display_name)
                 else:
                     vals['allowed_confirm_signed_by'] = self.op_mid_user_id.display_name
 
             if 'allowed_confirm_sign_three' in vals:
                 vals['allowed_confirm_date_sign_three'] = datetime.datetime.now()
                 if self.allowed_confirm_signed_by:
-                   vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by, self.op_top_user_id.display_name)
+                    vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by,
+                                                                          self.op_top_user_id.display_name)
                 else:
                     vals['allowed_confirm_signed_by'] = self.op_top_user_id.display_name
 
@@ -362,6 +410,21 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    receivable_service = fields.Boolean(string="Se puede recibir", compute='_compute_service_qty_received')
+    service_picking_line_ids = fields.One2many(comodel_name='stock.service.move', inverse_name='purchase_order_line_id',
+                                               string="Movimientos de servicio")
+
+    @api.depends('qty_received', 'service_picking_line_ids')
+    def _compute_service_qty_received(self):
+        for rec in self:
+            # rec.service_picking_line_ids.unlink()
+            picking_qty = sum(
+                rec.service_picking_line_ids.filtered(lambda spl: spl.state != 'cancel').mapped('product_uom_qty'))
+            if (rec.product_uom_qty - picking_qty) > 0:
+                rec.receivable_service = True
+            else:
+                rec.receivable_service = False
+
     @api.model
     def _prepare_purchase_order_line_from_procurement(self, product_id, product_qty, product_uom, company_id, values,
                                                       po):
@@ -375,4 +438,3 @@ class PurchaseOrderLine(models.Model):
             res['name'] = 'Uso: ' + values.get('order_use')
 
         return res
-

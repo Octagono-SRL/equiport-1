@@ -22,3 +22,4 @@ from . import product_unit
 from . import project_task
 from . import fleet_vehicle
 from . import dgii_report
+from . import stock_service_picking

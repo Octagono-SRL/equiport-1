@@ -16,6 +16,7 @@
                     <field name="allowed_confirm" invisible="1"/>
                     <field name="request_approval" invisible="1"/>
                     <field name="requested_cancel" invisible="1"/>
+                    <field name="receivable_service" invisible="1"/>
                     <field name="cancel_reason"
                            attrs="{'invisible':[('allowed_cancel', '=', False)], 'readonly':True}"/>
                 </xpath>
@@ -36,7 +37,20 @@
                             attrs="{'invisible':['|', ('request_approval', '=', True), '|', ('approval_needed', '=', False), ('state', 'in', ['cancel', 'done', 'purchase'])]}"
                             string="Solicitar Aprobacion" class="oe_highlight"
                             help="Realizar solicitud de autorización para realizar esta compra"/>
+                    <button name="%(wizard_service_picking_act_window)d" type="action"
+                            context="{'default_purchase_order_id': active_id}"
+                            groups="equiport_custom.group_operations_user"
+                            attrs="{'invisible': ['|', ('state', '!=', 'purchase'), ('receivable_service', '=', False)]}"
+                            string="Conduce de Servicio" class="oe_highlight"
+                            help="Crear un conduce para recibir servicios"/>
                 </xpath>
+
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <field name="service_picking_ids" invisible="1"/>
+                    <button type="object" name="action_view_service_receipt" class="oe_stat_button" icon="fa-truck" attrs="{'invisible': [('service_receipt_count', '=', 0)]}" groups="base.group_user">
+                        <field name="service_receipt_count" widget="statinfo" string="Servicios"/>
+                    </button>
+                </div>
 
                 <xpath expr="//header/button[@name='button_approve']" position="replace"/>
 
