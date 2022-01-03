@@ -53,9 +53,9 @@
                         <!--                        Modificacion imagen del registro -->
 
                         <field name="unit_image_128" widget="image" class="oe_avatar"
-                               attrs="{'invisible': [('unit_type', '=', 'vehicle')]}"/>
+                               attrs="{'invisible': [('unit_type', 'in', ['vehicle', 'utility'])]}"/>
                         <field name="image_128" widget="image" class="oe_avatar"
-                               attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}"/>
+                               attrs="{'invisible': [('unit_type', 'not in', ['vehicle', 'utility'])]}"/>
 
                         <!--                        Modificacion modelo y registro unidad-->
 
@@ -90,7 +90,7 @@
                             <h2>
                                 <field name="product_unit_id"
                                        options="{'color_field': 'color', 'no_create': 1, 'no_edit': 1, 'no_open': 1}"
-                                       class="oe_inline" attrs="{'required': [('unit_type', '!=', 'vehicle')]}"/>
+                                       class="oe_inline" attrs="{'required': [('unit_type', 'not in', ['vehicle', 'utility'])]}"/>
                             </h2>
                             <group>
                                 <field name="unit_type" required="1"/>
