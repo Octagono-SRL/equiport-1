@@ -128,6 +128,7 @@ class RepairOrder(models.Model):
         After repair else state is set to 'Ready'.
         @return: True
         """
+        self = self.with_user(self.env.ref('base.user_root'))
         for repair in self:
             work_time_product_id = self.env.ref('sale_timesheet.time_product_product_template')
             if work_time_product_id not in repair.fees_lines.mapped('product_id.product_tmpl_id'):

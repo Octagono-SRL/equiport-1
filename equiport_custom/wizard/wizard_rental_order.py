@@ -24,6 +24,7 @@ class RentalProcessing(models.TransientModel):
                 'location_dest_id': self.order_id.company_id.rental_loc_id.id,
                 'move_lines': lines,
                 'is_rental': True,
+                'sale_id': self.order_id.id,
                 'origin': self.order_id.name,
             })
             pick_output.name += f'/Movimiento de Alquiler: Entrega {self.order_id.name}'
@@ -53,6 +54,7 @@ class RentalProcessing(models.TransientModel):
                 'location_dest_id': self.order_id.warehouse_id.lot_stock_id.id,
                 'move_lines': lines,
                 'is_rental': True,
+                'sale_id': self.order_id.id,
                 'origin': self.order_id.name,
             })
             pick_input.name += f'/Movimiento de Alquiler: Devolución {self.order_id.name}'
@@ -70,6 +72,5 @@ class RentalProcessing(models.TransientModel):
                     pick_input.move_lines += move_line_id.move_id
             self.order_id.picking_ids += pick_input
             pick_input.state = 'assigned'
-            self.order_id.rental_subscription_id.set_close()
 
         return res

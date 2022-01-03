@@ -33,6 +33,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='user_id']" position="after">
                     <field name="fsm_invoice_available" invisible="1"/>
+                    <field name="truck_required" invisible="1"/>
                     <field name="extra_user1_id" options="{'no_create': 1, 'no_edit': 1}"
                            attrs="{'invisible': [('is_fsm', '=', False)]}"
                            domain="[('user_id', '!=', user_id)]"/>
@@ -53,7 +54,7 @@
                                 <field name="rescue_location"/>
                                 <field name="employee_worker_ids" widget="many2many_tags"/>
                                 <field name="main_cause" widget="radio" options="{'horizontal': 1}"/>
-                                <field name="rescue_truck_id" attrs="{'required': [('is_fsm', '=', True)]}"
+                                <field name="rescue_truck_id" attrs="{'required': [('is_fsm', '=', True), ('truck_required', '=', True)]}"
                                        options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                 <field name="consumption" attrs="{'required': [('km_travelled', '!=', 0)]}"/>
                                 <field name="performance" force_save="1" readonly="1"/>

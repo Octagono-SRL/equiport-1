@@ -24,3 +24,8 @@ access_unit_model_type,access_unit_model_type,model_unit_model_type,stock.group_
 access_unit_model_type_user,access_unit_model_type_user,model_unit_model_type,stock.group_stock_user,1,0,0,0
 access_unit_model_size,access_unit_model_size,model_unit_model_size,stock.group_stock_manager,1,1,1,1
 access_unit_model_size_user,access_unit_model_size_user,model_unit_model_size,stock.group_stock_user,1,0,0,0
+access_tire_state,access_tire_state,model_tire_state,stock.group_stock_manager,1,1,1,1
+access_tire_state_user,access_tire_state_user,model_unit_model_size,stock.group_stock_user,1,0,0,0
+access_stock_service_picking_user,access_stock_service_picking_user,model_stock_service_picking,base.group_user,1,1,1,1
+access_stock_service_move_user,access_stock_service_move_user,model_stock_service_move,base.group_user,1,1,1,1
+access_wizard_service_picking_user,access_wizard_service_picking_user,model_wizard_service_picking,base.group_user,1,1,1,1

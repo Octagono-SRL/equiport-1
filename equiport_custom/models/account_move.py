@@ -19,6 +19,7 @@ class AccountMove(models.Model):
         'l10n_latam_tax_ids.amount_currency',
         'amount_total',
         'state',
+        'currency_id',
         'fiscal_position_id')
     def _compute_sign_amount_tax(self):
         for rec in self:
@@ -27,12 +28,13 @@ class AccountMove(models.Model):
             tax_lines = rec.l10n_latam_tax_ids.filtered(lambda i: i.tax_line_id.tax_group_id.name == "ITBIS")
             if rec.is_inbound(True):
                 for line in tax_lines:
-                    positive += line.credit
-                    negative += line.debit
+                    positive += rec.company_currency_id._convert(line.credit, rec.currency_id, rec.company_id, rec.date)
+                    negative += rec.company_currency_id._convert(line.debit, rec.currency_id, rec.company_id, rec.date)
             elif rec.move_type == 'entry' or rec.is_outbound():
                 for line in tax_lines:
-                    positive += line.debit
-                    negative += line.credit
+                    positive += rec.company_currency_id._convert(line.debit, rec.currency_id, rec.company_id, rec.date)
+                    negative += rec.company_currency_id._convert(line.credit, rec.currency_id, rec.company_id, rec.date)
+
             rec.negative_amount_tax = negative
             rec.positive_amount_tax = positive
 
@@ -74,6 +76,9 @@ class AccountMove(models.Model):
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
 
     def action_post(self):
+        for inv in self.filtered(lambda m: m.move_type == 'out_refund'):
+            if self.user_has_groups("!equiport_custom.group_general_manager,!equiport_custom.group_commercial_manager,!equiport_custom.group_account_manager,!equiport_custom.group_admin_manager"):
+                raise ValidationError("No tiene permitido validar este documento, contacte con alguno de los gerentes encargados.")
 
         for invoice in self.filtered(lambda s: s.is_invoice()):
             prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
@@ -217,7 +222,7 @@ class AccountMoveLine(models.Model):
     _inherit = ['account.move.line']
 
     reserved_lot_ids = fields.Many2many(compute='_get_stock_reserved_lot_ids', comodel_name='stock.production.lot',
-                                        relation='invoice_reserved_lot_rel', domain="[('product_id','=',product_id)]",
+                                        relation='invoice_reserved_lot_rel', domain="[('product_id','=',product_id)]",store=True,
                                         copy=False, string="Números de serie")
     # Gate Service
     storage_rate = fields.Float(string="Tasa de estadia")
@@ -242,7 +247,7 @@ class AccountMoveLine(models.Model):
             rec.stamp = stamp_string
             rec.boat = boat_string
 
-    @api.depends('sale_line_ids')
+    @api.depends('sale_line_ids', 'name', 'move_id.state', 'move_id.flow_origin')
     def _get_stock_reserved_lot_ids(self):
         for rec in self:
             rec.reserved_lot_ids = [(6, 0, rec.mapped('sale_line_ids.move_ids.lot_ids').ids)]

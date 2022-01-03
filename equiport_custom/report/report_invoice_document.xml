@@ -21,6 +21,33 @@
                 </t>
             </xpath>
 
+            <xpath expr="//div[hasclass('page')]/p[@name='payment_communication']" position="replace"/>
+            <xpath expr="//div[hasclass('page')]/p[@name='payment_term']" position="replace"/>
+            <xpath expr="//div[hasclass('page')]/p[@name='comment']" position="replace"/>
+            <xpath expr="//div[hasclass('page')]/p[@name='note']" position="replace"/>
+
+            <xpath expr="//div[hasclass('page')]/div[hasclass('clearfix')]/div[@id='total']/div" position="attributes">
+                <attribute name="t-attf-class">#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'}</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('page')]/div[hasclass('clearfix')]/div[@id='total']/div" position="before">
+                <div class="col-6">
+                    <p t-if="o.move_type in ('out_invoice', 'in_refund') and o.payment_reference"
+                       name="payment_communication">
+                        Por favor utilice la siguiente referencia al realizar su pago : <b><span
+                            t-field="o.payment_reference"/></b>
+                    </p>
+                    <p t-if="o.invoice_payment_term_id" name="payment_term">
+                        <span t-field="o.invoice_payment_term_id.note"/>
+                    </p>
+                    <p t-if="o.narration" name="comment">
+                        <span t-field="o.narration"/>
+                    </p>
+                    <p t-if="o.fiscal_position_id.note" name="note">
+                        <span t-field="o.fiscal_position_id.note"/>
+                    </p>
+                </div>
+            </xpath>
+
             <xpath expr="//div[hasclass('page')]/div[hasclass('clearfix')]/div[@id='total']/div/table/tr[hasclass('o_subtotal')]"
                    position="before">
                 <tr class="border-black o_subtotal" style="">

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="new_tires" model="tire.state">
+            <field name="name">Nuevas</field>
+            <field name="active" eval="1"/>
+        </record>
+
+        <record id="used" model="tire.state">
+            <field name="name">Usadas</field>
+            <field name="active" eval="1"/>
+        </record>
+
+        <record id="used_low" model="tire.state">
+            <field name="name">Usadas bajo</field>
+            <field name="active" eval="1"/>
+        </record>
+
+        <record id="used_mid" model="tire.state">
+            <field name="name">Usadas medio</field>
+            <field name="active" eval="1"/>
+        </record>
+
+        <record id="used_high" model="tire.state">
+            <field name="name">Usadas alto</field>
+            <field name="active" eval="1"/>
+        </record>
+
+        <record id="scrap_tires" model="tire.state">
+            <field name="name">Desecho</field>
+            <field name="active" eval="1"/>
+        </record>
+    </data>
+</odoo>

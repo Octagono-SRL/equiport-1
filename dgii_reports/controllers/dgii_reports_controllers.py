@@ -15,25 +15,26 @@ class DgiiReportsControllers(Controller):
 
         if str(ncf_rnc)[:1] == 'B':
             invoice_id = env['account.move'].search([
-                ('reference', '=', ncf_rnc)
+                ('ref', '=', ncf_rnc),
+                ('move_type', 'in', ('out_invoice', 'in_invoice', 'out_refund', 'in_refund'))
                 ], limit=1)
             if invoice_id:
                 # Get action depending on invoice type
                 action_map = {
                     'out_invoice': request.env.ref(
-                        'account.action_invoice_tree1'
+                        'account.action_move_out_invoice_type'
                         ),
                     'in_invoice': request.env.ref(
-                        'account.action_vendor_bill_template'
+                        'account.action_move_in_invoice_type'
                         ),
                     'out_refund': request.env.ref(
-                        'account.action_invoice_out_refund'
+                        'account.action_move_out_invoice_type'
                         ),
                     'in_refund': request.env.ref(
-                        'account.action_invoice_in_refund'
+                        'account.action_move_in_invoice_type'
                         )
                 }
-                action = action_map[invoice_id.type]
+                action = action_map[invoice_id.move_type]
                 url = "%s/web#id=%s&action=%s&model=account.move&view" \
                       "_type=form" % (base_url, invoice_id.id, action.id)
 

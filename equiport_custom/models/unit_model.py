@@ -55,6 +55,7 @@ class ToolBrand(models.Model):
 
 class UnitType(models.Model):
     _name = 'unit.model.type'
+    _description = "Tipo de contenedor"
 
     name = fields.Char(string='Tipo de unidad', required=True)
     active = fields.Boolean(default=True, string="Activo")
@@ -62,6 +63,7 @@ class UnitType(models.Model):
 
 class UnitSize(models.Model):
     _name = 'unit.model.size'
+    _description = "Tamaño de chasis y contenedores"
 
     unit_type = fields.Selection([('container', 'Contenedor'), ('chassis', 'Chasis')],
                                  default='container', string="Tipo de unidad")

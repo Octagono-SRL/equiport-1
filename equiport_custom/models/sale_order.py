@@ -17,7 +17,7 @@ class SaleOrder(models.Model):
     def compute_fsm_invoice_available(self):
         for rec in self:
             rec.fsm_invoice_available = True
-            if rec.tasks_count <= 1:
+            if rec.tasks_count >= 1:
                 for task_id in rec.tasks_ids:
                     if task_id.is_fsm and task_id.main_cause == 'wear':
                         rec.fsm_invoice_available = False
@@ -28,6 +28,8 @@ class SaleOrder(models.Model):
                     rec.is_fsm = True
                 else:
                     rec.is_fsm = False
+            else:
+                rec.is_fsm = False
 
     # TODO Desabilido Proceso Gate In/Out
     # def _create_invoices(self, grouped=False, final=False, date=None):
@@ -206,12 +208,11 @@ class RentalOrderLine(models.Model):
     #         res['domain'] = {'product_id': domain}
     #     return res
     #
-    # def _prepare_invoice_line(self, **optional_values):
-    #     res = super(RentalOrderLine, self)._prepare_invoice_line(**optional_values)
-    #
-    #     if self.order_id.is_gate_service:
-    #         res.update(
-    #             storage_rate=self.storage_rate,
-    #         )
-    #
-    #     return res
+    def _prepare_invoice_line(self, **optional_values):
+        res = super(RentalOrderLine, self)._prepare_invoice_line(**optional_values)
+        if self.move_ids:
+            res.update(
+                reserved_lot_ids=[(6, 0, self.mapped('move_ids.lot_ids').ids)],
+            )
+
+        return res

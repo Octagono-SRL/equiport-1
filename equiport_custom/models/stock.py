@@ -64,8 +64,45 @@ class StockPicking(models.Model):
 
     is_rental = fields.Boolean(string="Proviene de una orden de alquiler", default=False)
     is_gate_service = fields.Boolean(string="Proviene de una orden de servicio gate")
+    is_fsm = fields.Boolean(related='sale_id.is_fsm', string="Proviene de un Rescate")
 
     repair_id = fields.Many2one('repair.order', string="Orden de reparación")
+    material_picking = fields.Boolean(string="Conduce de materiales")
+    material_not_allow_save = fields.Boolean(string="Conduce de materiales Permitir guardar")
+
+    @api.onchange('material_picking', 'move_ids_without_package', 'move_lines')
+    def check_not_unit_in_material_picking(self):
+        if self.material_picking:
+            message_err = []
+            for ml in self.move_line_ids:
+                if ml.product_id.unit_type:
+                    message_err.append(" - Producto: %s" % ml.product_id.name)
+            for ml in self.move_ids_without_package:
+                if ml.product_id.unit_type:
+                    message_err.append(" - Producto: %s" % ml.product_id.name)
+            for ml in self.move_line_ids_without_package:
+                if ml.product_id.unit_type:
+                    message_err.append(" - Producto: %s" % ml.product_id.name)
+            if len(message_err) > 0:
+                self.material_not_allow_save = True
+                return {
+                    'warning': {'title': "Advertencia",
+                                'message': 'Los siguientes no son materiales:\n' + '\n'.join(
+                                    message_err)},
+                }
+            else:
+                self.material_not_allow_save = False
+
+    @api.constrains('material_picking')
+    def constrains_not_unit_in_material_picking(self):
+        for rec in self:
+            if rec.material_picking and rec.material_not_allow_save:
+                raise ValidationError('Retire los productos que no sean materiales o modifique la operación')
+
+    @api.onchange('picking_type_code')
+    def set_material_picking_false(self):
+        if self.picking_type_code != 'internal':
+            self.material_picking = False
 
     @api.onchange('is_gate_service', 'name', 'partner_id')
     def set_domain_gate_picking_type(self):
@@ -107,8 +144,8 @@ class StockPicking(models.Model):
             error_message_lines = []
             for ml in self.move_line_ids:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'inventory_quantity'))
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -116,8 +153,8 @@ class StockPicking(models.Model):
 
             for ml in self.move_line_ids_without_package:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'inventory_quantity'))
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -125,8 +162,8 @@ class StockPicking(models.Model):
 
             for ml in self.move_line_nosuggest_ids:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.on_hand and sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'inventory_quantity'))
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -149,18 +186,18 @@ class StockPicking(models.Model):
 
         # region Gate Service
         if self.is_gate_service:
-            if self.picking_type_code == 'incoming':
-                for line in self.move_line_nosuggest_ids:
-                    if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
-                        continue
-                    else:
-                        raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
-                                              "\n"
-                                              "* Número de reserva\n"
-                                              "* Sello\n"
-                                              "* Barco\n"
-                                              "* Linea naviera\n")
-            elif self.picking_type_code == 'outgoing':
+            # if self.picking_type_code == 'incoming':
+                # for line in self.move_line_nosuggest_ids:
+                #     if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
+                #         continue
+                #     else:
+                #         raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
+                #                               "\n"
+                #                               "* Número de reserva\n"
+                #                               "* Sello\n"
+                #                               "* Barco\n"
+                #                               "* Linea naviera\n")
+            if self.picking_type_code == 'outgoing':
                 for line in self.move_line_nosuggest_ids:
                     if line.out_booking and line.out_boat and line.out_stamp and line.out_navy_line:
                         continue
@@ -229,7 +266,66 @@ class StockPicking(models.Model):
     def grant_access(self):
         self.access_granted = True
 
+    def write(self, vals):
+        for rec in self:
+            if rec.origin and 'origin' not in vals and rec.is_rental:
+                sale_id = self.env['sale.order'].search([('name', '=', rec.origin)])
+                vals['sale_id'] = sale_id.id if sale_id else False
+            actual_sale_id = rec.sale_id.id
+            if 'sale_id' in vals and rec.is_rental:
+                if not vals.get('sale_id') and actual_sale_id:
+                    vals['sale_id'] = actual_sale_id
+                else:
+                    sale_id = self.env['sale.order'].search([('name', '=', rec.origin)])
+                    vals['sale_id'] = sale_id.id if sale_id else False
+        res = super(StockPicking, self).write(vals)
+
+        return res
+
     def button_confirm(self):
+        sale_id = self.sale_id
+        if not sale_id:
+            find_sale_id = self.env['sale.order'].search([('name', '=', self.origin)])
+            self.sale_id = find_sale_id.id if find_sale_id else False
+
+        # region Rental Order
+        if self.is_rental and sale_id and sale_id.is_rental_order:
+            if self.picking_type_code == 'outgoing':
+                for line in sale_id.order_line:
+                    line.pickup_date = datetime.datetime.now()
+                    line.product_id_change()
+                if sale_id.rental_subscription_id:
+                    date_today = fields.Date.context_today(self)
+                    recurring_invoice_day = date_today.day
+                    recurring_next_date = self.env['sale.subscription']._get_recurring_next_date(
+                        sale_id.rental_template_id.recurring_rule_type, sale_id.rental_template_id.recurring_interval,
+                        date_today, recurring_invoice_day
+                    )
+                    sale_id.rental_subscription_id.write({
+                        'date_start': date_today,
+                        'recurring_next_date': recurring_next_date,
+                        'recurring_invoice_day': recurring_invoice_day
+                    })
+
+                    sale_id.update_existing_rental_subscriptions()
+
+                    for line in sale_id.mapped('invoice_ids.invoice_line_ids'):
+                        line._get_stock_reserved_lot_ids()
+            elif self.picking_type_code == 'incoming':
+                returned = True
+                for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                    if line.product_uom_qty > 0 and line.qty_delivered < line.qty_returned:
+                        returned = False
+                if sale_id.rental_subscription_id and returned:
+                    sale_id.rental_subscription_id.set_close()
+                else:
+                    for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                        if line.return_date and line.product_uom_qty > 0 and line.qty_delivered == line.qty_returned:
+                            line.product_uom_qty = 0
+                    sale_id.update_existing_rental_subscriptions()
+
+        # endregion
+
         if self.picking_type_code == 'incoming':
             for line in self.move_ids_without_package:
                 if line.rent_state:
@@ -366,6 +462,8 @@ class StockProductionLot(models.Model):
     _inherit = 'stock.production.lot'
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
+    is_tire_lot = fields.Boolean(related='product_id.is_tire_product')
+    tire_state_id = fields.Many2one(string="Estado de neúmatico", comodel_name='tire.state')
     assigned_tire = fields.Boolean(string="esta asignado?")
     positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
     unit_type = fields.Selection(related='product_id.unit_type')
@@ -379,6 +477,15 @@ class StockProductionLot(models.Model):
                 rec.positive_qty = True
             else:
                 rec.positive_qty = False
+
+    @api.onchange('product_id', 'name', 'positive_qty')
+    def set_domain_gate_picking_type(self):
+        if self._context.get('fleet_menu'):
+            return {
+                'domain': {
+                    'product_id': [('is_tire_product', '=', True)]
+                }
+            }
 
     @api.constrains('name')
     def check_general_unique_lot(self):
@@ -445,7 +552,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado")
@@ -465,9 +572,26 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
         string="Estado")
 
+    def write(self, vals):
+
+        res = super(StockMove, self).write(vals)
+
+        for rec in self:
+            if rec.picking_id.picking_type_code == 'incoming' and rec.picking_id.is_rental and rec.rent_state:
+                rec.picking_id.button_confirm()
+
+        return res
+
     storage_rate = fields.Float(string="Tasa de estadia")
+
+
+class TireState(models.Model):
+    _name = 'tire.state'
+
+    name = fields.Char(string="Titulo", required=True)
+    active = fields.Boolean(string="Archivado", default=True)

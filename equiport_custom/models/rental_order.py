@@ -52,6 +52,13 @@ class RentalOrder(models.Model):
                 # sub_lines = lines._prepare_subscription_line_data()
                 recurring_lines = []
                 for rent_line in lines:
+                    # Actualizando descripciones
+                    actual_desc = rent_line.name
+                    if rent_line.product_id.type == 'product':
+                        desc_list = actual_desc.split(rent_line.get_rental_order_line_description() or ' ')
+                        if len(desc_list) == 2 and desc_list[1] == '':
+                            rent_line.name = desc_list[0]
+
                     recurring_lines.append((0, False, {
                         'rental_order_line_id': rent_line.id,
                         'product_id': rent_line.product_id.id,
@@ -171,6 +178,33 @@ class RentalOrder(models.Model):
                     raise ValidationError("El contacto no tiene los documentos necesarios para continuar.")
         res = super(RentalOrder, self).action_confirm()
         return res
+
+    def action_cancel(self):
+        if self.is_rental_order:
+            if len(self.picking_ids) > 0:
+                outgoing_ids = self.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing')
+                for p_out in outgoing_ids:
+                    if p_out.state == 'done':
+                        raise ValidationError("No es posible cancelar un Alquiler con unidades entregadas")
+                    else:
+                        p_out.action_cancel()
+
+                # incoming_ids = self.picking_ids.filtered(lambda p: p.picking_type_code == 'incoming')
+            if self.rental_subscription_id:
+                self.rental_subscription_id.set_close()
+                self.rental_subscription_id = False
+            if self.rental_subscription_id or self.subscription_count > 0:
+                for line in self.order_line:
+                    line.subscription_id = False
+        res = super(RentalOrder, self).action_cancel()
+        return res
+
+    # def action_draft(self):
+    #     if self.is_rental_order:
+    #         for line in self.order_line:
+    #             line.subscription_id = False
+    #     res = super(RentalOrder, self).action_draft()
+    #     return res
 
     def action_view_deposits(self):
         payments = self.payment_ids
