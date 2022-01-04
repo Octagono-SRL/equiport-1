@@ -22,45 +22,31 @@
                     <attribute name="help">
                         Contribuyente:
                         (B) Crédito Fiscal (Tipo 01)
-                        (B) Régimen Especial (Tipo 14)
-                        (B) Factura Gubernamental (Tipo 15)
-                        (E) Crédito Fiscal Electrónica
-                        (E) Régimen Especial Electrónica
-                        (E) Factura Gubernamental Electrónica
 
                         Cliente de Consumo:
-                        (B) Comprobante de Compra (Tipo 11)
-                        (B) Gasto Menor (Tipo 13)
+                            Cliente:
+                                (B) Consumo (Tipo 02)
+                                (B) Único Ingreso (Tipo 12)
+                            Proveedor:
+                                (B) Comprobante de Compra (Tipo 11)
+                                (B) Gasto Menor (Tipo 13)
 
                         Sin fines de lucro:
-                        (B) Régimen Especial (Tipo 14)
-                        (B) Factura Gubernamental (Tipo 15)
-                        (E) Régimen Especial Electrónica
-                        (E) Factura Gubernamental Electrónica
+                            Cliente:
+                                (B) Crédito Fiscal (Tipo 01)
+                            Proveedor:
+                                (E) Régimen Especial Electrónica
+                                (E) Factura Gubernamental Electrónica
 
                         Exento:
-                        (B) Crédito Fiscal (Tipo 01)
                         (B) Régimen Especial (Tipo 14)
-                        (B) Factura Gubernamental (Tipo 15)
-                        (E) Crédito Fiscal Electrónica
-                        (E) Régimen Especial Electrónica
-                        (E) Factura Gubernamental Electrónica
 
                         Gubernamental:
-                        (B) Crédito Fiscal (Tipo 01)
-                        (B) Régimen Especial (Tipo 14)
                         (B) Factura Gubernamental (Tipo 15)
-                        (E) Crédito Fiscal Electrónica
-                        (E) Régimen Especial Electrónica
-                        (E) Factura Gubernamental Electrónica
 
                         Extranjero:
-                        (B) Crédito Fiscal (Tipo 01)
-                        (B) Régimen Especial (Tipo 14)
-                        (B) Factura Gubernamental (Tipo 15)
-                        (E) Crédito Fiscal Electrónica
-                        (E) Régimen Especial Electrónica
-                        (E) Factura Gubernamental Electrónica
+                        (B) Consumo (Tipo 02)
+                        (B) Exportación (Tipo 16)
                     </attribute>
                 </xpath>
 
