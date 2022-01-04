@@ -367,16 +367,16 @@ class RentalOrder(models.Model):
 
         return res
 
-    @api.model
-    def create(self, vals):
-        if 'is_rental_order' in vals:
-            if vals['is_rental_order']:
-                partner_id = self.env['res.partner'].browse(vals['partner_id'])
-                if not partner_id.allowed_rental:
-                    if not partner_id.commercial_register or not partner_id.leasing_contract:
-                        raise ValidationError("El contacto no tiene los documentos necesarios para continuar.")
-
-        return super(RentalOrder, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     if 'is_rental_order' in vals:
+    #         if vals['is_rental_order']:
+    #             partner_id = self.env['res.partner'].browse(vals['partner_id'])
+    #             if not partner_id.allowed_rental:
+    #                 if not partner_id.commercial_register or not partner_id.leasing_contract:
+    #                     raise ValidationError("El contacto no tiene los documentos necesarios para continuar.")
+    #
+    #     return super(RentalOrder, self).create(vals)
 
     def write(self, values):
         if self.is_rental_order:
