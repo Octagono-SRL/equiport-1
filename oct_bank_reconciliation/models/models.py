@@ -72,7 +72,7 @@ class OctBankReconciliation(models.Model):
                 raise ValidationError(u"La conciliación del periodo anterior no está validada.")
             rec.previous_balance = previous_reconciliation.total
 
-    @api.depends('previous_balance', 'issued_deposits', 'current_checks2')
+    @api.depends('previous_balance', 'issued_deposits', 'current_checks2', 'debit_checks1')
     def _compute_total(self):
         for rec in self:
             rec.total = rec.previous_balance + rec.issued_deposits - rec.current_checks2 - rec.debit_checks1
@@ -136,11 +136,11 @@ class OctBankReconciliation(models.Model):
                                  'credit': line.credit}))
 
         for line in unvalidated_reconciliations_current:
-            ref = line.ref
+            ref = line.ref or ''
             if line.payment_id:
-                ref += ' || ' + line.payment_id.name
-                if line.payment_id.communication:
-                    ref += ' || ' + str(line.payment_id.communication)
+                ref += (' || ' + line.payment_id.name) if line.payment_id.name else ''
+                if line.payment_id.ref:
+                    ref += ' || ' + str(line.payment_id.ref)
 
             debit = True if line.debit > 0 else False
             diff_currency = self.account_id.currency_id != self.company_id.currency_id if self.account_id.currency_id else False

@@ -125,7 +125,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="o.payment_ids" t-as="line">
+                        <tr t-foreach="o.payment_ids.filtered(lambda x: not x.bank_reconciliated)" t-as="line">
                             <td width="13%">
                                 <span t-field="line.date"/>
                             </td>
