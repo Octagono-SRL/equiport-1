@@ -34,7 +34,7 @@
                     <field name="is_gate_service" invisible="1"/>
                     <field name="is_fsm" invisible="1"/>
                     <field name="material_not_allow_save" invisible="1"/>
-                    <field name="material_picking" attrs="{'invisible': [('picking_type_code', '!=','internal')]}"/>
+                    <field name="material_picking"/>
                 </xpath>
 
                 <header position="after">
