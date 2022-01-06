@@ -28,13 +28,11 @@ class AccountPayment(models.Model):
             else:
                 rec.ncf_reference = ''
 
-    # def default_payment_reference(self):
-    #     ncf_reference = ''
-    #     if self.reconciled_bill_ids:
-    #         ncf_reference = ', '.join(i.l10n_do_fiscal_number for i in self.reconciled_bill_ids)
-    #     elif self.reconciled_invoice_ids:
-    #         ncf_reference = ', '.join(i.l10n_do_fiscal_number for i in self.reconciled_invoice_ids)
-    #     elif self.is_rental_deposit and self.rental_order_id:
-    #         ncf_reference = self.rental_order_id.name
-    #
-    #     return ncf_reference
+    def unlink(self):
+        is_deposit = self.is_rental_deposit
+        order_id = self.rental_order_id
+        res = super().unlink()
+        if is_deposit:
+            order_id.deposit_status = False
+        return res
+
