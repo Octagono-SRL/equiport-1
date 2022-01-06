@@ -283,6 +283,7 @@ class StockPicking(models.Model):
         return res
 
     def button_confirm(self):
+        self = self.sudo()
         sale_id = self.sale_id
         if not sale_id:
             find_sale_id = self.env['sale.order'].search([('name', '=', self.origin)])
@@ -337,6 +338,7 @@ class StockPicking(models.Model):
         self.state = 'done'
 
     def request_access(self):
+        self = self.sudo()
         sale_id = self.sale_id
         if self.picking_type_code == 'outgoing' and sale_id and not self.is_gate_service:
             if not sale_id.partner_id.allowed_credit:
@@ -424,6 +426,7 @@ class StockPicking(models.Model):
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
+        self = self.sudo()
         if self.env.context.get('mark_requested_access'):
             self.write({'access_requested': True})
             kwargs['attachment_ids'] = self.env.context.get('attachment_ids')
