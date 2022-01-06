@@ -99,10 +99,10 @@ class StockPicking(models.Model):
             if rec.material_picking and rec.material_not_allow_save:
                 raise ValidationError('Retire los productos que no sean materiales o modifique la operación')
 
-    @api.onchange('picking_type_code')
-    def set_material_picking_false(self):
-        if self.picking_type_code != 'internal':
-            self.material_picking = False
+    # @api.onchange('picking_type_code')
+    # def set_material_picking_false(self):
+    #     if self.picking_type_code != 'internal':
+    #         self.material_picking = False
 
     @api.onchange('is_gate_service', 'name', 'partner_id')
     def set_domain_gate_picking_type(self):
