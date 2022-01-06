@@ -92,8 +92,7 @@
             <field name="arch" type="xml">
                 <search string="Conduces de servicio">
                     <group expand="1" string="Agrupar por">
-                        <filter string="Orden" name="purchase_order_id" domain="[]"
-                                context="{'group_by':'purchase_order_id'}"/>
+                        <filter string="Orden" name="purchase_order_id" domain="[]"/>
                     </group>
                 </search>
             </field>

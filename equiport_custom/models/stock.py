@@ -319,10 +319,11 @@ class StockPicking(models.Model):
                 if sale_id.rental_subscription_id and returned:
                     sale_id.rental_subscription_id.set_close()
                 else:
-                    for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                        if line.return_date and line.product_uom_qty > 0 and line.qty_delivered == line.qty_returned:
-                            line.product_uom_qty = 0
-                    sale_id.update_existing_rental_subscriptions()
+                    if sale_id.rental_subscription_id:
+                        for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                            if line.return_date and line.product_uom_qty > 0 and line.qty_delivered == line.qty_returned:
+                                line.product_uom_qty = 0
+                        sale_id.update_existing_rental_subscriptions()
 
         # endregion
 

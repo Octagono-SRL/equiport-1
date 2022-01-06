@@ -143,7 +143,7 @@ class RentalPaymentRegister(models.TransientModel):
             'account_id': account,
             'currency_id': (line.order_id.currency_id or line.order_id.company_id.currency_id).id,
             'partner_bank_id': False,
-            'partner_type': 'customer',
+            'partner_type': 'supplier',
             'payment_type': self._context.get('payment_type') if self._context.get(
                 'payment_type') != False else self.payment_type,
         }
@@ -443,7 +443,8 @@ class RentalPaymentRegister(models.TransientModel):
         #     raise UserError("El monto no puede superar el total de la cotización")
 
         if self._context.get('payment_type') == 'inbound':
-            account_id = self.env.ref('equiport_custom.rental_in_deposit_account')
+            # account_id = self.env.ref('equiport_custom.rental_in_deposit_account')
+            account_id = self.env.ref('equiport_custom.rental_out_deposit_account')
         elif self._context.get('payment_type') == 'outbound':
             account_id = self.env.ref('equiport_custom.rental_out_deposit_account')
             deposit = self.env['account.payment'].search(
@@ -457,7 +458,7 @@ class RentalPaymentRegister(models.TransientModel):
             'amount': self.amount,
             'payment_type': self._context.get('payment_type') if self._context.get(
                 'payment_type') != False else self.payment_type,
-            'partner_type': 'customer',
+            'partner_type': 'supplier',
             'ref': self.communication,
             'journal_id': self.journal_id.id,
             'currency_id': self.currency_id.id,
