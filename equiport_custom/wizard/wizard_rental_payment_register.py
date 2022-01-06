@@ -259,17 +259,18 @@ class RentalPaymentRegister(models.TransientModel):
     @api.depends('company_id')
     def _compute_journal_id(self):
         for wizard in self:
-            domain = [
-                ('type', 'in', ('bank', 'cash')),
-                ('company_id', '=', wizard.company_id.id),
-            ]
-            journal = None
-            if wizard.source_currency_id:
-                journal = self.env['account.journal'].search(
-                    domain + [('currency_id', '=', wizard.source_currency_id.id)], limit=1)
-            if not journal:
-                journal = self.env['account.journal'].search(domain, limit=1)
-            wizard.journal_id = journal
+            if not wizard.journal_id:
+                domain = [
+                    ('type', 'in', ('bank', 'cash')),
+                    ('company_id', '=', wizard.company_id.id),
+                ]
+                journal = None
+                if wizard.source_currency_id:
+                    journal = self.env['account.journal'].search(
+                        domain + [('currency_id', '=', wizard.source_currency_id.id)], limit=1)
+                if not journal:
+                    journal = self.env['account.journal'].search(domain, limit=1)
+                wizard.journal_id = journal
 
     @api.depends('journal_id')
     def _compute_currency_id(self):
@@ -367,20 +368,6 @@ class RentalPaymentRegister(models.TransientModel):
                 if deposit:
                     wizard.amount = deposit[0].amount
 
-    # @api.depends('amount')
-    # def _compute_payment_difference(self):
-    #     for wizard in self:
-    #         if wizard.source_currency_id == wizard.currency_id:
-    #             # Same currency.
-    #             wizard.payment_difference = wizard.source_amount_currency - wizard.amount
-    #         elif wizard.currency_id == wizard.company_id.currency_id:
-    #             # Payment expressed on the company's currency.
-    #             wizard.payment_difference = wizard.source_amount - wizard.amount
-    #         else:
-    #             # Foreign currency on payment different than the one set on the journal entries.
-    #             amount_payment_currency = wizard.company_id.currency_id._convert(wizard.source_amount, wizard.currency_id, wizard.company_id, wizard.payment_date)
-    #             wizard.payment_difference = amount_payment_currency - wizard.amount
-
     # -------------------------------------------------------------------------
     # LOW-LEVEL METHODS
     # -------------------------------------------------------------------------
@@ -470,29 +457,8 @@ class RentalPaymentRegister(models.TransientModel):
             'destination_account_id': account_id.id
         }
 
-        # if not self.currency_id.is_zero(self.payment_difference) and self.payment_difference_handling == 'reconcile':
-        #     payment_vals['write_off_line_vals'] = {
-        #         'name': self.writeoff_label,
-        #         'amount': self.payment_difference,
-        #         'account_id': self.writeoff_account_id.id,
-        #     }
         return payment_vals
 
-    # def _create_payment_vals_from_batch(self, batch_result):
-    #     batch_values = self._get_wizard_values_from_batch(batch_result)
-    #     return {
-    #         'date': self.payment_date,
-    #         'amount': batch_values['source_amount_currency'],
-    #         'payment_type': batch_values['payment_type'],
-    #         'partner_type': batch_values['partner_type'],
-    #         'ref': self._get_batch_communication(batch_result),
-    #         'journal_id': self.journal_id.id,
-    #         'currency_id': batch_values['source_currency_id'],
-    #         'partner_id': batch_values['partner_id'],
-    #         'partner_bank_id': batch_result['key_values']['partner_bank_id'],
-    #         'payment_method_id': self.payment_method_id.id,
-    #         'destination_account_id': batch_result['lines'][0].account_id.id
-    #     }
 
     def _create_payments(self):
         self.ensure_one()
@@ -542,20 +508,6 @@ class RentalPaymentRegister(models.TransientModel):
                 ]})
 
         payments.action_post()
-
-        # domain = [('account_internal_type', 'in', ('receivable', 'payable')), ('reconciled', '=', False)]
-        # for payment, lines in zip(payments, to_reconcile):
-        #
-        #     # When using the payment tokens, the payment could not be posted at this point (e.g. the transaction failed)
-        #     # and then, we can't perform the reconciliation.
-        #     if payment.state != 'posted':
-        #         continue
-        #
-        #     payment_lines = payment.line_ids.filtered_domain(domain)
-        #     for account in payment_lines.account_id:
-        #         (payment_lines + lines)\
-        #             .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
-        #             .reconcile()
 
         return payments
 
