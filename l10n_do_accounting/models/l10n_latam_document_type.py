@@ -46,9 +46,7 @@ class L10nLatamDocumentType(models.Model):
     l10n_do_ncf_expiration_date = fields.Date(
         string="NCF Expiration date",
         required=True,
-        default=fields.Date.end_of(
-            fields.Date.today().replace(year=fields.Date.today().year + 1), "year"
-        ),
+        default=fields.Date.end_of(fields.Date.today(), "year"),
     )
     internal_type = fields.Selection(
         selection_add=[
@@ -79,9 +77,8 @@ class L10nLatamDocumentType(models.Model):
             return False
 
         # NCF/ECF validation regex
-        regex = (
-            r"^((P?(?=.{11})B)|(?=.{13})E)%s(\d{8}|\d{10})$"
-            % dict(self._get_l10n_do_ncf_types())[self.l10n_do_ncf_type]
+        regex = r"^(P?((?=.{13})E)type(\d{10})|(((?=.{11})B))type(\d{8}))$".replace(
+            "type", dict(self._get_l10n_do_ncf_types())[self.l10n_do_ncf_type]
         )
         pattern = compile(regex)
 
