@@ -11,8 +11,15 @@
         <template id="report_repairorder2_equiport_inherit" inherit_id="repair.report_repairorder2">
             <xpath expr="//t[@t-call='web.html_container']/t[@t-foreach='docs']/t[@t-call='repair.report_repairorder']"
                    position="before">
-<!--                asdfghjkl;'lkjhgfgdfghjkl;kjhgfdfghjkl;'lkjhgf-->
+                <!--                asdfghjkl;'lkjhgfgdfghjkl;kjhgfdfghjkl;'lkjhgf-->
                 <t t-set="origin_document" t-value="'repair'"/>
+            </xpath>
+        </template>
+
+        <template id="report_purchaseorder2_equiport_inherit" inherit_id="purchase.report_purchaseorder">
+            <xpath expr="//t[@t-call='web.html_container']/t[@t-foreach='docs']/t[@t-call='purchase.report_purchaseorder_document']"
+                   position="before">
+                <t t-set="origin_document" t-value="'purchase'"/>
             </xpath>
         </template>
 
@@ -26,7 +33,7 @@
                    position="replace">
                 <div>
                     <!--        region FACTURACION-->
-<!--                    <t t-set="origin_document" t-value="'invoice'"/>-->
+                    <!--                    <t t-set="origin_document" t-value="'invoice'"/>-->
                     <t t-if="origin_document == 'invoice'">
                         <br/>
                         <div class="text-center" style="padding-bottom:5px;">
@@ -76,6 +83,66 @@
                         </div>
                     </t>
                     <!--                endregion-->
+
+                    <t t-elif="origin_document == 'purchase'">
+                        <div class="text-center" style="padding-bottom:5px; ">
+                            <table border="0" width="100%" style="border: none; border-collapse: collapse;">
+                                <t t-if="o.allowed_confirm_sign_level" name="signature">
+                                    <tr style="border: none; margin-top:5px;">
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;">
+                                            <div class="">
+                                                <img t-att-src="image_data_uri(o.allowed_confirm_sign_level)"
+                                                     style="max-height: 5cm; max-width: 5cm;"/>
+                                            </div>
+                                        </td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <th style="border: none;">_____________________________________________</th>
+                                        <th style="border: none;"></th>
+                                        <th style="border: none;">_____________________________________________</th>
+                                        <th style="border: none;"></th>
+                                        <th style="border: none;">_____________________________________________</th>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none;">Preparado por</td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;">Aprobado por</td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;">Recibido por</td>
+                                    </tr>
+                                </t>
+                                <t t-else="" >
+                                    <tr style="border: none;">
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <th style="border: none;">_____________________________________________</th>
+                                        <th style="border: none;"></th>
+                                        <th style="border: none;">_____________________________________________</th>
+                                        <th style="border: none;"></th>
+                                        <th style="border: none;">_____________________________________________</th>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none;">Preparado por</td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;">Aprobado por</td>
+                                        <td style="border: none;"></td>
+                                        <td style="border: none;">Recibido por</td>
+                                    </tr>
+                                </t>
+
+                            </table>
+                        </div>
+                    </t>
+
 
                 </div>
                 <div class="text-center">

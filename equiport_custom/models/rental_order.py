@@ -492,9 +492,9 @@ class RentalOrderLine(models.Model):
     def set_domain_for_rental_product(self):
         res = {}
         domain = [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                  ('company_id', '=', self.order_id.company_id)]
+                  ('company_id', '=', self.order_id.company_id.id)]
         rent_domain = [('rent_ok', '=', True), '|', ('company_id', '=', False),
-                       ('company_id', '=', self.order_id.company_id)]
+                       ('company_id', '=', self.order_id.company_id.id)]
         if self.order_id.is_rental_order:
             res['domain'] = {'product_id': rent_domain}
         else:

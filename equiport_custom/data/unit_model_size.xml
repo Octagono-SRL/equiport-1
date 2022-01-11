@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="container_unit_model_size_20" model="unit.model.size">
             <field name="name">20</field>
             <field name="unit_type">container</field>
