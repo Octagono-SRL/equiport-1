@@ -96,7 +96,6 @@
         'views/dgii_report_views.xml',
         'views/account_payment_views.xml',
         'report/report_external_layout.xml',
-        'report/report_purchaseorder_equiport_inherit.xml',
         'report/report_purchase_order_comparison.xml',
         'report/report_deliveryslip.xml',
         'report/report_purchase_requisition_order_comparison.xml',
