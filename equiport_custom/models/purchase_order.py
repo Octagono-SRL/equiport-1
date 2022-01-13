@@ -162,7 +162,10 @@ class PurchaseOrder(models.Model):
     is_approval_group = fields.Boolean(string="Grupo de aprobacion", compute="_check_approval_group")
     approval_level = fields.Selection(
         selection=[('one', 'Primer nivel'), ('two', 'Segundo nivel'), ('three', 'Tercer nivel')],
-        compute='_check_approval_need')
+        compute='_check_approval_need', string="Nivel de aprobación")
+    actual_approval_level = fields.Selection(
+        selection=[('one', 'Primer nivel'), ('two', 'Segundo nivel'), ('three', 'Tercer nivel'),
+                   ('complete', 'Totalmente aprobado')], string="Nivel de aprobación actual")
     request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
     approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
 
@@ -185,7 +188,6 @@ class PurchaseOrder(models.Model):
     def _check_approval_need(self):
         for rec in self:
             company_id = rec.company_id
-            company_currency_id = company_id.currency_id
             op_approval = company_id.active_op_approval
 
             if rec.amount_total <= 0:
@@ -201,6 +203,30 @@ class PurchaseOrder(models.Model):
                 if rec.get_currency_amount(company_id.op_top_level) <= rec.amount_total:
                     rec.approval_level = 'three'
                     rec.approval_needed = True
+
+                # CODIGO CONFIGURANDO ENVIO POR DE CORREO POR NIVEL
+
+                if rec.approval_level == 'one':
+                    if rec.allowed_confirm_sign_one:
+                        rec.actual_approval_level = 'complete'
+                    else:
+                        rec.actual_approval_level = 'one'
+                elif rec.approval_level == 'two':
+                    if rec.allowed_confirm_sign_one and rec.allowed_confirm_sign_two:
+                        rec.actual_approval_level = 'complete'
+                    elif rec.allowed_confirm_sign_one and not rec.allowed_confirm_sign_two:
+                        rec.actual_approval_level = 'two'
+                    else:
+                        rec.actual_approval_level = 'one'
+                elif rec.approval_level == 'three':
+                    if rec.allowed_confirm_sign_one and rec.allowed_confirm_sign_two and rec.allowed_confirm_sign_three:
+                        rec.actual_approval_level = 'complete'
+                    elif rec.allowed_confirm_sign_one and not rec.allowed_confirm_sign_two and not rec.allowed_confirm_sign_three:
+                        rec.actual_approval_level = 'two'
+                    elif rec.allowed_confirm_sign_one and rec.allowed_confirm_sign_two and not rec.allowed_confirm_sign_three:
+                        rec.actual_approval_level = 'three'
+                    else:
+                        rec.actual_approval_level = 'one'
             else:
                 rec.approval_needed = False
                 rec.approval_level = False
@@ -289,6 +315,23 @@ class PurchaseOrder(models.Model):
 
             return str([p.id for p in partners]).replace('[', '').replace(']', '')
 
+    def sign_with_user_sign(self):
+        env_user = self.env.user
+        if not env_user.sign_signature:
+            raise ValidationError("Su usuario no cuenta con una firma digital registrada")
+        if env_user == self.op_ini_user_id:
+            self.write({
+                'allowed_confirm_sign_one': env_user.sign_signature
+            })
+        elif env_user == self.op_mid_user_id:
+            self.write({
+                'allowed_confirm_sign_two': env_user.sign_signature
+            })
+        elif env_user == self.op_top_user_id:
+            self.write({
+                'allowed_confirm_sign_three': env_user.sign_signature
+            })
+
     def allow_confirm(self):
         if self.approval_level:
             responsible = False
@@ -316,9 +359,9 @@ class PurchaseOrder(models.Model):
                 self.allowed_confirm_sign_level = self.allowed_confirm_sign_three
                 self.allowed_confirm_sign_level_by = responsible.name
                 self.allowed_confirm_sign_level_date = self.allowed_confirm_date_sign_three
-            if self.env.user != responsible:
-                raise ValidationError(
-                    "El usuario encargado de la aprobacion final es {0}.".format(responsible.display_name))
+            # if self.env.user != responsible:
+            #     raise ValidationError(
+            #         "El usuario encargado de la aprobacion final es {0}.".format(responsible.display_name))
 
         self.write({
             'allowed_confirm': True,
@@ -338,8 +381,13 @@ class PurchaseOrder(models.Model):
     def write(self, vals):
         sign_list = ['allowed_confirm_sign_one', 'allowed_confirm_sign_two', 'allowed_confirm_sign_three']
         if any([sign in vals for sign in sign_list]):
+            activity_type_id = self.env.ref('equiport_custom.mail_activity_purchase_order_approval')
             if 'allowed_confirm_sign_one' in vals:
                 vals['allowed_confirm_date_sign_one'] = datetime.datetime.now()
+                activity_id = self.activity_ids.filtered(
+                    lambda act: act.user_id == self.op_ini_user_id and act.activity_type_id == activity_type_id)
+                if activity_id:
+                    activity_id.action_done()
                 if self.allowed_confirm_signed_by:
                     vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by,
                                                                           self.op_ini_user_id.display_name)
@@ -348,6 +396,10 @@ class PurchaseOrder(models.Model):
 
             if 'allowed_confirm_sign_two' in vals:
                 vals['allowed_confirm_date_sign_two'] = datetime.datetime.now()
+                activity_id = self.activity_ids.filtered(
+                    lambda act: act.user_id == self.op_mid_user_id and act.activity_type_id == activity_type_id)
+                if activity_id:
+                    activity_id.action_done()
                 if self.allowed_confirm_signed_by:
                     vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by,
                                                                           self.op_mid_user_id.display_name)
@@ -356,6 +408,10 @@ class PurchaseOrder(models.Model):
 
             if 'allowed_confirm_sign_three' in vals:
                 vals['allowed_confirm_date_sign_three'] = datetime.datetime.now()
+                activity_id = self.activity_ids.filtered(
+                    lambda act: act.user_id == self.op_top_user_id and act.activity_type_id == activity_type_id)
+                if activity_id:
+                    activity_id.action_done()
                 if self.allowed_confirm_signed_by:
                     vals['allowed_confirm_signed_by'] = "{0}, {1}".format(self.allowed_confirm_signed_by,
                                                                           self.op_top_user_id.display_name)
@@ -371,6 +427,22 @@ class PurchaseOrder(models.Model):
             self.write({'requested_cancel': True})
 
         if self.env.context.get('mark_request_approval'):
+            if not self.request_approval:
+                users = self.env['res.users']
+                company_id = self.company_id
+                op_approval = company_id.active_op_approval
+                if op_approval:
+                    if self.get_currency_amount(company_id.op_ini_level) <= self.amount_total:
+                        users += company_id.op_ini_user_id
+                    if self.get_currency_amount(company_id.op_mid_level) <= self.amount_total:
+                        users += company_id.op_mid_user_id
+                    if self.get_currency_amount(company_id.op_top_level) <= self.amount_total:
+                        users += company_id.op_top_user_id
+                for u in list(set(users)):
+                    self.activity_schedule(
+                        'equiport_custom.mail_activity_purchase_order_approval', self.date_order.date(),
+                        summary="Documento a la espera de aprobación",
+                        user_id=u.id)
             self.write({
                 'request_approval': True,
                 'state': 'to approve'
