@@ -179,5 +179,12 @@
             <field name="icon">fa-car</field>
             <field name="res_model_id" ref="fleet.model_fleet_vehicle_log_services"/>
         </record>
+
+        <record id="mail_activity_purchase_order_approval" model="mail.activity.type">
+            <field name="name">Aprobación orden de compra</field>
+            <field name="icon">fa-check-circle</field>
+            <field name="sequence">4</field>
+            <field name="res_model_id" ref="purchase.model_purchase_order"/>
+        </record>
     </data>
 </odoo>
