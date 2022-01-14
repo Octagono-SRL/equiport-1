@@ -38,9 +38,10 @@
                             attrs="{'invisible':['|', ('request_approval', '=', True), '|', ('approval_needed', '=', False), ('state', 'in', ['cancel', 'done', 'purchase'])]}"
                             string="Solicitar Aprobacion" class="oe_highlight"
                             help="Realizar solicitud de autorización para realizar esta compra"/>
+                    <!--   TODO SUPUESTO A CAMBIAR EL GROUP USER-->
                     <button name="%(wizard_service_picking_act_window)d" type="action"
                             context="{'default_purchase_order_id': active_id}"
-                            groups="equiport_custom.group_operations_user"
+                            groups="equiport_custom.group_operations_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager"
                             attrs="{'invisible': ['|', ('state', '!=', 'purchase'), ('receivable_service', '=', False)]}"
                             string="Conduce de Servicio" class="oe_highlight"
                             help="Crear un conduce para recibir servicios"/>
@@ -72,9 +73,11 @@
                                 <field name="op_mid_user_id" invisible="1"/>
                                 <field name="op_top_user_id" invisible="1"/>
                                 <!--                                <div class="fields">-->
-                                <group name="user_ini_group" attrs="{'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}">
+                                <group name="user_ini_group"
+                                       attrs="{'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}">
                                     <div name="user_ini_div">
-                                        <span>Firma requerida: <field name="op_ini_user_id" options="{'no_open': 1}"/></span>
+                                        <span>Firma requerida: <field name="op_ini_user_id"
+                                                                      options="{'no_open': 1}"/></span>
                                         <field name="allowed_confirm_sign_one" widget="signature" nolabel="1"
                                                options="{'size': ['',200]}"
                                                attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_ini_user', '=', False)], 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
@@ -86,28 +89,32 @@
                                     </div>
                                 </group>
 
-                                <group name="user_mid_group" attrs="{'invisible':[('approval_level', 'not in', ['two', 'three'])]}">
+                                <group name="user_mid_group"
+                                       attrs="{'invisible':[('approval_level', 'not in', ['two', 'three'])]}">
                                     <div name="user_mid_div">
-                                        <span>Firma requerida: <field name="op_mid_user_id" options="{'no_open': 1}"/></span>
-                                    <field name="allowed_confirm_sign_two" widget="signature" nolabel="1"
-                                           options="{'size': ['',200]}"
-                                           attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_mid_user', '=', False)], 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
+                                        <span>Firma requerida: <field name="op_mid_user_id"
+                                                                      options="{'no_open': 1}"/></span>
+                                        <field name="allowed_confirm_sign_two" widget="signature" nolabel="1"
+                                               options="{'size': ['',200]}"
+                                               attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_mid_user', '=', False)], 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
 
-                                    <button name="sign_with_user_sign" type="object" string="Usar Firma de usuario"
-                                            class="btn btn-primary"
-                                            attrs="{'invisible': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), '|', ('is_mid_user', '=', False), ('approval_level', 'not in', ['two', 'three'])]}"/>
+                                        <button name="sign_with_user_sign" type="object" string="Usar Firma de usuario"
+                                                class="btn btn-primary"
+                                                attrs="{'invisible': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), '|', ('is_mid_user', '=', False), ('approval_level', 'not in', ['two', 'three'])]}"/>
                                     </div>
                                 </group>
-                                <group name="user_top_group" attrs="{'invisible':[('approval_level', 'not in', ['three'])]}">
+                                <group name="user_top_group"
+                                       attrs="{'invisible':[('approval_level', 'not in', ['three'])]}">
                                     <div name="user_top_div">
-                                        <span>Firma requerida: <field name="op_top_user_id" options="{'no_open': 1}"/></span>
-                                    <field name="allowed_confirm_sign_three" widget="signature" nolabel="1"
-                                           options="{'size': ['',200]}"
-                                           attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_top_user', '=', False)], 'invisible':[('approval_level', 'not in', ['three'])]}"/>
+                                        <span>Firma requerida: <field name="op_top_user_id"
+                                                                      options="{'no_open': 1}"/></span>
+                                        <field name="allowed_confirm_sign_three" widget="signature" nolabel="1"
+                                               options="{'size': ['',200]}"
+                                               attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_top_user', '=', False)], 'invisible':[('approval_level', 'not in', ['three'])]}"/>
 
-                                    <button name="sign_with_user_sign" type="object" string="Usar Firma de usuario"
-                                            class="btn btn-primary"
-                                            attrs="{'invisible': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), '|', ('is_top_user', '=', False), ('approval_level', 'not in', ['three'])]}"/>
+                                        <button name="sign_with_user_sign" type="object" string="Usar Firma de usuario"
+                                                class="btn btn-primary"
+                                                attrs="{'invisible': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), '|', ('is_top_user', '=', False), ('approval_level', 'not in', ['three'])]}"/>
                                     </div>
                                 </group>
                             </group>
