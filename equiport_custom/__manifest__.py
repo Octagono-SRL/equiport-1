@@ -105,6 +105,7 @@
         'report/repair_templates_repair_order.xml',
         'report/sale_report_template_inherit.xml',
         'report/report_service_receipt.xml',
+        'report/report_purchase_order.xml',
         # 'views/',
     ],
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_purchase_order_equiport" inherit_id="purchase.report_purchaseorder_document">
+             <xpath expr="//t[1]/div[hasclass('page')]/table[hasclass('table')]/thead/tr/th[@name='th_description']"
+                   position="before">
+                    <th name="th_product"><strong>Producto</strong></th>
+            </xpath>
+
+            <xpath expr="//t[1]/div[hasclass('page')]/table[hasclass('table')]/tbody/t[2]/tr/t[@t-if='not line.display_type']/td[@id='product']"
+                   position="before">
+                <td name="td_product">
+                    <span t-field="line.product_id"/>
+                </td>
+            </xpath>
+        </template>
+    </data>
+</odoo>
