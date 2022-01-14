@@ -10,7 +10,7 @@
         for the company Equiport.
     """,
 
-    'author': "Wander Paniagua",
+    'author': "Wander Paniagua/ Enmanuel Febrier",
     'website': "",
 
     'category': 'Customizations',
