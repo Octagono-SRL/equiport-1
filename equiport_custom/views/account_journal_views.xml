@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Form View to Modify it -->
+        <record id="account_journal_form_view_equiport_inherit" model="ir.ui.view">
+            <field name="name">account.journal.form.equiport.inherit</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook/page[@name='advanced_settings']/group" position="inside">
+                    <group string="Moneda" name="currency">
+                        <field name="use_partner_currency"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

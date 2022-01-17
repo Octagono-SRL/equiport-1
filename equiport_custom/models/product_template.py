@@ -69,3 +69,14 @@ class ProductTemplate(models.Model):
         if not self.rent_ok:
             res = super(ProductTemplate, self)._check_subscription_product()
         return res
+
+    # Restrincion de actualizacion de cantidad
+
+    def action_update_quantity_on_hand(self):
+        advanced_option_groups = [
+            'equiport_custom.group_inventory_manager',
+        ]
+        if (self.env.user.user_has_groups(','.join(advanced_option_groups))):
+            return super(ProductTemplate, self).action_update_quantity_on_hand()
+        else:
+            raise ValidationError("Solo el encargado de almacen tiene acceso a esta parte.")

@@ -1,6 +1,7 @@
 from . import unit_model
 from . import product_category
 from . import account_account
+from . import account_journal
 from . import account_move
 from . import l10n_latam_document_type
 from . import account_payment
@@ -15,6 +16,7 @@ from . import sale_subscription
 from . import repair_order
 from . import crm_lead
 from . import res_currency
+from . import res_users
 from . import res_partner
 from . import res_company
 from . import res_employee
