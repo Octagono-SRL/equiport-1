@@ -586,7 +586,8 @@ class StockMove(models.Model):
         res = super(StockMove, self).write(vals)
 
         for rec in self:
-            if rec.picking_id.picking_type_code == 'incoming' and rec.picking_id.is_rental and rec.rent_state:
+            move_rent_states = self.search([('picking_id', '=', rec.picking_id.id)]).mapped('rent_state')
+            if rec.picking_id.picking_type_code == 'incoming' and rec.picking_id.is_rental and rec.rent_state and all(move_rent_states):
                 rec.picking_id.button_confirm()
 
         return res

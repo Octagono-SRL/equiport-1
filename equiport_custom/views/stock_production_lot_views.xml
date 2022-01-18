@@ -8,15 +8,15 @@
             <field name="inherit_id" ref="stock.view_production_lot_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
-                    <header>
+                    <header >
                         <button name="change_state" type="object"
-                                attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', False)]}"
+                                attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"
                                 class="btn btn-danger"
                                 confirm="Realizar esta Opcion puede afectar con el flujo de operaciones. ¿Seguro que desea continuar?"
                                 string="Cambiar estado" groups="stock.group_stock_manager"/>
                         <field name="rent_state" widget="statusbar"
                                statusbar_visible="available,rented,to_check,to_repair,to_wash,damaged"
-                               attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', False)]}"/>
+                               attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"/>
                     </header>
                 </xpath>
                 <div class="oe_button_box" name="button_box" position="before">
