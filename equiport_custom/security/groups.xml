@@ -170,41 +170,41 @@
         <!--        region Security Rules-->
 
         <record id="rule_allowed_location" model="ir.rule">
-            <field name="name">Localidad permitida</field>
+            <field name="name">Localidad no permitida</field>
             <field ref="model_stock_location" name="model_id"/>
-            <field name="domain_force">['|',('id', 'in', user.allowed_stock_location_ids.ids),('usage', '!=', 'internal')]</field>
+            <field name="domain_force">['|',('id', 'not in', user.allowed_stock_location_ids.ids),('usage', '!=', 'internal')]</field>
             <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
 
         <record id="rule_allowed_quant" model="ir.rule">
-            <field name="name">Cantidades de localidad permitida</field>
+            <field name="name">Cantidades de localidad no permitida</field>
             <field ref="stock.model_stock_quant" name="model_id"/>
-            <field name="domain_force">['|',('location_id', 'in', user.allowed_stock_location_ids.ids),('location_id.usage', '!=', 'internal')]</field>
+            <field name="domain_force">['|',('location_id', 'not in', user.allowed_stock_location_ids.ids),('location_id.usage', '!=', 'internal')]</field>
             <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
 
         <record id="rule_allowed_warehouse" model="ir.rule">
-            <field name="name">Almacen permitidos</field>
+            <field name="name">Almacenes no permitidos</field>
             <field ref="model_stock_warehouse" name="model_id"/>
-            <field name="domain_force">[('id', 'in', user.allowed_stock_warehouse_ids.ids)]</field>
+            <field name="domain_force">[('id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>
             <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
 
         <record id="rule_allowed_picking_type" model="ir.rule">
-            <field name="name">Operaciones permitidas</field>
+            <field name="name">Operaciones no permitidas</field>
             <field ref="stock.model_stock_picking_type" name="model_id"/>
-            <field name="domain_force">[('warehouse_id', 'in', user.allowed_stock_warehouse_ids.ids)]</field>
+            <field name="domain_force">[('warehouse_id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>
             <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
         
         <record id="rule_allowed_stock_picking" model="ir.rule">
-            <field name="name">Conduces Permitidos</field>
+            <field name="name">Conduces no Permitidos</field>
             <field ref="stock.model_stock_picking" name="model_id"/>
-            <field name="domain_force">[('picking_type_id.warehouse_id', 'in', user.allowed_stock_warehouse_ids.ids)]</field>
+            <field name="domain_force">[('picking_type_id.warehouse_id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>
             <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
