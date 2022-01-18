@@ -7,6 +7,20 @@ from odoo.exceptions import ValidationError, UserError
 class AccountMove(models.Model):
     _inherit = ['account.move']
 
+    # region Partner Currency Selection
+    @api.onchange('partner_id', 'journal_id')
+    def set_partner_currency(self):
+        if self.journal_id and self.partner_id:
+            if self.journal_id.use_partner_currency:
+                if self.move_type in ['out_invoice', 'out_refund', 'out_receipt']:
+                    if self.partner_id.property_product_pricelist.currency_id:
+                        self.currency_id = self.partner_id.property_product_pricelist.currency_id
+                else:
+                    if self.partner_id.property_purchase_currency_id:
+                        self.currency_id = self.partner_id.property_purchase_currency_id
+
+    # endregion
+
     # region Taxes detail
     positive_amount_tax = fields.Monetary(string='Itbis Acum.', store=True, readonly=True,
                                           compute='_compute_sign_amount_tax')

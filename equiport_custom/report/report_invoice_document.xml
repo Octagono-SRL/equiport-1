@@ -109,8 +109,6 @@
                     </t>
                     <td class="text-right">
                         <span t-esc="net_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                        <span t-esc="o.currency_id.symbol"/>
-                        <span t-esc="net_total"/>
                     </td>
                 </tr>
                 <tr class="border-black o_subtotal" style="">
@@ -125,8 +123,6 @@
                     </t>
                     <td class="text-right">
                         <span t-esc="discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                        <span t-esc="o.currency_id.symbol"/>
-                        <span t-esc="discount"/>
                     </td>
                 </tr>
             </xpath>
