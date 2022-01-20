@@ -146,28 +146,42 @@ class StockPicking(models.Model):
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
+                free_qty1 = sum(ml.product_id.stock_quant_ids.filtered(
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'inventory_quantity'))
+
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
-                            _(" - Producto: %s", ml.product_id.name))
+                            _(" - Producto: %s, %s", ml.product_id.name, free_qty1))
 
             for ml in self.move_line_ids_without_package:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'available_quantity'))
+                free_qty1 = sum(ml.product_id.stock_quant_ids.filtered(
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
-                            _(" - Producto: %s", ml.product_id.name))
+                            _(" - Producto: %s, %s", ml.product_id.name, free_qty1))
 
             for ml in self.move_line_nosuggest_ids:
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
+                free_qty1 = sum(ml.product_id.stock_quant_ids.filtered(
+                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+                    'inventory_quantity'))
+
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
-                            _(" - Producto: %s", ml.product_id.name))
+                            _(" - Producto: %s, %s", ml.product_id.name, free_qty1))
 
             if error_message_lines:
                 raise ValidationError(
