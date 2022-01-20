@@ -146,9 +146,11 @@ class StockPicking(models.Model):
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
                 free_qty1 = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -160,7 +162,8 @@ class StockPicking(models.Model):
                     'available_quantity'))
                 free_qty1 = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'available_quantity'))
+                    'inventory_quantity'))
+
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
@@ -170,9 +173,11 @@ class StockPicking(models.Model):
                 free_qty = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
                 free_qty1 = sum(ml.product_id.stock_quant_ids.filtered(
                     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
                     'inventory_quantity'))
+
                 if ml.qty_done > free_qty:
                     if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
                         error_message_lines.append(
