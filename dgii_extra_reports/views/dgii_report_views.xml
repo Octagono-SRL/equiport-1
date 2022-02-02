@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="dgii_report_form_view_inherit_extra_reports" model="ir.ui.view">
+        <field name="name">dgii.reports.form.view.inherit.extra.reports</field>
+        <field name="model">dgii.reports</field>
+        <field name="inherit_id" ref="dgii_reports.dgii_report_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='it1']" position="after">
+                <page string="IR17" name="ir17" invisible="1">
+                    <group string="Resumen de otras retenciones">
+                        <field name="ret_rent"/>
+                        <field name="ret_service_honoraries"/>
+                        <field name="ret_award"/>
+                        <field name="ret_title_transfer"/>
+                        <field name="ret_dividends"/>
+                        <field name="ret_legal_person10"/>
+                        <field name="ret_legal_person5"/>
+                        <field name="ret_physical_person10"/>
+                        <field name="ret_physical_person5"/>
+                        <field name="ret_remittances"/>
+                        <field name="ret_special_remittances"/>
+                        <field name="ret_local_supplier"/>
+                        <field name="ret_phone_set"/>
+                        <field name="ret_capital_earning"/>
+                        <field name="ret_internet_games"/>
+                        <field name="ret_others_rent10"/>
+                        <field name="ret_others_rent2"/>
+                        <field name="ret_others_ret"/>
+                        <field name="ret_finance_entity_legal"/>
+                        <field name="ret_finance_entity_physical"/>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
