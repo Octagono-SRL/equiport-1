@@ -54,6 +54,7 @@ class StockRule(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    transport_partner_id = fields.Many2one(comodel_name='res.partner', domain=[('company_type', '=', 'company')], string="Compañia transportista")
     partner_driver = fields.Char(string="Conductor")
     vat_driver = fields.Char(string="Cédula del conductor")
     card_driver = fields.Char(string="Carnet del conductor")
@@ -130,14 +131,16 @@ class StockPicking(models.Model):
             for ml in self.move_line_ids:
                 if sale_id:
                     sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
-                    if ml.qty_done > sale_order_line_id.product_uom_qty:
-                        raise ValidationError("No puede exceder la cantidad especificada en la orden")
+                    for sol in sale_order_line_id:
+                        if ml.qty_done > sol.product_uom_qty:
+                            raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
             for ml in self.move_line_ids_without_package:
                 if sale_id:
                     sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
-                    if ml.qty_done > sale_order_line_id.product_uom_qty:
-                        raise ValidationError("No puede exceder la cantidad especificada en la orden")
+                    for sol in sale_order_line_id:
+                        if ml.qty_done > sol.product_uom_qty:
+                            raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
         elif self.picking_type_code == 'internal':
 

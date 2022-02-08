@@ -103,6 +103,13 @@
                                     <t t-esc="o.partner_truck"/>
                                 </td>
                             </tr>
+                            <tr t-if="o.transport_partner_id">
+                                <th class="border-custom bold-custom" scope="row" name="transport_company">Compañia transportista
+                                </th>
+                                <td>
+                                    <t t-esc="o.transport_partner_id.name"/>
+                                </td>
+                            </tr>
                         </table>
                     </div>
 

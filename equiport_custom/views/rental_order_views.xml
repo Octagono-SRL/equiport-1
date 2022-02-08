@@ -47,6 +47,7 @@
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
                             groups="sales_team.group_sale_manager"/>
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
+                            groups="equiport_custom.group_commercial_user"
                             string="Actualizar subscripción"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|', ('rental_sub_state', 'in', ['closed', False]), ('is_inventory_user', '=', True)]}"
                             confirm="¿Está seguro de continuar? esta acción actualizara todas las lineas de la subscripción existente."/>

@@ -56,6 +56,11 @@
             <field name="sequence">10</field>
             <field name="parent_id" ref="module_category_equiport"/>
         </record>
+        <record id="module_category_purchase_equiport" model="ir.module.category">
+            <field name="name">Compras</field>
+            <field name="sequence">60</field>
+            <field name="parent_id" ref="module_category_equiport"/>
+        </record>
         <record id="module_category_accounting_equiport" model="ir.module.category">
             <field name="name">Contabilidad</field>
             <field name="sequence">20</field>
@@ -122,6 +127,21 @@
             <field name="name">Gerente General</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
             <field name="implied_ids" eval="[(4, ref('group_admin_manager'))]"/>
+        </record>
+
+        <!--        COMPRAS-->
+
+        <record id="eq_group_purchase_user" model="res.groups">
+            <field name="name">Usuario Compras</field>
+            <field name="category_id" ref="module_category_purchase_equiport"/>
+            <field name="implied_ids" eval="[(4, ref('request_cancel_purchase_order'))]"/>
+        </record>
+
+        <record id="eq_group_purchase_manager" model="res.groups">
+            <field name="name">Encargado Compras</field>
+            <field name="category_id" ref="module_category_purchase_equiport"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('eq_group_purchase_user'))]"/>
         </record>
 
         <!--        OPERACIONES-->

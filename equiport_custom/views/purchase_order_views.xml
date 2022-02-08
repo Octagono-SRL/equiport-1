@@ -24,19 +24,22 @@
                 <xpath expr="//header/button[@name='button_cancel']" position="before">
                     <button name="allow_confirm" type="object"
                             attrs="{'invisible':['|', ('allowed_confirm', '=', True), '|', ('request_approval', '=', False), ('actual_approval_level', '!=', 'complete')]}"
-                            groups="purchase.group_purchase_manager" string="Aprobar compra" class="oe_highlight"
+                            groups="equiport_custom.eq_group_purchase_manager" string="Aprobar compra"
+                            class="oe_highlight"
                             help="Autorizar esta orden"/>
                     <button name="allow_cancel" type="object"
                             attrs="{'invisible':['|', ('allowed_cancel', '=', True),('cancel_reason', '=', False)]}"
-                            groups="purchase.group_purchase_manager" string="Aprobar cancelación" class="oe_highlight"
+                            groups="equiport_custom.eq_group_purchase_manager" string="Aprobar cancelación"
+                            class="oe_highlight"
                             help="Autorizar cancelar esta orden"/>
                     <button name="request_cancel" type="object"
                             attrs="{'invisible':['|', ('requested_cancel', '=', True), ('state', '=', 'cancel')]}"
-                            groups="equiport_custom.request_cancel_purchase_order" string="Solicitar cancelación"
+                            groups="equiport_custom.eq_group_purchase_user" string="Solicitar cancelación"
                             class="oe_highlight" help="Realizar solicitud de autorización para cancelar esta orden"/>
                     <button name="request_confirm" type="object"
                             attrs="{'invisible':['|', ('request_approval', '=', True), '|', ('approval_needed', '=', False), ('state', 'in', ['cancel', 'done', 'purchase'])]}"
                             string="Solicitar Aprobacion" class="oe_highlight"
+                            groups="equiport_custom.eq_group_purchase_user"
                             help="Realizar solicitud de autorización para realizar esta compra"/>
                     <!--   TODO SUPUESTO A CAMBIAR EL GROUP USER-->
                     <button name="%(wizard_service_picking_act_window)d" type="action"
@@ -150,13 +153,29 @@
                         attrs="{'invisible': ['|', ('state', 'not in', ('purchase', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}"
                         position="attributes">
                     <attribute name="string">Registrar factura</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
                 <button name="action_create_invoice" type="object" context="{'create_bill':True}"
                         attrs="{'invisible': ['|', '|', ('state', 'not in', ('purchase', 'done')), ('invoice_status', 'not in', ('no', 'invoiced')), ('order_line', '=', [])]}"
                         position="attributes">
                     <attribute name="string">Registrar factura</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
 
+                <button name="action_rfq_send" states="sent" type="object" context="{'send_rfq':True}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+                <button name="action_rfq_send" states="purchase" type="object" context="{'send_rfq':False}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+                <button name="button_cancel" states="draft,to approve,sent,purchase" type="object" position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+                <button name="button_done" type="object" states="purchase" position="attributes">
+                    <attribute name="groups">equiport_custom.group_account_manager,equiport_custom.eq_group_purchase_manager</attribute>
+                </button>
 
             </field>
         </record>

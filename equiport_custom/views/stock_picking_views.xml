@@ -27,6 +27,9 @@
                         <field name="partner_truck"
                                attrs="{'invisible': ['|', ('picking_type_code', 'not in', ['outgoing', 'internal', 'incoming']), ('material_picking', '=', True)], 'required':[('material_picking', '=', False), ('picking_type_code', 'in', ['outgoing', 'internal', 'incoming'])]}"/>
                     </group>
+                    <group string="Datos de transportista" name="other_transport_infos">
+                        <field name="transport_partner_id"/>
+                    </group>
                 </xpath>
 
                 <xpath expr="//field[@name='origin']" position="after">
@@ -36,9 +39,21 @@
                     <field name="material_not_allow_save" invisible="1"/>
                     <field name="material_picking"/>
                 </xpath>
+                <button name="button_scrap" type="object"
+                        attrs="{'invisible': ['|', '&amp;', ('picking_type_code', '=', 'incoming'), ('state', '!=', 'done'), '&amp;', ('picking_type_code', '=', 'outgoing'), ('state', '=', 'done')]}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_inventory_manager</attribute>
+                </button>
+
+                <button name="action_cancel"
+                        attrs="{'invisible': [('state', 'not in', ('assigned', 'confirmed', 'partially_available', 'draft', 'waiting'))]}"
+                        groups="base.group_user" type="object"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_inventory_manager</attribute>
+                </button>
 
                 <header position="after">
-                    <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', 'not in', ['outgoing', 'internal']),'|', ('is_rental','=', True), ('is_fsm','=', True)]}">
+                    <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', 'not in', ['outgoing', 'internal']),'|', ('is_rental','=', True), '|',('is_fsm','=', True), ('is_gate_service','=', True)]}">
                         <button name="request_access" string="Solicitar autorización" type="object"
                                 class="oe_highlight"
                                 groups="base.group_user"
@@ -55,12 +70,12 @@
                                 class="oe_highlight"
                                 groups="base.group_user"
                                 attrs="{'invisible': [('state', 'in', ('done','cancel'))]}"/>
-<!--                        <widget name="signature" string="Firmar" highlight="1"-->
-<!--                                attrs="{'invisible': ['|', '|', ('id', '=', False), ('picking_type_code', '!=', 'outgoing'), ('state', '!=', 'done')]}"-->
-<!--                                full_name="partner_id" groups="stock.group_stock_sign_delivery"/>-->
-<!--                        <widget name="signature" string="Firmar"-->
-<!--                                attrs="{'invisible': ['|', '|', ('id', '=', False), ('picking_type_code', '!=', 'outgoing'), ('state', '=', 'done')]}"-->
-<!--                                full_name="partner_id" groups="stock.group_stock_sign_delivery"/>-->
+                        <!--                        <widget name="signature" string="Firmar" highlight="1"-->
+                        <!--                                attrs="{'invisible': ['|', '|', ('id', '=', False), ('picking_type_code', '!=', 'outgoing'), ('state', '!=', 'done')]}"-->
+                        <!--                                full_name="partner_id" groups="stock.group_stock_sign_delivery"/>-->
+                        <!--                        <widget name="signature" string="Firmar"-->
+                        <!--                                attrs="{'invisible': ['|', '|', ('id', '=', False), ('picking_type_code', '!=', 'outgoing'), ('state', '=', 'done')]}"-->
+                        <!--                                full_name="partner_id" groups="stock.group_stock_sign_delivery"/>-->
                         <button name="do_print_picking" string="Imprimir" groups="stock.group_stock_user" type="object"
                                 attrs="{'invisible': [('state', 'not in', ('assigned', 'partially_available'))]}"/>
                         <button name="action_toggle_is_locked"
@@ -79,7 +94,8 @@
                 <header position="attributes">
                     <attribute name="attrs">{
                         'invisible': ['|', ('is_rental', '=', True), '&amp;', ('access_granted', '=', False),
-                                      ('picking_type_code', 'in', ['outgoing', 'internal'])]}</attribute>
+                                      ('picking_type_code', 'in', ['outgoing', 'internal']),
+                                      ('is_gate_service', '=', False)]}</attribute>
                 </header>
 
                 <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='lot_ids']"
@@ -99,18 +115,18 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='lot_name']" position="after">
 
-<!--                    <field name="in_booking"-->
-<!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
-<!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
-<!--                    <field name="in_stamp"-->
-<!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
-<!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
-<!--                    <field name="in_boat"-->
-<!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
-<!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
-<!--                    <field name="in_navy_line"-->
-<!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
-<!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
+                    <!--                    <field name="in_booking"-->
+                    <!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
+                    <!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
+                    <!--                    <field name="in_stamp"-->
+                    <!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
+                    <!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
+                    <!--                    <field name="in_boat"-->
+                    <!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
+                    <!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
+                    <!--                    <field name="in_navy_line"-->
+                    <!--                           attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'incoming')],-->
+                    <!--                            'invisible': [('lot_name', '=', False),('parent.is_gate_service', '=', False)], 'required': [('lot_name', '!=', False),('parent.is_gate_service', '=', True), ('parent.picking_type_code', '=', 'incoming')]}"/>-->
 
                     <field name="out_booking"
                            attrs="{'column_invisible': ['|', ('parent.is_gate_service', '=', False), ('parent.picking_type_code', '!=', 'outgoing')],
