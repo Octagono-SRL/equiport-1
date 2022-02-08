@@ -130,14 +130,16 @@ class StockPicking(models.Model):
             for ml in self.move_line_ids:
                 if sale_id:
                     sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
-                    if ml.qty_done > sale_order_line_id.product_uom_qty:
-                        raise ValidationError("No puede exceder la cantidad especificada en la orden")
+                    for sol in sale_order_line_id:
+                        if ml.qty_done > sol.product_uom_qty:
+                            raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
             for ml in self.move_line_ids_without_package:
                 if sale_id:
                     sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
-                    if ml.qty_done > sale_order_line_id.product_uom_qty:
-                        raise ValidationError("No puede exceder la cantidad especificada en la orden")
+                    for sol in sale_order_line_id:
+                        if ml.qty_done > sol.product_uom_qty:
+                            raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
         elif self.picking_type_code == 'internal':
 
@@ -336,6 +338,7 @@ class StockPicking(models.Model):
                 else:
                     raise ValidationError("Debe colocar el estado de devolucion de la unidad.")
         self.state = 'done'
+        self.date_done = fields.Datetime.now()
 
     def request_access(self):
         self = self.sudo()
