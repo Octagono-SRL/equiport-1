@@ -336,6 +336,7 @@ class StockPicking(models.Model):
                 else:
                     raise ValidationError("Debe colocar el estado de devolucion de la unidad.")
         self.state = 'done'
+        self.date_done = fields.Datetime.now()
 
     def request_access(self):
         self = self.sudo()

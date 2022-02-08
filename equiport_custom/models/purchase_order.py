@@ -3,7 +3,7 @@ import base64
 import datetime
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class PurchaseOrder(models.Model):
@@ -165,7 +165,8 @@ class PurchaseOrder(models.Model):
         compute='_check_approval_need', string="Nivel de aprobación")
     actual_approval_level = fields.Selection(
         selection=[('one', 'Primer nivel'), ('two', 'Segundo nivel'), ('three', 'Tercer nivel'),
-                   ('complete', 'Totalmente aprobado')], string="Nivel de aprobación actual")
+                   ('complete', 'Totalmente aprobado')], compute='_check_approval_need', store=True,
+        string="Nivel de aprobación actual")
     request_approval = fields.Boolean(string="Solicitó aprobación", tracking=True)
     approval_needed = fields.Boolean(string="Aprobación Requerida", compute='_check_approval_need')
 
@@ -379,6 +380,7 @@ class PurchaseOrder(models.Model):
     # region Herencia funciones Base
 
     def write(self, vals):
+        # region SIGN PROCESS
         sign_list = ['allowed_confirm_sign_one', 'allowed_confirm_sign_two', 'allowed_confirm_sign_three']
         if any([sign in vals for sign in sign_list]):
             activity_type_id = self.env.ref('equiport_custom.mail_activity_purchase_order_approval')
@@ -418,7 +420,52 @@ class PurchaseOrder(models.Model):
                 else:
                     vals['allowed_confirm_signed_by'] = self.op_top_user_id.display_name
 
+        # endregion
+
+        reset = False
+        if self.request_approval and self.allowed_confirm:
+            reset = True
+        if (self.state == 'purchase' and vals.get('state', False) not in ['cancel', 'done']) or (
+                self.state == 'done' and vals.get('state', False) not in ['purchase']):
+            raise UserError(
+                'No puedes editar una orden confirmada. Cancele la orden; Solicite aprobación de ser requerido')
         res = super(PurchaseOrder, self).write(vals)
+        if reset:
+            body = """
+            </br>
+            <p>Debido a cambio en la informacion de la orden se ha reiniciado el proceso de autorizacion de la orden.</p>
+            </br>
+            </br>
+            </br>
+            <h2><b>Información aprobacion previa:</b></h2>
+            <ul>
+                %s
+                %s
+                %s
+                %s
+                %s
+            </ul>
+            """ % (
+                ('<li><b>Fecha de aprobación primer nivel:</b> {0}</li>'.format(
+                    self.allowed_confirm_date_sign_one) if self.allowed_confirm_date_sign_one else ''),
+                ('<li><b>Fecha de aprobación segundo nivel:</b> {0}</li>'.format(
+                    self.allowed_confirm_date_sign_two) if self.allowed_confirm_date_sign_two else ''),
+                ('<li><b>Fecha de aprobación tercer nivel:</b> {0}</li>'.format(
+                    self.allowed_confirm_date_sign_three) if self.allowed_confirm_date_sign_three else ''),
+                ('<li><b>Aprobación firmada por:</b> {0}</li>'.format(
+                    self.allowed_confirm_signed_by) if self.allowed_confirm_signed_by else ''),
+                ('<li><b>Orden aprobada para:</b> {0}</li>'.format(
+                    self.user_id.name) if self.user_id else ''),
+            )
+            self.message_post(
+                body=body,
+                message_type='notification'
+            )
+            self.write({
+                'request_approval': False,
+                'allowed_confirm': False,
+
+            })
         return res
 
     @api.returns('mail.message', lambda value: value.id)
