@@ -251,7 +251,9 @@ class AccountInvoice(models.Model):
                     #     amount += tax.credit
                     # elif inv.move_type in ['in_invoice', 'in_refund']:
                     #     amount += tax.debit
-                    inv.invoiced_itbis = inv._convert_to_local_currency(amount)
+                    # inv.invoiced_itbis = inv._convert_to_local_currency(amount)
+                    inv.invoiced_itbis = amount
+                    # inv.invoiced_itbis = inv._convert_to_local_currency(amount)
 
     def _get_payment_move_iterator(self, payment, inv_type, witheld_type):
         payment_id = self.env['account.payment'].browse(
