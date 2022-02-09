@@ -54,6 +54,7 @@ class StockRule(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    transport_partner_id = fields.Many2one(comodel_name='res.partner', domain=[('company_type', '=', 'company')], string="Compañia transportista")
     partner_driver = fields.Char(string="Conductor")
     vat_driver = fields.Char(string="Cédula del conductor")
     card_driver = fields.Char(string="Carnet del conductor")
@@ -317,14 +318,14 @@ class StockPicking(models.Model):
             elif self.picking_type_code == 'incoming':
                 returned = True
                 for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                    if line.product_uom_qty > 0 and line.qty_delivered < line.qty_returned:
+                    if line.product_uom_qty > 0 and line.qty_returned < line.qty_delivered:
                         returned = False
                 if sale_id.rental_subscription_id and returned:
                     sale_id.rental_subscription_id.set_close()
                 else:
                     if sale_id.rental_subscription_id:
                         for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                            if line.return_date and line.product_uom_qty > 0 and line.qty_delivered == line.qty_returned:
+                            if line.return_date and line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
                                 line.product_uom_qty = 0
                         sale_id.update_existing_rental_subscriptions()
 
