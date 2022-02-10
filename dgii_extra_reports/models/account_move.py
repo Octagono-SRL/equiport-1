@@ -13,13 +13,15 @@ class AccountMove(models.Model):
 
     def write(self, values):
         # Add code here
-        if 'l10n_do_fiscal_number' in values and not self.defined_fiscal_number:
-            values['defined_fiscal_number'] = values.get('l10n_do_fiscal_number')
+        for rec in self:
+            if 'l10n_do_fiscal_number' in values and not rec.defined_fiscal_number:
+                values['defined_fiscal_number'] = values.get('l10n_do_fiscal_number')
 
         res = super(AccountMove, self).write(values)
 
-        if self.l10n_do_fiscal_number != self.defined_fiscal_number:
-            self.l10n_do_fiscal_number = self.defined_fiscal_number
+        for rec in self:
+            if rec.l10n_do_fiscal_number != rec.defined_fiscal_number:
+                rec.l10n_do_fiscal_number = rec.defined_fiscal_number
 
         return res
 
