@@ -7,28 +7,33 @@
         <field name="inherit_id" ref="dgii_reports.dgii_report_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[@name='it1']" position="after">
-                <page string="IR17" name="ir17" invisible="1">
-                    <group string="Resumen de otras retenciones">
-                        <field name="ret_rent"/>
-                        <field name="ret_service_honoraries"/>
-                        <field name="ret_award"/>
-                        <field name="ret_title_transfer"/>
-                        <field name="ret_dividends"/>
-                        <field name="ret_legal_person10"/>
-                        <field name="ret_legal_person5"/>
-                        <field name="ret_physical_person10"/>
-                        <field name="ret_physical_person5"/>
-                        <field name="ret_remittances"/>
-                        <field name="ret_special_remittances"/>
-                        <field name="ret_local_supplier"/>
-                        <field name="ret_phone_set"/>
-                        <field name="ret_capital_earning"/>
-                        <field name="ret_internet_games"/>
-                        <field name="ret_others_rent10"/>
-                        <field name="ret_others_rent2"/>
-                        <field name="ret_others_ret"/>
-                        <field name="ret_finance_entity_legal"/>
-                        <field name="ret_finance_entity_physical"/>
+                <page string="IR17" name="ir17" invisible="0">
+                    <group>
+                        <group string="Resumen de otras retenciones" readonly="1">
+                            <field name="ret_rent" readonly="1"/>
+                            <field name="ret_service_honoraries" readonly="1"/>
+                            <field name="ret_award" readonly="1"/>
+                            <field name="ret_title_transfer" readonly="1"/>
+                            <field name="ret_dividends" readonly="1"/>
+                            <field name="ret_legal_person10" readonly="1"/>
+                            <field name="ret_legal_person5" readonly="1"/>
+                            <field name="ret_physical_person10" readonly="1"/>
+                            <field name="ret_physical_person5" readonly="1"/>
+                            <field name="ret_remittances" readonly="1"/>
+                            <field name="ret_special_remittances" readonly="1"/>
+                            <field name="ret_local_supplier" readonly="1"/>
+                            <field name="ret_phone_set" readonly="1"/>
+                            <field name="ret_capital_earning" readonly="1"/>
+                            <field name="ret_internet_games" readonly="1"/>
+                            <field name="ret_others_rent10" readonly="1"/>
+                            <field name="ret_others_rent2" readonly="1"/>
+                            <field name="ret_others_ret" readonly="1"/>
+                            <field name="ret_finance_entity_legal" readonly="1"/>
+                            <field name="ret_finance_entity_physical" readonly="1"/>
+                        </group>
+                        <group string="Total">
+                            <field name="ret_total" readonly="1"/>
+                        </group>
                     </group>
                 </page>
             </xpath>

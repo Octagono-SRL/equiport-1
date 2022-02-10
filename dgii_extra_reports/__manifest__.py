@@ -12,7 +12,8 @@
         'dgii_reports'
     ],
     'data': [
-        'views/dgii_report_views.xml'
+        'views/dgii_report_views.xml',
+        'views/account_account_views.xml'
     ],
     'installable': True,
     'auto_install': False
