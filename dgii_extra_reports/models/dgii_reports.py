@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-import calendar
+
 
 class DgiiReport(models.Model):
     _inherit = 'dgii.reports'
@@ -45,7 +45,7 @@ class DgiiReport(models.Model):
                     'ret_service_honoraries': ret_dict['ret_service_honoraries'] + abs(sum(inv.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.isr_retention_type == '02' and abs(l.tax_line_id.amount) == 10).mapped(return_balance))),
                     'ret_award': ret_dict['ret_award'] + 0,
                     'ret_title_transfer': ret_dict['ret_title_transfer'] + 0,
-                    'ret_dividends': ret_dict['ret_dividends'] + abs(sum(inv.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.is_dividend and abs(l.tax_line_id.amount) == 10).mapped(return_balance))), # Eso se obtiene de una cuenta de dividendos a traves de un asiento contable
+                    'ret_dividends': ret_dict['ret_dividends'] + 0,
                     'ret_legal_person10': ret_dict['ret_legal_person10'] + abs(sum(inv.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.isr_retention_type == '05').mapped(return_balance))),
                     'ret_legal_person5': ret_dict['ret_legal_person5'] + abs(sum(inv.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.isr_retention_type == '05').mapped(return_balance))),
                     'ret_physical_person10': ret_dict['ret_physical_person10'] + abs(sum(inv.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.isr_retention_type == '06').mapped(return_balance))),
@@ -61,21 +61,6 @@ class DgiiReport(models.Model):
                     'ret_others_ret': ret_dict['ret_others_ret'] + abs(sum(inv.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.isr_retention_type == '03' and abs(l.tax_line_id.amount) not in [2, 10]).mapped(return_balance))),
                     'ret_finance_entity_legal': ret_dict['ret_finance_entity_legal'] + 0,
                     'ret_total': 0,
-                })
-            month, year = self.name.split('/')
-            last_day = calendar.monthrange(int(year), int(month))[1]
-            start_date = '{}-{}-01'.format(year, month)
-            end_date = '{}-{}-{}'.format(year, month, last_day)
-            move_ids = self.env['account.move'].search(
-                [('date', '>=', start_date),
-                 ('date', '<=', end_date),
-                 ('company_id', '=', self.company_id.id),
-                 ('state', '=', 'posted'),
-                 ('move_type', '=', 'entry')],
-                order='date asc')
-            for m in move_ids:
-                ret_dict.update({
-                    'ret_dividends': ret_dict['ret_dividends'] + abs(sum(m.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.is_dividend))), # Eso se obtiene de una cuenta de dividendos a traves de un asiento contable
                 })
             ret_dict['ret_total'] = sum([v for k, v in ret_dict.items() if k != 'ret_total'])
             rec._set_retention_fields_vals(ret_dict)
