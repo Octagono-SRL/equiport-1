@@ -386,7 +386,12 @@ class DgiiReport(models.Model):
                 return (vat.strip().replace('-', ''),
                         id_type) if not vat.isspace() else False
             else:
-                return False
+                if len(vat) > 11:
+                    id_type = 3
+                    return (vat.strip().replace('-', ''),
+                            id_type) if not vat.isspace() else False
+                else:
+                    return False
         else:
             return False
 
