@@ -477,6 +477,8 @@ class StockProductionLot(models.Model):
     unit_type = fields.Selection(related='product_id.unit_type')
     unit_year = fields.Char(string="Año de unidad")
     unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
+    active = fields.Boolean(string="Activo", default=True)
+    in_scrap = fields.Boolean(string="En desecho", related='tire_state_id.scrap_state')
 
     @api.depends('product_qty', 'product_id')
     def _compute_positive_qty(self):
@@ -542,9 +544,9 @@ class StockProductionLot(models.Model):
 
     # Campos relacionados actividad Alquiler
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado'), ('scrap', 'Desecho')],
         string="Estado", default="available")
 
     def change_state(self):
@@ -603,4 +605,5 @@ class TireState(models.Model):
     _name = 'tire.state'
 
     name = fields.Char(string="Titulo", required=True)
+    scrap_state = fields.Boolean(string="Estado de desecho")
     active = fields.Boolean(string="Archivado", default=True)
