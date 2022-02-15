@@ -252,7 +252,9 @@ class AccountInvoice(models.Model):
                     # elif inv.move_type in ['in_invoice', 'in_refund']:
                     #     amount += tax.debit
                     # inv.invoiced_itbis = inv._convert_to_local_currency(amount)
-                inv.invoiced_itbis = amount
+                    inv.invoiced_itbis = amount
+                if len(inv._get_tax_line_ids()) == 0:
+                    inv.invoiced_itbis = 0
                     # inv.invoiced_itbis = inv._convert_to_local_currency(amount)
 
     def _get_payment_move_iterator(self, payment, inv_type, witheld_type):
