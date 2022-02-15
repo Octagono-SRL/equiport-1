@@ -154,7 +154,7 @@ class AccountInvoice(models.Model):
                     good_amount)
 
     @api.model
-    @api.depends('l10n_latam_tax_ids', 'state', 'move_type')
+    @api.depends('l10n_latam_tax_ids', 'state', 'move_type', 'payment_state')
     def _compute_isr_withholding_type(self):
         """Compute ISR Withholding Type
         Keyword / Values:
@@ -168,7 +168,7 @@ class AccountInvoice(models.Model):
         08 -- Juegos Telefónicos
         """
         for inv in self.filtered(
-                lambda i: i.move_type == "in_invoice" and i.state == "posted" and i.payment_state in ["paid", "in_payment"]):
+                lambda i: i.move_type == "in_invoice" and i.state == "posted" or i.payment_state in ["paid", "in_payment"] and i.move_type == "in_invoice"):
 
             tax_l_id = inv.l10n_latam_tax_ids.filtered(
                 lambda t: t.tax_line_id.purchase_tax_type == "isr")
