@@ -74,8 +74,11 @@ class DgiiReport(models.Model):
                  ('move_type', '=', 'entry')],
                 order='date asc')
             for m in move_ids:
+                def return_balance(inv_line):
+                    return m.currency_id._convert(inv_line.amount_currency, m.company_id.currency_id, m.company_id,
+                                                   m.date or fields.Date.context_today(self))
                 ret_dict.update({
-                    'ret_dividends': ret_dict['ret_dividends'] + abs(sum(m.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.is_dividend))), # Eso se obtiene de una cuenta de dividendos a traves de un asiento contable
+                    'ret_dividends': ret_dict['ret_dividends'] + abs(sum(m.line_ids.filtered(lambda l: l.account_id.account_fiscal_type == 'ISR' and l.account_id.is_dividend).mapped(return_balance))), # Eso se obtiene de una cuenta de dividendos a traves de un asiento contable
                 })
             ret_dict['ret_total'] = sum([v for k, v in ret_dict.items() if k != 'ret_total'])
             rec._set_retention_fields_vals(ret_dict)
