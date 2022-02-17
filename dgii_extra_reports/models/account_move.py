@@ -1,4 +1,5 @@
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 
 
 class AccountMove(models.Model):
@@ -25,3 +26,19 @@ class AccountMove(models.Model):
 
         return res
 
+    @api.constrains('name', 'partner_id', 'company_id', 'posted_before', 'defined_fiscal_number',
+                    'l10n_latam_document_number')
+    def _check_unique_vendor_fiscal_number(self):
+        for rec in self.filtered(
+                lambda x: x.name and x.name != '/' and x.is_purchase_document() and x.l10n_latam_use_documents):
+            domain = [
+                ('move_type', '=', rec.move_type),
+                # by validating name we validate l10n_latam_document_type_id
+                ('company_id', '=', rec.company_id.id),
+                ('id', '!=', rec.id),
+                ('l10n_latam_document_number', '=', rec.l10n_latam_document_number),
+                # allow to have to equal if they are cancelled
+                ('state', '!=', 'cancel'),
+            ]
+            if rec.search(domain):
+                raise ValidationError('Las facturas de proveedor deben tener un numero unico de NCF por proveedor y compañia.')
