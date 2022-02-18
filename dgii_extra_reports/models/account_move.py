@@ -26,7 +26,7 @@ class AccountMove(models.Model):
 
         return res
 
-    @api.constrains('name', 'partner_id', 'company_id', 'posted_before', 'defined_fiscal_number',
+    @api.constrains('name', 'partner_id', 'company_id', 'posted_before', 'defined_fiscal_number', 'l10n_do_fiscal_number',
                     'l10n_latam_document_number')
     def _check_unique_vendor_fiscal_number(self):
         for rec in self.filtered(
@@ -36,7 +36,8 @@ class AccountMove(models.Model):
                 # by validating name we validate l10n_latam_document_type_id
                 ('company_id', '=', rec.company_id.id),
                 ('id', '!=', rec.id),
-                ('l10n_latam_document_number', '=', rec.l10n_latam_document_number),
+                ('l10n_do_fiscal_number', '=', rec.l10n_latam_document_number),
+                ('l10n_do_fiscal_number', 'not in', [False, '']),
                 # allow to have to equal if they are cancelled
                 ('state', '!=', 'cancel'),
             ]
