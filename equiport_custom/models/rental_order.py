@@ -515,3 +515,22 @@ class RentalOrderLine(models.Model):
                     rec.new_rental_addition = False
             else:
                 rec.new_rental_addition = False
+
+    def unlink(self):
+        if self._check_rental_line_unlink():
+            raise UserError(
+                _('No puede eliminar una línea de alquiler una vez que se confirma  y entrega el mismo.\nDebería en su lugar establecer la cantidad a 0.'))
+        return super(RentalOrderLine, self).unlink()
+
+    def _check_rental_line_unlink(self):
+        """
+                Check wether a rental order line can be deleted or not.
+
+                Lines cannot be deleted if the order is confirmed; downpayment
+                lines who have not yet been invoiced neither pickup bypass that exception.
+                :rtype: recordset sale.order.line
+                :returns: set of lines that cannot be deleted
+                """
+        return self.filtered(
+            lambda line: line.is_rental and line.state in ('sale', 'done') and (
+                        not line.pickup_date or not line.is_downpayment))
