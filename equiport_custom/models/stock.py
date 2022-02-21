@@ -501,8 +501,7 @@ class StockProductionLot(models.Model):
     def check_general_unique_lot(self):
 
         for rec in self:
-            domain = [('product_id', 'in', rec.product_id.ids),
-                      ('company_id', 'in', rec.company_id.ids),
+            domain = [('company_id', 'in', rec.company_id.ids),
                       ('name', 'in', rec.mapped('name')),
                       ('id', '!=', rec.ids)]
 
