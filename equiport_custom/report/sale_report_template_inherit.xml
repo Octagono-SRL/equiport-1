@@ -36,10 +36,10 @@
                             <strong>Moneda:</strong>
                             <p class="m-0"><span t-esc="doc.currency_id.name"/></p>
                         </div>
-                        <div class="col-auto col-3 mw-100 mb-2">
-                            <strong>Tasa de cambio:</strong>
-                            <p class="m-0"><span t-esc="doc.currency_id.currency_rate" t-options='{"widget": "float", "precision": 2}'/></p>
-                        </div>
+<!--                        <div class="col-auto col-3 mw-100 mb-2">-->
+<!--                            <strong>Tasa de cambio:</strong>-->
+<!--                            <p class="m-0"><span t-esc="doc.currency_id.currency_rate" t-options='{"widget": "float", "precision": 2}'/></p>-->
+<!--                        </div>-->
                     </t>
             </xpath>
 

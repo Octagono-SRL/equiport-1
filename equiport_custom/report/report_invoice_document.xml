@@ -11,12 +11,12 @@
                     </div>
                     <div class="col-6 text-right mb4">
                         <div name="company_address" class="float-right mb4">
-                             <strong t-field="o.company_id.partner_id.name"/>
-                        <span t-field="o.company_id.partner_id" class="text-muted"
+                             <strong t-esc="company.partner_id.name"/>
+                        <span t-esc="company.partner_id" class="text-muted"
                               t-options='{"widget": "contact", "fields": ["address"], "no_marker": true}'/>
                         <span>
                             <strong>RNC:</strong>
-                            <span t-if="o.company_id.vat" t-field="o.company_id.vat"/>
+                            <span t-if="company.vat" t-esc="company.vat"/>
                         </span>
                         </div>
                     </div>
