@@ -142,10 +142,10 @@ class ProjectTask(models.Model):
                     validate_fields.update({
                         'Tipo de contenedor': False,
                     })
-                if not task.container_long_id or not task.chassis_long_id:
-                    validate_fields.update({
-                        'Longitud de las unidades': False,
-                    })
+                # if not task.container_long_id and task.contain:
+                #     validate_fields.update({
+                #         'Longitud de las unidades': False,
+                #     })
 
                 if not task.damage_type_ids and not task.other_damage:
                     validate_fields.update({
