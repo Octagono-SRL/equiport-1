@@ -316,17 +316,20 @@ class StockPicking(models.Model):
                     for line in sale_id.mapped('invoice_ids.invoice_line_ids'):
                         line._get_stock_reserved_lot_ids()
             elif self.picking_type_code == 'incoming':
-                returned = True
+                returned = []
                 for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                    if line.product_uom_qty > 0 and line.qty_returned < line.qty_delivered:
-                        returned = False
-                if sale_id.rental_subscription_id and returned:
+                    if line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
+                        returned.append(True)
+                    else:
+                        returned.append(False)
+                if sale_id.rental_subscription_id and all(returned) and len(returned) > 0:
+                    sale_id.rental_subscription_id.generate_recurring_invoice()
                     sale_id.rental_subscription_id.set_close()
                 else:
                     if sale_id.rental_subscription_id:
-                        for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                            if line.return_date and line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
-                                line.product_uom_qty = 0
+                        # for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                        #     if line.return_date and line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
+                        #         line.product_uom_qty = 0
                         sale_id.update_existing_rental_subscriptions()
 
         # endregion
