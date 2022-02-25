@@ -11,7 +11,9 @@
                 <button name="%(sale.action_view_sale_advance_payment_inv)d" type="action" class="btn-primary"
                         attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'to invoice'), '|',
-                                                           ('fsm_invoice_available', '=', False), ('is_inventory_user', '=', True)]}</attribute>
+                        ('fsm_invoice_available', '=', False), ('is_inventory_user', '=', True)]}
+                    </attribute>
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
 
                 <button name="%(sale.action_view_sale_advance_payment_inv)d" type="action"
@@ -19,13 +21,49 @@
                         attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"
                         position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'no'), '|',
-                                                           ('fsm_invoice_available', '=', False), '|',
-                                                           ('state', '!=', 'sale'), ('is_inventory_user', '=', True)]}</attribute>
+                        ('fsm_invoice_available', '=', False), '|',
+                        ('state', '!=', 'sale'), ('is_inventory_user', '=', True)]}
+                    </attribute>
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
 
                 <button name="action_cancel" type="object" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']), '|',('id', '=', False), ('is_inventory_user', '=', True)]}</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']),
+                        '|',('id', '=', False), ('is_inventory_user', '=', True)]}
+                    </attribute>
                 </button>
+
+                <button name="action_confirm" id="action_confirm" class="btn-primary" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['sent'])]}">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
+
+                <button name="action_confirm" type="object" attrs="{'invisible': [('state', 'not in', ['draft'])]}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
+
+
+                <button name="action_quotation_send" type="object" states="draft"
+                        class="btn-primary" position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
+
+                <button name="action_quotation_send" type="object" states="sent,sale" position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
+
+
+                <!--                <button name="action_confirm" type="object" position="attributes">-->
+                <!--                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>-->
+                <!--                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']), '|',('id', '=', False), ('is_inventory_user', '=', True)]}</attribute>-->
+                <!--                </button>-->
+
+                <!--                <button name="action_quotation_send" type="object" position="attributes">-->
+                <!--                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>-->
+                <!--                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']), '|',('id', '=', False), ('is_inventory_user', '=', True)]}</attribute>-->
+                <!--                </button>-->
 
                 <field name="partner_id" position="after">
                     <field name="is_gate_service" invisible="1"/>
@@ -52,20 +90,81 @@
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="before">
-<!--                    <field name="storage_rate"-->
-<!--                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>-->
+                    <!--                    <field name="storage_rate"-->
+                    <!--                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>-->
                 </xpath>
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="attributes">
                     <attribute name="attrs">{'column_invisible': [('parent.is_inventory_user', '=', True)],
-                                             'required': True, 'readonly': [('qty_invoiced', '&gt;', 0)]}
+                        'required': True, 'readonly': [('qty_invoiced', '&gt;', 0)]}
                     </attribute>
+                </xpath>
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_invoice']"
+                       position="attributes">
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+                </xpath>
+
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='preview_sale_order']" position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user</attribute>
                 </xpath>
 
 
             </field>
         </record>
 
+        <record id="rental_order_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">rental.order.form.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='open_return']" position="attributes">
+                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="sale_view_order_form" model="ir.ui.view">
+            <field name="name">sale.view_order_form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='action_confirm']" position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="sale_subscription_view_sale_subscription_order_line" model="ir.ui.view">
+            <field name="name">sale.subscription_order_line</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_subscription.view_sale_subscription_order_line"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_open_subscriptions']" position="attributes">
+                    <!-- Add your fields or attributes here -->
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!--  Inherit Form View to Modify it-->
+<!--        <record id="sale_subscription_view_sale_subscription_order_line" model="ir.ui.view">-->
+<!--            <field name="name">sale.subscription_order_line</field>-->
+<!--            <field name="model">sale.order</field>-->
+<!--            <field name="inherit_id" ref="sale_subscription.view_sale_subscription_order_line"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//div[hasclass('oe_button_box')]/[@name='action_open_subscriptions']"-->
+<!--                       position="attributes">-->
+<!--                    <attribute name="groups">equiport_custom.group_commercial_user, equiport_custom.group_account_user</attribute>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
 
     </data>
 </odoo>

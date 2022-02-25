@@ -31,21 +31,24 @@
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="before">
                     <field name="new_rental_addition" invisible="1"/>
-                    <field name="start_rent_price" attrs="{'invisible':[('new_rental_addition', '=', False)],'column_invisible':[('parent.is_rental_order', '=',False)], 'required':[('new_rental_addition', '=', True)]}"/>
+                    <field name="start_rent_price"
+                           attrs="{'invisible':[('new_rental_addition', '=', False)],'column_invisible':[('parent.is_rental_order', '=',False)], 'required':[('new_rental_addition', '=', True)]}"/>
                 </xpath>
 
                 <header position="inside">
                     <button name="add_deposit" type="object" string="Agregar deposito" class="oe_highlight"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']),('deposit_status','in',['added', 'returned'])]}"
-                            groups="equiport_custom.rental_account_deposit"/>
+                            groups="equiport_custom.group_account_user"/>
                     <button name="remove_deposit" type="object" string="Devolver deposito" class="oe_highlight"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"
-                            groups="equiport_custom.rental_account_deposit"/>
+                            groups="equiport_custom.group_account_user"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), '|', ('state', 'not in', ['sent', 'sale']), ('is_inventory_user', '=', True)]}"/>
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), '|', ('state', 'not in', ['sent', 'sale']), ('is_inventory_user', '=', True)]}"
+                            groups="equiport_custom.group_commercial_user"/>
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
-                            groups="sales_team.group_sale_manager"/>
+                            groups="equiport_custom.group_commercial_manager,equiport_custom.group_general_manager"/>
+
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
                             groups="equiport_custom.group_commercial_user"
                             string="Actualizar subscripción"
@@ -54,22 +57,47 @@
                 </header>
 
                 <button name="open_pickup" type="object" class="btn-primary"
-                        attrs="{'invisible':['|', ('has_pickable_lines','=',False), ('state', 'not in', ['sale', 'done'])]}" position="attributes">
+                        attrs="{'invisible':['|', ('has_pickable_lines','=',False), ('state', 'not in', ['sale', 'done'])]}"
+                        position="attributes">
                     <attribute name="string">
                         Seleccionar unidades
                     </attribute>
+                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
                 </button>
 
 
                 <div class="oe_button_box" name="button_box" position="inside">
                     <button name="action_view_deposits" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
-                            attrs="{'invisible': ['|', ('deposit_status', 'not in', ['added', 'returned']), ('is_inventory_user', '=', True)]}">
+                            attrs="{'invisible': ['|', ('deposit_status', 'not in', ['added', 'returned']), ('is_inventory_user', '=', True)]}"
+                            groups="equiport_custom.group_account_user">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_text">Depositos</span>
                             <!--                                <span class="o_stat_text">Preview</span>-->
                         </div>
                     </button>
                 </div>
+
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='preview_sale_order']" position="attributes">
+                   <attribute name="groups">equiport_custom.group_account_user</attribute>
+               </xpath>
+
+            </field>
+        </record>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="rental_order_form_equiport_inherit" model="ir.ui.view">
+            <field name="name">rental.order.form.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='open_return']" position="attributes">
+                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='open_pickup']" position="attributes">
+                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
+                </xpath>
 
 
             </field>

@@ -166,6 +166,15 @@
                         position="attributes">
                     <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
+<!--                <button name="action_rfq_send" states="sent" string="Re-Send by Email" type="object" context="{'send_rfq':True}"/>-->
+<!--                <button name="action_rfq_send" states="purchase"  type="object" context="{'send_rfq':False}" position="attributes">-->
+<!--                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>-->
+<!--                </button>-->
+                 <button name="action_rfq_send" states="draft" type="object" context="{'send_rfq':True}" class="oe_highlight"
+                            position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+
                 <button name="action_rfq_send" states="purchase" type="object" context="{'send_rfq':False}"
                         position="attributes">
                     <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
@@ -175,6 +184,18 @@
                 </button>
                 <button name="button_done" type="object" states="purchase" position="attributes">
                     <attribute name="groups">equiport_custom.group_account_manager,equiport_custom.eq_group_purchase_manager</attribute>
+                </button>
+
+                <button name="print_quotation"  type="object" states="draft" class="oe_highlight" groups="base.group_user" position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                </button>
+
+<!--                <button name="button_confirm" type="object" states="sent"  class="oe_highlight" id="bid_confirm" position="attributes">-->
+<!--                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>-->
+<!--                </button>-->
+
+                <button name="button_confirm" type="object" states="draft"  id="draft_confirm" position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
                 </button>
 
             </field>

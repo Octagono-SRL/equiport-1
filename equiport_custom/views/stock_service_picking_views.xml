@@ -9,11 +9,12 @@
                 <form string="Conduce de servicio">
                     <header>
                         <button name="button_confirm" string="Validar" type="object"
-                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['draft','done', 'cancel'])]}"/>
+                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['draft','done', 'cancel'])]}" groups="equiport_custom.group_inventory_user"/>
+
                         <button name="action_assign_to_me" string="Asignar a mi" type="object"
-                                attrs="{'invisible': [('user_id', '!=', False)]}"/>
+                                attrs="{'invisible': [('user_id', '!=', False)]}" groups="equiport_custom.group_inventory_user"/>
                         <button name="action_cancel" string="Cancelar" type="object"
-                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
+                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}" groups="equiport_custom.group_inventory_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done,cancel"/>
                     </header>
                     <sheet>
@@ -40,14 +41,17 @@
                             <page string="Lineas" name="picking_lines">
                                 <field name="move_lines" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}">
                                     <tree editable="bottom">
-                                        <field name="product_id" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
+                                        <field name="product_id"
+                                               attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
                                         <field name="name" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
                                         <field name="state" invisible="1"/>
-                                        <field name="product_uom_qty" attrs="{'readonly': [('state', 'in', ['assigned', 'done', 'cancel'])]}"/>
+                                        <field name="product_uom_qty"
+                                               attrs="{'readonly': [('state', 'in', ['assigned', 'done', 'cancel'])]}"/>
                                         <field name="service_picking_id" invisible="1"/>
                                         <field name="purchase_order_line_id" invisible="1"/>
                                         <field name="product_uom_category_id" invisible="1"/>
-                                        <field name="qty_done" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
+                                        <field name="qty_done"
+                                               attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
                                         <field name="company_id" invisible="1"/>
                                     </tree>
                                 </field>
@@ -55,8 +59,10 @@
                             <page string="Información extra" name="extra">
                                 <group>
                                     <group string="Detalles de Recepción" name="receipt_details">
-                                        <field name="receipt_from" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
-                                        <field name="receipt_by" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
+                                        <field name="receipt_from"
+                                               attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
+                                        <field name="receipt_by"
+                                               attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
                                     </group>
                                     <group name="note" string="Notas">
                                         <field name="note" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
@@ -66,6 +72,14 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <!-- Attachment preview -->
+                    <div class="o_attachment_preview" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>

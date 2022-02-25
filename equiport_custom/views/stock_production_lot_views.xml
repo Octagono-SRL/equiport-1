@@ -13,7 +13,8 @@
                                 attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"
                                 class="btn btn-danger"
                                 confirm="Realizar esta Opcion puede afectar con el flujo de operaciones. ¿Seguro que desea continuar?"
-                                string="Cambiar estado" groups="stock.group_stock_manager"/>
+                                string="Cambiar estado" groups="equiport_custom.group_inventory_manager"
+                        />
                         <field name="rent_state" widget="statusbar"
                                statusbar_visible="available,rented,to_check,to_repair,to_wash,damaged"
                                attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"/>
@@ -24,6 +25,25 @@
                     <field name="unit_type" invisible="1"/>
                     <field name="is_gate_product" invisible="1"/>
                     <field name="is_tire_lot" invisible="1"/>
+                </div>
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <button name="toggle_active"
+                            type="object"
+                            string="Archivar"
+                            confirm="Archivará la referencia. ¿Seguro quiere proceder?"
+                            class="oe_stat_button"
+                            attrs="{'invisible': [('active', '=', False)]}"
+                            icon="fa-archive">
+                            <field name="active" widget="toggle_button" options='{"terminology": "archive"}'/>
+                    </button>
+                    <button name="toggle_active"
+                            type="object"
+                            string="Desarchivar"
+                            class="oe_stat_button"
+                            attrs="{'invisible': [('active', '=', True)]}"
+                            icon="fa-archive">
+                            <field name="active" widget="toggle_button" options='{"terminology": "archive"}'/>
+                    </button>
                 </div>
 
                 <field name="product_id" position="after">

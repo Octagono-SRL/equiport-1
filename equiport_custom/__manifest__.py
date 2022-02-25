@@ -89,12 +89,14 @@
         'views/product_unit_view.xml',
         'views/account_journal_views.xml',
         'views/account_move.xml',
+        'views/menu_items.xml',
         'views/l10n_latam_document_type_views.xml',
         'views/fleet_vehicle_view.xml',
         'views/fleet_vehicle_log_views.xml',
         'views/unit_model_type.xml',
         'views/unit_model_size.xml',
         'views/tire_state_views.xml',
+        'views/sale_subscription_view.xml',
         'views/dgii_report_views.xml',
         'views/account_payment_views.xml',
         'report/report_external_layout.xml',
@@ -108,6 +110,7 @@
         'report/sale_report_template_inherit.xml',
         'report/report_service_receipt.xml',
         'report/report_purchase_order.xml',
+
         # 'views/',
     ],
 }

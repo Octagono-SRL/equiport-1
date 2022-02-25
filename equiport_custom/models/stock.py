@@ -316,17 +316,23 @@ class StockPicking(models.Model):
                     for line in sale_id.mapped('invoice_ids.invoice_line_ids'):
                         line._get_stock_reserved_lot_ids()
             elif self.picking_type_code == 'incoming':
-                returned = True
+                returned = []
                 for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                    if line.product_uom_qty > 0 and line.qty_returned < line.qty_delivered:
-                        returned = False
-                if sale_id.rental_subscription_id and returned:
-                    sale_id.rental_subscription_id.set_close()
+                    if line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
+                        returned.append(True)
+                    else:
+                        returned.append(False)
+                if sale_id.rental_subscription_id and all(returned) and len(returned) > 0:
+                    if not sale_id.rental_subscription_id.generated_last_invoice:
+                        sale_id.rental_subscription_id.generate_recurring_invoice()
+                        sale_id.rental_subscription_id.generated_last_invoice = True
+                    elif not sale_id.rental_subscription_id.stage_id.category == 'closed':
+                        sale_id.rental_subscription_id.set_close()
                 else:
                     if sale_id.rental_subscription_id:
-                        for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
-                            if line.return_date and line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
-                                line.product_uom_qty = 0
+                        # for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
+                        #     if line.return_date and line.product_uom_qty > 0 and line.qty_returned == line.qty_delivered:
+                        #         line.product_uom_qty = 0
                         sale_id.update_existing_rental_subscriptions()
 
         # endregion
@@ -477,6 +483,8 @@ class StockProductionLot(models.Model):
     unit_type = fields.Selection(related='product_id.unit_type')
     unit_year = fields.Char(string="Año de unidad")
     unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
+    active = fields.Boolean(string="Activo", default=True)
+    in_scrap = fields.Boolean(string="En desecho", related='tire_state_id.scrap_state')
 
     @api.depends('product_qty', 'product_id')
     def _compute_positive_qty(self):
@@ -541,9 +549,9 @@ class StockProductionLot(models.Model):
 
     # Campos relacionados actividad Alquiler
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado'), ('scrap', 'Desecho')],
         string="Estado", default="available")
 
     def change_state(self):
@@ -602,4 +610,5 @@ class TireState(models.Model):
     _name = 'tire.state'
 
     name = fields.Char(string="Titulo", required=True)
+    scrap_state = fields.Boolean(string="Estado de desecho")
     active = fields.Boolean(string="Archivado", default=True)

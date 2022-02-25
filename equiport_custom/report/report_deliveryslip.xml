@@ -115,8 +115,6 @@
 
                 </div>
             </div>
-
-            <xpath expr="//div[hasclass('page')]/div[@name='signature']" position="replace"/>
             <div t-if="o.state in ['assigned', 'done']" class="text-muted">
                 <style>
                     table.recibido {position:relative; top:200px; margin-top:35px;width:100%
@@ -143,6 +141,7 @@
             </div>
 
         </xpath>
+        <xpath expr="//div[hasclass('page')]/div[@name='signature']" position="replace"/>
 
         <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/t[@groups='stock.group_lot_on_delivery_slip']"
                position="replace">

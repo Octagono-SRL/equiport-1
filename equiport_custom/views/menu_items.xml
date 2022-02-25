@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--        permiso de acceso a modulo de firmar-->
+        <record model="ir.ui.menu" id="sign.menu_document">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.group_admin_manager'),
+            ref('equiport_custom.group_account_manager'),
+            ref('equiport_custom.eq_group_purchase_manager'),
+            ref('equiport_custom.group_operations_manager'),
+            ref('equiport_custom.group_inventory_manager'),
+            ref('equiport_custom.group_commercial_manager'),
+                        ])]"/>
+        </record>
+        <!--permiso de acceso a modulo documentos-->
+        <record model="ir.ui.menu" id="documents.menu_root">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.group_admin_manager'),
+            ref('equiport_custom.group_account_manager'),
+            ref('equiport_custom.eq_group_purchase_manager'),
+            ref('equiport_custom.group_operations_manager'),
+            ref('equiport_custom.group_inventory_manager'),
+            ref('equiport_custom.group_commercial_manager'),
+                        ])]"/>
+        </record>
+        <!--permiso de acceso a modulo contabilidad-->
+        <record model="ir.ui.menu" id="account_accountant.menu_accounting">
+            <field name="groups_id" eval="[(6,0, [ref('equiport_custom.group_account_user')])]"/>
+        </record>
+        <!--permiso de acceso a modulo subscription-->
+        <record model="ir.ui.menu" id="sale_subscription.menu_sale_subscription_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.group_account_user'), ref('equiport_custom.group_commercial_user')])]"/>
+        </record>
+
+    </data>
+</odoo>
