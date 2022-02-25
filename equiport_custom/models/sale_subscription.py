@@ -9,6 +9,7 @@ class SaleSubscription(models.Model):
 
     rental_order_id = fields.Many2one(comodel_name='sale.order', string="Orden de alquiler",
                                       domain=[('is_rental_order', '=', True)], ondelete='cascade')
+    generated_last_invoice = fields.Boolean(string="Ultima factura generada")
 
     def write(self, vals):
         res = super(SaleSubscription, self).write(vals)
@@ -20,6 +21,7 @@ class SaleSubscription(models.Model):
             raise ValidationError("No puede eliminar esta subscripción, debe cancelar la orden de alquiler primero.")
         res = super(SaleSubscription, self).unlink()
         return res
+    # TODO en generar factura indicar la linea de cotizacion que ha sido totalmente facturada.
 
     def generate_recurring_invoice(self):
         res = super(SaleSubscription, self).generate_recurring_invoice()
