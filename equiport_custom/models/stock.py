@@ -130,14 +130,14 @@ class StockPicking(models.Model):
         if self.picking_type_code == 'outgoing':
             for ml in self.move_line_ids:
                 if sale_id:
-                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
+                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id and ml.move_id in sl.move_ids)
                     for sol in sale_order_line_id:
                         if ml.qty_done > sol.product_uom_qty:
                             raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
             for ml in self.move_line_ids_without_package:
                 if sale_id:
-                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
+                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id and ml.move_id in sl.move_ids)
                     for sol in sale_order_line_id:
                         if ml.qty_done > sol.product_uom_qty:
                             raise ValidationError("No puede exceder la cantidad especificada en la orden")
@@ -323,8 +323,12 @@ class StockPicking(models.Model):
                     else:
                         returned.append(False)
                 if sale_id.rental_subscription_id and all(returned) and len(returned) > 0:
-                    sale_id.rental_subscription_id.generate_recurring_invoice()
-                    sale_id.rental_subscription_id.set_close()
+                    if not sale_id.rental_subscription_id.generated_last_invoice:
+                        sale_id.rental_subscription_id.recurring_next_date = datetime.date.today()
+                        sale_id.rental_subscription_id.generate_recurring_invoice()
+                        sale_id.rental_subscription_id.generated_last_invoice = True
+                    elif not sale_id.rental_subscription_id.stage_id.category == 'closed':
+                        sale_id.rental_subscription_id.set_close()
                 else:
                     if sale_id.rental_subscription_id:
                         # for line in sale_id.order_line.filtered(lambda l: l.product_id.type != 'service'):
