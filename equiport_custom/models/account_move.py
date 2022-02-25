@@ -235,7 +235,7 @@ class AccountMove(models.Model):
     @api.constrains('amount_total', 'invoice_line_ids')
     def _check_no_zero_balance(self):
         for rec in self:
-            if (rec.amount_total == 0 or sum(rec.invoice_line_ids.mapped('price_unit')) == 0) and rec.flow_origin == 'Sin origen':
+            if sum(rec.invoice_line_ids.mapped('price_unit')) == 0 and rec.flow_origin == 'Sin origen':
                 raise ValidationError("No puede guardar una factura con monto total de cero (0)")
     # endregion
 
