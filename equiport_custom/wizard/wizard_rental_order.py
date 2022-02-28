@@ -64,7 +64,7 @@ class RentalProcessing(models.TransientModel):
                     'move_line_ids').ids
                 move_line_ids = self.env['stock.move.line'].search(
                     [('product_id', '=', line.product_id.id), ('location_id', '=', line.company_id.rental_loc_id.id),
-                     ('id', 'not in', list(check_list))])
+                     ('id', 'not in', list(check_list)), ('rent_state', '=', False)])
                 if move_line_ids:
                     move_line_id = move_line_ids.filtered(lambda ml: self.order_id.name in ml.reference.split(' '))
                     # if not move_line_id.picking_id:
