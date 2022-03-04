@@ -42,4 +42,4 @@ class AccountMove(models.Model):
                 ('state', '!=', 'cancel'),
             ]
             if rec.search(domain):
-                raise ValidationError('Las facturas de proveedor deben tener un numero unico de NCF por proveedor y compañia.')
+                raise ValidationError('Las facturas de proveedor deben tener un numero unico de NCF por proveedor y compañia.\n Detalles:\n {0}'.format(rec.search(domain).mapped('name')))
