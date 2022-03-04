@@ -34,7 +34,7 @@ class AccountMove(models.Model):
             domain = [
                 ('move_type', '=', rec.move_type),
                 # by validating name we validate l10n_latam_document_type_id
-                ('company_id', '=', rec.company_id.id),
+                ('partner_id', '=', rec.partner_id.id),
                 ('id', '!=', rec.id),
                 ('l10n_do_fiscal_number', '=', rec.l10n_latam_document_number),
                 ('l10n_do_fiscal_number', 'not in', [False, '']),
