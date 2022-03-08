@@ -13,7 +13,7 @@
                     <field name="access_requested" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='date_done']" position="before">
-                    <field name="physic_effective_date"/>
+                    <field name="physic_effective_date" attrs="{'required': [('state', '=', 'assigned')], 'readonly': [('state', 'in', ['done', 'cancel'])]}"/>
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='extra']/group/group[@name='other_infos']" position="before">
