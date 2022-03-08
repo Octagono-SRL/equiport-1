@@ -50,7 +50,7 @@
                                 </tr>
                                 <tr style="border: none;">
                                     <td style="border: none;">
-                                        <span t-esc="o.create_uid.name"/>
+                                        <span t-esc="o.prepared_by.name"/>
                                     </td>
                                     <td style="border: none;"></td>
                                     <td style="border: none;">Cliente/nombre, Cédula/Sello</td>

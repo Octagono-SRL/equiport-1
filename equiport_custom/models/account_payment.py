@@ -34,7 +34,8 @@ class AccountPayment(models.Model):
         res = super(AccountPayment, self).write(values)
 
         for rec in self:
-            if rec.check_number != rec.first_assigned_check_number and rec.first_assigned_check_number not in [False, '']:
+            if rec.check_number != rec.first_assigned_check_number \
+                    and rec.first_assigned_check_number not in [False, '']:
                 rec.check_number = rec.first_assigned_check_number
             if check_next_sequence:
                 rec.journal_id.check_sequence_id.number_next_actual = check_next_sequence
@@ -43,9 +44,7 @@ class AccountPayment(models.Model):
 
         return res
 
-
     ncf_reference = fields.Char(string="Referencia de Pago", compute='compute_payment_reference', store=True)
-
 
     @api.depends('name', 'reconciled_invoices_count', 'reconciled_invoice_ids', 'reconciled_bill_ids',
                  'reconciled_bills_count', 'rental_order_id', 'is_rental_deposit')

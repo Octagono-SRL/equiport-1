@@ -13,9 +13,10 @@
                 </xpath>
                 <field name="partner_id" position="after">
                     <field name="is_gate_service" invisible="1"/>
+                    <field name="prepared_by" invisible="1"/>
                 </field>
 
-<!--                Alerta de Numero de comprobante-->
+                <!--                Alerta de Numero de comprobante-->
                 <xpath expr="/form/div[hasclass('alert')]" position="after">
                     <field name="document_type_alert" invisible="1"/>
                     <div groups="account.group_account_invoice" class="alert alert-info" role="alert"
@@ -24,9 +25,9 @@
                     </div>
                 </xpath>
 
-<!--                <field name="narration" position="attributes">-->
-<!--                    <attribute name="attrs">{'required': [('move_type', 'in', ['out_invoice', 'out_refund'])]}</attribute>-->
-<!--                </field>-->
+                <!--                <field name="narration" position="attributes">-->
+                <!--                    <attribute name="attrs">{'required': [('move_type', 'in', ['out_invoice', 'out_refund'])]}</attribute>-->
+                <!--                </field>-->
 
                 <xpath expr="//field[@name='ref']" position="attributes">
                     <attribute name="help">Documento que Afecta la factura</attribute>
@@ -40,11 +41,12 @@
                            attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
                     <field name="booking"
                            attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>
-<!--                    <field name="storage_rate"-->
-<!--                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>-->
+                    <!--                    <field name="storage_rate"-->
+                    <!--                           attrs="{'column_invisible': [('parent.is_gate_service', '=', False)], 'required':[('parent.is_gate_service', '=', True)]}"/>-->
                 </xpath>
 
-                <xpath expr="//notebook/page[@id='invoice_tab']/group[hasclass('oe_subtotal_footer')]/field[@name='amount_by_group']" position="before">
+                <xpath expr="//notebook/page[@id='invoice_tab']/group[hasclass('oe_subtotal_footer')]/field[@name='amount_by_group']"
+                       position="before">
                     <field name="positive_amount_tax" attrs="{'invisible': [('amount_tax', '=', 0)]}"/>
                     <field name="negative_amount_tax" attrs="{'invisible': [('amount_tax', '=', 0)]}"/>
                 </xpath>
@@ -95,7 +97,8 @@
                 'default_partner_type': 'customer',
                 'search_default_inbound_filter': 1,
                 'default_move_journal_types': ('bank', 'cash'),
-            }</field>
+                }
+            </field>
             <field name="view_id" ref="account.view_account_payment_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -111,6 +114,7 @@
         <!-- This Menu Item must have a parent and an action -->
         <menuitem name="Cobros" id="menu_action_account_payments_receivable" parent="account.menu_finance_receivables"
                   action="action_account_payments" sequence="15"/>
+
 
     </data>
 </odoo>

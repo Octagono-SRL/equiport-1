@@ -103,13 +103,19 @@
                                     <t t-esc="o.partner_truck"/>
                                 </td>
                             </tr>
+                            <tr t-if="o.transport_partner_id">
+                                <th class="border-custom bold-custom" scope="row" name="transport_company">Compañia
+                                    transportista
+                                </th>
+                                <td>
+                                    <t t-esc="o.transport_partner_id.name"/>
+                                </td>
+                            </tr>
                         </table>
                     </div>
 
                 </div>
             </div>
-
-            <xpath expr="//div[hasclass('page')]/div[@name='signature']" position="replace"/>
             <div t-if="o.state in ['assigned', 'done']" class="text-muted">
                 <style>
                     table.recibido {position:relative; top:200px; margin-top:35px;width:100%
@@ -135,6 +141,13 @@
                 </table>
             </div>
 
+        </xpath>
+        <xpath expr="//div[hasclass('page')]/div[@name='signature']" position="replace"/>
+        <xpath expr="//div[hasclass('page')]/div[hasclass('row')]" position="inside">
+            <div t-if="o.physic_effective_date" class="col-auto" name="div_physic_date">
+                <strong>Fecha fisica:</strong>
+                <p t-field="o.physic_effective_date"/>
+            </div>
         </xpath>
 
         <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/t[@groups='stock.group_lot_on_delivery_slip']"

@@ -86,15 +86,23 @@ class AccountMove(models.Model):
 
     # endregion
 
+    # region set prepare user for document
+    prepared_by = fields.Many2one(comodel_name='res.users', default=lambda self: self.env.user, string="Preparado por")
+
+    # endregion
+
     # region Gate Service
     is_gate_service = fields.Boolean(string="Servicio Gate In / Gate Out")
 
     def action_post(self):
         for inv in self.filtered(lambda m: m.move_type == 'out_refund'):
-            if self.user_has_groups("!equiport_custom.group_general_manager,!equiport_custom.group_commercial_manager,!equiport_custom.group_account_manager,!equiport_custom.group_admin_manager"):
-                raise ValidationError("No tiene permitido validar este documento, contacte con alguno de los gerentes encargados.")
+            if self.user_has_groups(
+                    "!equiport_custom.group_general_manager,!equiport_custom.group_commercial_manager,!equiport_custom.group_account_manager,!equiport_custom.group_admin_manager"):
+                raise ValidationError(
+                    "No tiene permitido validar este documento, contacte con alguno de los gerentes encargados.")
 
         for invoice in self.filtered(lambda s: s.is_invoice()):
+            invoice.prepared_by = self.env.user
             prefix_code = invoice.l10n_latam_document_type_id.doc_code_prefix
             last_number = invoice.l10n_latam_document_type_id.last_number
             if invoice.journal_id.l10n_latam_use_documents and invoice.l10n_latam_document_type_id and \
@@ -237,7 +245,8 @@ class AccountMove(models.Model):
     def create(self, vals_list):
         res = super(AccountMove, self).create(vals_list)
         for rec in res:
-            if sum(rec.invoice_line_ids.mapped('price_unit')) == 0 and rec.flow_origin == 'Sin origen' and rec.is_invoice():
+            if sum(rec.invoice_line_ids.mapped(
+                    'price_unit')) == 0 and rec.flow_origin == 'Sin origen' and rec.is_invoice():
                 raise ValidationError("No puede guardar una factura con monto total de cero (0)")
         return res
 
@@ -248,7 +257,8 @@ class AccountMoveLine(models.Model):
     _inherit = ['account.move.line']
 
     reserved_lot_ids = fields.Many2many(compute='_get_stock_reserved_lot_ids', comodel_name='stock.production.lot',
-                                        relation='invoice_reserved_lot_rel', domain="[('product_id','=',product_id)]",store=True,
+                                        relation='invoice_reserved_lot_rel', domain="[('product_id','=',product_id)]",
+                                        store=True,
                                         copy=False, string="Números de serie")
     # Gate Service
     storage_rate = fields.Float(string="Tasa de estadia")
