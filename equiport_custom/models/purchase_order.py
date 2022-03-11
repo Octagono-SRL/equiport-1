@@ -433,7 +433,7 @@ class PurchaseOrder(models.Model):
         # endregion
 
         reset = False
-        if self.request_approval and self.allowed_confirm:
+        if self.request_approval and self.allowed_confirm and self.state not in ['sent', 'to approve', 'draft']:
             reset = True
             vals.update({
                 'request_approval': False,
