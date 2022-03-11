@@ -28,6 +28,7 @@
         'repair',
         'account',
         'sale_subscription',
+        'account_check_printing',
         'sale_renting',
         'sale_stock_renting',
         'purchase_discount',

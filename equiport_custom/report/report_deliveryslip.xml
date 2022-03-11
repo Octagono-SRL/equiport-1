@@ -104,7 +104,8 @@
                                 </td>
                             </tr>
                             <tr t-if="o.transport_partner_id">
-                                <th class="border-custom bold-custom" scope="row" name="transport_company">Compañia transportista
+                                <th class="border-custom bold-custom" scope="row" name="transport_company">Compañia
+                                    transportista
                                 </th>
                                 <td>
                                     <t t-esc="o.transport_partner_id.name"/>
@@ -142,6 +143,12 @@
 
         </xpath>
         <xpath expr="//div[hasclass('page')]/div[@name='signature']" position="replace"/>
+        <xpath expr="//div[hasclass('page')]/div[hasclass('row')]" position="inside">
+            <div t-if="o.physic_effective_date" class="col-auto" name="div_physic_date">
+                <strong>Fecha fisica:</strong>
+                <p t-field="o.physic_effective_date"/>
+            </div>
+        </xpath>
 
         <xpath expr="//div[hasclass('page')]/table[@name='stock_move_line_table']/t[@groups='stock.group_lot_on_delivery_slip']"
                position="replace">

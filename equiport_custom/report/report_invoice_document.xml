@@ -31,13 +31,13 @@
                     <tr style="">
                         <td>Itbis Acum.</td>
                         <td class="text-right o_price_total">
-                            <span class="text-nowrap" t-esc="o.positive_amount_tax"/>
+                            <span class="text-nowrap" t-esc="o.positive_amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                         </td>
                     </tr>
                     <tr style="">
                         <td>Itbis Ret.</td>
                         <td class="text-right o_price_total">
-                            <span class="text-nowrap" t-esc="o.negative_amount_tax"/>
+                            <span class="text-nowrap" t-esc="o.negative_amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                         </td>
                     </tr>
                 </t>
@@ -119,7 +119,7 @@
                        t-value="o.invoice_line_ids.sorted(key=lambda l: (-l.sequence, l.date, l.move_name, -l.id), reverse=True).filtered(lambda l: l.discount > 0)"/>
                     <t t-set="discount" t-value="0"/>
                     <t t-foreach="discount_lines" t-as="line">
-                        <t t-set="discount" t-value="discount + ((line.discount / 100) * line.price_unit)"/>
+                        <t t-set="discount" t-value="discount + ((line.discount / 100) * (line.price_unit * line.quantity))"/>
                     </t>
                     <td class="text-right">
                         <span t-esc="discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>

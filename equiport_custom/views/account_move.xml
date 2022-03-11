@@ -13,6 +13,7 @@
                 </xpath>
                 <field name="partner_id" position="after">
                     <field name="is_gate_service" invisible="1"/>
+                    <field name="prepared_by" invisible="1"/>
                 </field>
 
                 <!--                Alerta de Numero de comprobante-->

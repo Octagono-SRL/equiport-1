@@ -54,7 +54,9 @@ class StockRule(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    transport_partner_id = fields.Many2one(comodel_name='res.partner', domain=[('company_type', '=', 'company')], string="Compañia transportista")
+    physic_effective_date = fields.Datetime(string="Fecha fisica", default=fields.Datetime.now())
+    transport_partner_id = fields.Many2one(comodel_name='res.partner', domain=[('company_type', '=', 'company')],
+                                           string="Compañia transportista")
     partner_driver = fields.Char(string="Conductor")
     vat_driver = fields.Char(string="Cédula del conductor")
     card_driver = fields.Char(string="Carnet del conductor")
@@ -130,14 +132,16 @@ class StockPicking(models.Model):
         if self.picking_type_code == 'outgoing':
             for ml in self.move_line_ids:
                 if sale_id:
-                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
+                    sale_order_line_id = sale_id.order_line.filtered(
+                        lambda sl: sl.product_id == ml.product_id and ml.move_id in sl.move_ids)
                     for sol in sale_order_line_id:
                         if ml.qty_done > sol.product_uom_qty:
                             raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
             for ml in self.move_line_ids_without_package:
                 if sale_id:
-                    sale_order_line_id = sale_id.order_line.filtered(lambda sl: sl.product_id == ml.product_id)
+                    sale_order_line_id = sale_id.order_line.filtered(
+                        lambda sl: sl.product_id == ml.product_id and ml.move_id in sl.move_ids)
                     for sol in sale_order_line_id:
                         if ml.qty_done > sol.product_uom_qty:
                             raise ValidationError("No puede exceder la cantidad especificada en la orden")
@@ -190,16 +194,16 @@ class StockPicking(models.Model):
         # region Gate Service
         if self.is_gate_service:
             # if self.picking_type_code == 'incoming':
-                # for line in self.move_line_nosuggest_ids:
-                #     if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
-                #         continue
-                #     else:
-                #         raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
-                #                               "\n"
-                #                               "* Número de reserva\n"
-                #                               "* Sello\n"
-                #                               "* Barco\n"
-                #                               "* Linea naviera\n")
+            # for line in self.move_line_nosuggest_ids:
+            #     if line.in_booking and line.in_boat and line.in_stamp and line.in_navy_line:
+            #         continue
+            #     else:
+            #         raise ValidationError("Debe colocar lo siguientes datos de la unidad:\n"
+            #                               "\n"
+            #                               "* Número de reserva\n"
+            #                               "* Sello\n"
+            #                               "* Barco\n"
+            #                               "* Linea naviera\n")
             if self.picking_type_code == 'outgoing':
                 for line in self.move_line_nosuggest_ids:
                     if line.out_booking and line.out_boat and line.out_stamp and line.out_navy_line:
@@ -324,6 +328,7 @@ class StockPicking(models.Model):
                         returned.append(False)
                 if sale_id.rental_subscription_id and all(returned) and len(returned) > 0:
                     if not sale_id.rental_subscription_id.generated_last_invoice:
+                        sale_id.rental_subscription_id.recurring_next_date = datetime.date.today()
                         sale_id.rental_subscription_id.generate_recurring_invoice()
                         sale_id.rental_subscription_id.generated_last_invoice = True
                     elif not sale_id.rental_subscription_id.stage_id.category == 'closed':
@@ -549,7 +554,8 @@ class StockProductionLot(models.Model):
 
     # Campos relacionados actividad Alquiler
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),
+         ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado'), ('scrap', 'Desecho')],
         string="Estado", default="available")
@@ -598,7 +604,8 @@ class StockMove(models.Model):
 
         for rec in self:
             move_rent_states = self.search([('picking_id', '=', rec.picking_id.id)]).mapped('rent_state')
-            if rec.picking_id.picking_type_code == 'incoming' and rec.picking_id.is_rental and rec.rent_state and all(move_rent_states):
+            if rec.picking_id.picking_type_code == 'incoming' and rec.picking_id.is_rental and rec.rent_state and all(
+                    move_rent_states):
                 rec.picking_id.button_confirm()
 
         return res

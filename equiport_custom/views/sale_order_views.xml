@@ -43,7 +43,10 @@
                         position="attributes">
                     <attribute name="groups">equiport_custom.group_commercial_user</attribute>
                 </button>
-
+                <button name="action_draft" states="cancel" type="object"
+                          position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
 
                 <button name="action_quotation_send" type="object" states="draft"
                         class="btn-primary" position="attributes">
@@ -105,7 +108,8 @@
                 </xpath>
 
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='preview_sale_order']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user
+                    </attribute>
                 </xpath>
 
 
@@ -145,26 +149,28 @@
             <field name="inherit_id" ref="sale_subscription.view_sale_subscription_order_line"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_open_subscriptions']" position="attributes">
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_open_subscriptions']"
+                       position="attributes">
                     <!-- Add your fields or attributes here -->
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user
+                    </attribute>
                 </xpath>
 
             </field>
         </record>
 
         <!--  Inherit Form View to Modify it-->
-<!--        <record id="sale_subscription_view_sale_subscription_order_line" model="ir.ui.view">-->
-<!--            <field name="name">sale.subscription_order_line</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="inherit_id" ref="sale_subscription.view_sale_subscription_order_line"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//div[hasclass('oe_button_box')]/[@name='action_open_subscriptions']"-->
-<!--                       position="attributes">-->
-<!--                    <attribute name="groups">equiport_custom.group_commercial_user, equiport_custom.group_account_user</attribute>-->
-<!--                </xpath>-->
-<!--            </field>-->
-<!--        </record>-->
+        <!--        <record id="sale_subscription_view_sale_subscription_order_line" model="ir.ui.view">-->
+        <!--            <field name="name">sale.subscription_order_line</field>-->
+        <!--            <field name="model">sale.order</field>-->
+        <!--            <field name="inherit_id" ref="sale_subscription.view_sale_subscription_order_line"/>-->
+        <!--            <field name="arch" type="xml">-->
+        <!--                <xpath expr="//div[hasclass('oe_button_box')]/[@name='action_open_subscriptions']"-->
+        <!--                       position="attributes">-->
+        <!--                    <attribute name="groups">equiport_custom.group_commercial_user, equiport_custom.group_account_user</attribute>-->
+        <!--                </xpath>-->
+        <!--            </field>-->
+        <!--        </record>-->
 
     </data>
 </odoo>

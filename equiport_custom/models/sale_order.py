@@ -122,10 +122,11 @@ class SaleOrder(models.Model):
     #             section_line.unlink()
     #             self.section_gate_service_seq = 0
 
-    @api.onchange('partner_id')
+    @api.onchange('partner_id', 'pricelist_id')
     def check_credit_warning(self):
         self.ensure_one()
         partner = self.partner_id
+        partner_currency_id = partner.property_product_pricelist.currency_id
         if partner.allowed_credit:
             user_id = self.env['res.users'].search([
                 ('partner_id', '=', partner.id)], limit=1)
@@ -135,13 +136,22 @@ class SaleOrder(models.Model):
                 confirm_sale_order = self.search([('partner_id', '=', partner.id),
                                                   ('state', '=', 'sale')])
                 amount_total = 0.0
+
+                credit_limit = partner_currency_id._convert(partner.credit_limit,
+                                                            partner_currency_id,
+                                                            self.env.company,
+                                                            partner.date_last_credit or fields.Date.today())
                 for sale in confirm_sale_order.filtered(lambda s: len(s.invoice_ids) < 1 or s.invoice_ids.filtered(
                         lambda inv: inv.payment_state not in ['in_payment', 'paid'])):
-                    amount_total += sale.amount_total
-                if amount_total >= ((partner.credit_limit * partner.credit_warning) / 100):
+                    amount_total += sale.currency_id._convert(sale.amount_total,
+                                                              partner_currency_id,
+                                                              self.env.company,
+                                                              sale.date_order or fields.Date.today())
+                if amount_total >= ((credit_limit * partner.credit_warning) / 100):
                     if not partner.over_credit:
                         msg = 'El crédito disponible' \
-                              ' Monto = %s' % (round(partner.credit_limit - amount_total, 2))
+                              ' Monto = %s %s' % (partner_currency_id.symbol,
+                                                  round(credit_limit - amount_total, 2))
                         return {'value': {},
                                 'warning': {'title': f'Alerta {partner.credit_warning}% del credito alcanzado',
                                             'message': msg}}
@@ -149,6 +159,7 @@ class SaleOrder(models.Model):
     def check_limit(self):
         self.ensure_one()
         partner = self.partner_id
+        partner_currency_id = partner.property_product_pricelist.currency_id
         if partner.allowed_credit:
             user_id = self.env['res.users'].search([
                 ('partner_id', '=', partner.id)], limit=1)
@@ -158,14 +169,22 @@ class SaleOrder(models.Model):
                 confirm_sale_order = self.search([('partner_id', '=', partner.id),
                                                   ('state', '=', 'sale')])
                 amount_total = 0.0
+
+                credit_limit = partner_currency_id._convert(partner.credit_limit,
+                                                            partner_currency_id,
+                                                            self.env.company,
+                                                            partner.date_last_credit or fields.Date.today())
                 for sale in confirm_sale_order.filtered(lambda s: len(s.invoice_ids) < 1 or s.invoice_ids.filtered(
                         lambda inv: inv.payment_state not in ['in_payment', 'paid'])):
-                    amount_total += sale.amount_total
-                if amount_total > partner.credit_limit:
+                    amount_total += sale.currency_id._convert(sale.amount_total,
+                                                              partner_currency_id,
+                                                              self.env.company,
+                                                              sale.date_order or fields.Date.today())
+                if amount_total >= ((credit_limit * partner.credit_warning) / 100):
                     if not partner.over_credit:
                         msg = 'El crédito disponible' \
-                              ' Monto = %s \nVerifique "%s" Cuentas o Limites de ' \
-                              'Crédito.' % (partner.credit_limit,
+                              ' Monto = %s %s \nVerifique "%s" Cuentas o Limites de ' \
+                              'Crédito.' % (partner_currency_id.symbol, partner.credit_limit,
                                             self.partner_id.name)
                         raise UserError('No puede confirmarse la venta.\n' + msg)
 

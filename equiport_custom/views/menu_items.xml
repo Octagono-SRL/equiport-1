@@ -33,5 +33,35 @@
                    eval="[(6,0, [ref('equiport_custom.group_account_user'), ref('equiport_custom.group_commercial_user')])]"/>
         </record>
 
+<!--        permiso de acceso a modulo de aprobacion-->
+          <record model="ir.ui.menu" id="approvals.approvals_menu_root">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.group_admin_manager'),
+            ref('equiport_custom.group_account_manager'),
+            ref('equiport_custom.eq_group_purchase_manager'),
+            ref('equiport_custom.group_operations_manager'),
+            ref('equiport_custom.group_inventory_manager'),
+            ref('equiport_custom.group_commercial_manager'),
+                        ])]"/>
+          </record>
+
+<!--        permiso de acceso a modulo de tablero-->
+         <record model="ir.ui.menu" id="base.menu_board_root">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.group_admin_manager'),
+            ref('equiport_custom.group_account_manager'),
+            ref('equiport_custom.eq_group_purchase_manager'),
+            ref('equiport_custom.group_operations_manager'),
+            ref('equiport_custom.group_inventory_manager'),
+            ref('equiport_custom.group_commercial_manager'),
+                        ])]"/>
+         </record>
+
+        <record model="ir.ui.menu" id="helpdesk.menu_helpdesk_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.group_commercial_user')])]">
+            </field>
+        </record>
+
     </data>
 </odoo>

@@ -13,25 +13,38 @@
                 <button class="btn-primary" name="action_create_invoice" type="object"
                         attrs="{'invisible': [('display_create_invoice_primary', '=', False)]}"
                         groups="industry_fsm.group_fsm_manager" position="attributes">
+
+<!--                    <attribute name="attrs">{'invisible': }</attribute>-->
+
                     <attribute name="attrs">{'invisible': 1}</attribute>
+
                     <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
 
                 <button class="btn-secondary" name="action_create_invoice" type="object"
                         attrs="{'invisible': [('display_create_invoice_secondary', '=', False)]}"
                         groups="industry_fsm.group_fsm_manager" position="attributes">
+
+<!--                    <attribute name="attrs">{'invisible': 1}</attribute>-->
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+
                     <attribute name="attrs">{'invisible': 1}</attribute>
                     <attribute name="groups">equiport_custom.group_account_user</attribute>
-                </button>
 
+                </button>
             </field>
         </record>
+
+
 
         <record id="project_task_form2_equiport_inherit" model="ir.ui.view">
             <field name="name">project.task.form.equiport.inherit</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
+
+
+
                 <xpath expr="//field[@name='user_id']" position="after">
                     <field name="fsm_invoice_available" invisible="1"/>
                     <field name="truck_required" invisible="1"/>
@@ -230,7 +243,12 @@
 
                                         <button name="action_view_subtask_timesheet" type="object"
                                                 class="o_td_label o_form_label o_form_subtask_button oe_inline oe_link mr-0"
+
                                                 attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}" groups="equiport_custom.group_operations_manager">
+
+<!--                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}"-->
+<!--                                                groups="equiport_custom.group_operations_manager">-->
+
                                             <span class="text-nowrap"
                                                   attrs="{'invisible' : [('encode_uom_in_days', '=', True)]}">Horas
                                                 dedicadas en subtareas
