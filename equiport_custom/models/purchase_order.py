@@ -433,7 +433,7 @@ class PurchaseOrder(models.Model):
         # endregion
 
         reset = False
-        if self.request_approval and self.allowed_confirm and self.state not in ['sent', 'to approve', 'draft']:
+        if self.request_approval and self.allowed_confirm and self.state in ['sent', 'to approve', 'draft']:
             reset = True
             vals.update({
                 'request_approval': False,
@@ -446,11 +446,33 @@ class PurchaseOrder(models.Model):
             mark_request_cancel = True
 
         if not mark_request_cancel and (
-        (self.state == 'purchase' and vals.get('state', False) not in ['cancel', 'done']) or (
-        self.state == 'done' and vals.get('state', False) not in['purchase'])
+                (self.state == 'purchase' and vals.get('state', False) not in ['cancel', 'done']) or (
+                self.state == 'done' and vals.get('state', False) not in ['purchase'])
         ):
-            raise UserError(
-                'No puedes editar una orden confirmada. Cancele la orden; Solicite aprobación de ser requerido')
+            fields_list = [
+                'partner_id',
+                'partner_ref',
+                'requisition_id',
+                'currency_id',
+                'notes',
+                'date_order',
+                'date_planned',
+                'order_line',
+                'payment_term_id',
+                'fiscal_position_id',
+                'user_id',
+                'incoterm_id',
+                'picking_type_id'
+            ]
+            for field in fields_list:
+                if field in vals:
+                    raise UserError(
+                        'No puedes editar una orden confirmada. Cancele la orden; Solicite aprobación de ser requerido')
+
+            reset = False
+        if self.state == 'to approve' and vals.get('state', False) in ['purchase']:
+            reset = False
+
         res = super(PurchaseOrder, self).write(vals)
         if reset:
             body = """
