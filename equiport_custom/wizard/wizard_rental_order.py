@@ -38,6 +38,7 @@ class RentalProcessing(models.TransientModel):
 
                     move_line_id = move_line_ids.filtered(lambda ml: self.order_id.name in ml.reference.split(' '))
 
+                    move_line_id.rent_state = 'rented'
                     move_line_id.lot_id.rent_state = 'rented'
                     move_line_id.picking_id = pick_output.id
                     pick_output.move_lines += move_line_id.move_id
