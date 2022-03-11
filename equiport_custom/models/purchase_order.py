@@ -195,7 +195,7 @@ class PurchaseOrder(models.Model):
         company_currency_id = company_id.currency_id
         return company_currency_id._convert(amount, self.currency_id, self.company_id, self.date_order)
 
-    @api.depends('amount_total', 'company_id.active_op_approval')
+    @api.depends('amount_total', 'company_id.active_op_approval', 'allowed_confirm')
     def _check_approval_need(self):
         for rec in self:
             company_id = rec.company_id

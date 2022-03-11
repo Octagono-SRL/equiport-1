@@ -202,7 +202,7 @@
 
                 <button name="print_quotation" type="object" states="draft" class="oe_highlight"
                         groups="base.group_user" position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
 
                 <!--                <button name="button_confirm" type="object" states="sent"  class="oe_highlight" id="bid_confirm" position="attributes">-->
@@ -210,24 +210,24 @@
                 <!--                </button>-->
 
                 <button name="button_confirm" type="object" states="draft" id="draft_confirm" position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
 
 
                     <button name="button_confirm" type="object" states="sent"
                             class="oe_highlight" id="bid_confirm"
                             position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
 
                     <button name="button_confirm" type="object" states="draft"
                             id="draft_confirm"
                             position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
                 <button name="button_draft" states="cancel"  type="object"
                          position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
 
 
