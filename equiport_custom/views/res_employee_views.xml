@@ -12,10 +12,10 @@
                 <header position="inside">
                     <field name="create_invoice_access" invisible="1"/>
                     <button name="allow_user_to_create_invoices" string="Permitir crear facturas sueltas" type="object"
-                            groups="equiport_custom.set_security_group_for_costumer_invoices"
+                            groups="equiport_custom.group_account_manager"
                             attrs="{'invisible': [('create_invoice_access', '=',True)]}"/>
                     <button name="block_user_to_create_invoices" string="Bloquear crear facturas sueltas" type="object"
-                            groups="equiport_custom.set_security_group_for_costumer_invoices"
+                            groups="equiport_custom.group_account_manager"
                             attrs="{'invisible': [('create_invoice_access', '=', False)]}"/>
                 </header>
 

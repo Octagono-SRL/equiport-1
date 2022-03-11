@@ -59,11 +59,13 @@ class RentalOrder(models.Model):
                         if len(desc_list) == 2 and desc_list[1] == '':
                             rent_line.name = desc_list[0]
 
+                    new_qty = rent_line.product_uom_qty if (rent_line.qty_returned == 0 and rent_line.qty_delivered == 0) else (rent_line.qty_delivered - rent_line.qty_returned)
+
                     recurring_lines.append((0, False, {
                         'rental_order_line_id': rent_line.id,
                         'product_id': rent_line.product_id.id,
                         'name': rent_line.name,
-                        'quantity': rent_line.product_uom_qty,
+                        'quantity': new_qty,
                         'uom_id': rent_line.product_uom.id,
                         'price_unit': rent_line.price_unit,
                         'discount': rent_line.discount if rent_line.order_id.subscription_management != 'upsell' else False,
@@ -486,6 +488,7 @@ class RentalOrderLine(models.Model):
 
     new_rental_addition = fields.Boolean(string="Adición a renta", compute='_check_rental_lines', copy=False)
     new_rental_added = fields.Boolean(string="Agregado", copy=False)
+    returned_and_invoiced = fields.Boolean(string="Devuelto y Facturado", copy=False)
     start_rent_price = fields.Float(string="Cargo inicial")
 
     @api.onchange('name')

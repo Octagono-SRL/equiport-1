@@ -13,7 +13,8 @@
                                 attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"
                                 class="btn btn-danger"
                                 confirm="Realizar esta Opcion puede afectar con el flujo de operaciones. ¿Seguro que desea continuar?"
-                                string="Cambiar estado" groups="stock.group_stock_manager"/>
+                                string="Cambiar estado" groups="equiport_custom.group_inventory_manager"
+                        />
                         <field name="rent_state" widget="statusbar"
                                statusbar_visible="available,rented,to_check,to_repair,to_wash,damaged"
                                attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"/>

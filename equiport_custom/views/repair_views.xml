@@ -8,6 +8,46 @@
             <field name="inherit_id" ref="repair.view_repair_order_form"/>
             <field name="arch" type="xml">
 
+                <button name="action_repair_cancel" type="object"
+                        attrs="{'invisible':['|', ('state', '=', 'cancel'), ('invoice_state', '!=', 'draft')]}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_operations_user</attribute>
+                </button>
+
+                <button name="action_repair_cancel" type="object"
+                        attrs="{'invisible': ['|', ('state','=', 'cancel',), ('invoice_state', '=', 'draft')]}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_operations_supervisor</attribute>
+                </button>
+
+                <button name="action_repair_invoice_create" type="object"  class="oe_highlight"
+                        groups="account.group_account_invoice"
+                        attrs="{'invisible': ['|', ('state', '!=', '2binvoiced'), ('invoice_id', '!=', False)]}"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+                </button>
+
+                 <button name="action_validate" states="draft" type="object"  class="oe_highlight"
+                          position="attributes">
+                    <attribute name="groups">equiport_custom.group_operations_user</attribute>
+                </button>
+
+                 <button name="action_send_mail" states="draft"  type="object"
+                          position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
+                   <button name="print_repair_order" states="draft" type="object"
+                            position="attributes">
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                </button>
+
+                <button name="action_repair_end" states="under_repair" type="object"  class="oe_highlight"
+                        position="attributes">
+                    <attribute name="groups">equiport_custom.group_operations_user</attribute>
+                </button>
+
+
+
                 <xpath expr="//field[@name='product_id']" position="after">
                     <field name="is_fleet_origin" invisible="1"/>
                     <field name="is_fuel_replenishment" invisible="1"/>
@@ -15,7 +55,9 @@
 
                 <xpath expr="//field[@name='product_id']" position="replace">
                     <field name="product_id" attrs="{'invisible': [('is_fleet_origin', '=', True)]}"/>
-                    <field name="product_fleet_name" attrs="{'invisible': [('is_fleet_origin', '=', False)], 'readonly': [('is_fleet_origin', '=', True)]}" string="Producto a reparar"/>
+                    <field name="product_fleet_name"
+                           attrs="{'invisible': [('is_fleet_origin', '=', False)], 'readonly': [('is_fleet_origin', '=', True)]}"
+                           string="Producto a reparar"/>
                 </xpath>
 
                 <xpath expr="//sheet/notebook/page[@name='extra_info']/group/group" position="inside">
@@ -24,10 +66,12 @@
 
                 <div class="oe_button_box" name="button_box" position="inside">
                     <field name="picking_ids" invisible="1"/>
-                    <button type="object" name="action_view_delivery" class="oe_stat_button" icon="fa-truck" attrs="{'invisible': [('delivery_count', '=', 0)]}" groups="base.group_user">
+                    <button type="object" name="action_view_delivery" class="oe_stat_button" icon="fa-truck"
+                            attrs="{'invisible': [('delivery_count', '=', 0)]}" groups="base.group_user">
                         <field name="delivery_count" widget="statinfo" string="Conduces"/>
                     </button>
                 </div>
+
 
                 <xpath expr="//sheet/notebook/page[@name='operations']/field[@name='fees_lines']" position="attributes">
                     <attribute name="attrs">
@@ -103,9 +147,10 @@
                 <xpath expr="//field[@name='tag_ids']" position="after">
                     <field name="order_type"/>
                 </xpath>
-                
+
             </field>
         </record>
+
 
     </data>
 </odoo>

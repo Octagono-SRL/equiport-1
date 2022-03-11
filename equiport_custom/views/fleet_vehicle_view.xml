@@ -7,23 +7,30 @@
             <field name="model">fleet.vehicle</field>
             <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
             <field name="arch" type="xml">
+                <header position="inside">
+                    <button name="button_restart_measurer" type="object" string="Reiniciar Odómetro / Horómetro"
+                            groups="equiport_custom.group_operations_manager"
+                            attrs="{'invisible': ['|','&amp;',('unit_type', 'in', ['utility', 'gen_set']), ('hourmeter', '=', 0), '&amp;', ('unit_type', '=', 'vehicle'), ('odometer', '=', 0)]}"
+                            confirm="¿Esta seguro de establecer el valor en cero?"/>
+                </header>
 
                 <xpath expr="//sheet" position="replace">
                     <sheet>
                         <field name="currency_id" invisible="1"/>
                         <div class="oe_button_box" name="button_box">
                             <button name="open_assignation_logs" type="object" class="oe_stat_button" icon="fa-history"
-                                    attrs="{'invisible':[('unit_type', '!=', 'vehicle')]}">
+                                    attrs="{'invisible':[('unit_type', '!=', 'vehicle')]}" groups="equiport_custom.group_operations_user">
                                 <field name="history_count" widget="statinfo" string="Drivers History"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-book"
                                     context="{'xml_id':'fleet_vehicle_log_contract_action'}"
-                                    help="show the contract for this vehicle">
+                                    help="show the contract for this vehicle" groups="equiport_custom.group_operations_user">
                                 <field name="contract_count" widget="statinfo" string="Contracts"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-wrench"
                                     context="{'xml_id':'fleet_vehicle_log_services_action'}"
-                                    help="show the services logs for this vehicle">
+                                    help="show the services logs for this vehicle"
+                                    groups="equiport_custom.group_operations_user">
                                 <field name="service_count" widget="statinfo" string="Services"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button"
@@ -36,14 +43,14 @@
                                     icon="fa-tachometer"
                                     context="{'xml_id':'fleet_unit_hourmeter_action', 'xml_origin': 'hourmeter'}"
                                     help="Muestra los registros de Horometro de la unidad"
-                                    attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}" groups="equiport_custom.group_operations_user">
                                 <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button"
                                     icon="fa-circle"
                                     context="{'xml_id':'fleet_vehicle_log_tires_action', 'xml_origin': 'tires'}"
                                     help="Historial de asignacion de neumaticos"
-                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis'])]}">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis'])]}" groups="equiport_custom.group_operations_user">
                                 <field name="tires_count" widget="statinfo" string="Neumaticos"/>
                             </button>
                         </div>
@@ -71,7 +78,8 @@
                                 <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
                             </h2>
                             <label for="tag_ids" class="oe_edit_only"/>
-                            <field name="tag_ids" attrs="{'required': [('unit_type', '=', 'vehicle')]}" widget="many2many_tags"
+                            <field name="tag_ids" attrs="{'required': [('unit_type', '=', 'vehicle')]}"
+                                   widget="many2many_tags"
                                    options="{'color_field': 'color', 'no_create_edit': True, 'no_create': 1, 'no_edit': 1}"/>
 
                             <group>
@@ -90,7 +98,8 @@
                             <h2>
                                 <field name="product_unit_id"
                                        options="{'color_field': 'color', 'no_create': 1, 'no_edit': 1, 'no_open': 1}"
-                                       class="oe_inline" attrs="{'required': [('unit_type', 'not in', ['vehicle', 'utility'])]}"/>
+                                       class="oe_inline"
+                                       attrs="{'required': [('unit_type', 'not in', ['vehicle', 'utility'])]}"/>
                             </h2>
                             <group>
                                 <field name="unit_type" required="1"/>
@@ -413,7 +422,7 @@
 
         <menuitem action="action_fleet_production_lot_form" id="menu_fleet_production_lot_form"
                   parent="fleet.menu_root" groups="stock.group_production_lot"
-                  sequence="101"/>
+                  sequence="30"/>
 
 
     </data>

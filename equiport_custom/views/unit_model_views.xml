@@ -23,7 +23,8 @@
                                 type="object"
                                 confirm="(Un)archiving a project automatically (un)archives its tasks and issues. Do you want to proceed?"
                                 class="oe_stat_button"
-                                icon="fa-archive">
+                                icon="fa-archive"
+                                 groups="equiport_custom.group_inventory_manager">
                             <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
                         </button>
                     </div>

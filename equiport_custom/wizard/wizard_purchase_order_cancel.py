@@ -51,6 +51,8 @@ class PurchaseOrderCancel(models.TransientModel):
             'default_use_template': bool(template_id),
             'default_template_id': template_id,
             'mark_request_cancel': True,
+            # 'cancel_reason': dict(self._fields['reason'].selection).get(self.reason),
+            'cancel_reason': self.reason,
             'default_composition_mode': 'comment',
             'custom_layout': "mail.mail_notification_paynow",
             'force_email': True,
@@ -72,7 +74,7 @@ class PurchaseOrderCancel(models.TransientModel):
                 'attachment_ids': [(6, 0, [attachment_id.id])]
             })
 
-        self.purchase_order_id.cancel_reason = self.reason
+        # self.with_context(self._context, mark_request_cancel=True).purchase_order_id.cancel_reason = self.reason
 
         return {
             'name': _('Compose Email'),

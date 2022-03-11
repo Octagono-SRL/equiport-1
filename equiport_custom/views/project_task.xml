@@ -13,24 +13,38 @@
                 <button class="btn-primary" name="action_create_invoice" type="object"
                         attrs="{'invisible': [('display_create_invoice_primary', '=', False)]}"
                         groups="industry_fsm.group_fsm_manager" position="attributes">
+
+<!--                    <attribute name="attrs">{'invisible': }</attribute>-->
+
                     <attribute name="attrs">{'invisible': 1}</attribute>
+
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
 
                 <button class="btn-secondary" name="action_create_invoice" type="object"
                         attrs="{'invisible': [('display_create_invoice_secondary', '=', False)]}"
                         groups="industry_fsm.group_fsm_manager" position="attributes">
-                    <attribute name="attrs">{'invisible': 1}</attribute>
-                </button>
 
+<!--                    <attribute name="attrs">{'invisible': 1}</attribute>-->
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+
+                    <attribute name="attrs">{'invisible': 1}</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+
+                </button>
             </field>
         </record>
+
+
 
         <record id="project_task_form2_equiport_inherit" model="ir.ui.view">
             <field name="name">project.task.form.equiport.inherit</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="project.view_task_form2"/>
-            <field name="priority" eval="8"/>
             <field name="arch" type="xml">
+
+
+
                 <xpath expr="//field[@name='user_id']" position="after">
                     <field name="fsm_invoice_available" invisible="1"/>
                     <field name="truck_required" invisible="1"/>
@@ -54,7 +68,8 @@
                                 <field name="rescue_location"/>
                                 <field name="employee_worker_ids" widget="many2many_tags"/>
                                 <field name="main_cause" widget="radio" options="{'horizontal': 1}"/>
-                                <field name="rescue_truck_id" attrs="{'required': [('is_fsm', '=', True), ('truck_required', '=', True)]}"
+                                <field name="rescue_truck_id"
+                                       attrs="{'required': [('is_fsm', '=', True), ('truck_required', '=', True)]}"
                                        options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                                 <field name="consumption" attrs="{'required': [('km_travelled', '!=', 0)]}"/>
                                 <field name="performance" force_save="1" readonly="1"/>
@@ -109,7 +124,8 @@
                             <group>
                                 <field name="chassis_long" invisible="1"/>
                                 <field name="chassis_long_id"/>
-                                <field name="product_chassis_id" attrs="{'required': [('chassis_long_id', '!=', False)]}"
+                                <field name="product_chassis_id"
+                                       attrs="{'required': [('chassis_long_id', '!=', False)]}"
                                        domain="[('unit_size_id', '=', chassis_long_id), ('unit_type', '=', 'chassis')]"/>
                                 <field name="chassis_lot_id" attrs="{'required': [('product_chassis_id', '!=', False)]}"
                                        domain="[('product_id', '=', product_chassis_id), ('rent_state', 'not in', ['to_check','to_repair', 'to_wash', 'damaged']), ('positive_qty', '=', True)]"/>
@@ -167,16 +183,24 @@
                                                 <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                                                     <div class="row">
                                                         <div class="col-6">
-                                                            <strong><span><t
-                                                                    t-esc="record.employee_id.value"/></span></strong>
+                                                            <strong>
+                                                                <span>
+                                                                    <t
+                                                                            t-esc="record.employee_id.value"/>
+                                                                </span>
+                                                            </strong>
                                                         </div>
                                                         <div class="col-6 pull-right text-right">
-                                                            <strong><t t-esc="record.date.value"/></strong>
+                                                            <strong>
+                                                                <t t-esc="record.date.value"/>
+                                                            </strong>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-6 text-muted">
-                                                            <span><t t-esc="record.name.value"/></span>
+                                                            <span>
+                                                                <t t-esc="record.name.value"/>
+                                                            </span>
                                                         </div>
                                                         <div class="col-6">
                                                             <span class="pull-right text-right">
@@ -219,13 +243,20 @@
 
                                         <button name="action_view_subtask_timesheet" type="object"
                                                 class="o_td_label o_form_label o_form_subtask_button oe_inline oe_link mr-0"
-                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}">
+
+                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}" groups="equiport_custom.group_operations_manager">
+
+<!--                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}"-->
+<!--                                                groups="equiport_custom.group_operations_manager">-->
+
                                             <span class="text-nowrap"
                                                   attrs="{'invisible' : [('encode_uom_in_days', '=', True)]}">Horas
-                                                dedicadas en subtareas</span>
+                                                dedicadas en subtareas
+                                            </span>
                                             <span class="text-nowrap"
                                                   attrs="{'invisible' : [('encode_uom_in_days', '=', False)]}">Dias
-                                                dedicados en subtareas</span>
+                                                dedicados en subtareas
+                                            </span>
                                         </button>
                                         <field name="subtask_effective_hours" class="mt-2" widget="timesheet_uom"
                                                attrs="{'invisible' : ['|', ('allow_subtasks', '=', False), ('subtask_effective_hours', '=', 0.0)]}"

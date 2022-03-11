@@ -2,11 +2,12 @@
 <odoo>
     <data>
         <record id="tire_state_tree_view" model="ir.ui.view">
-            <field name="name"></field>
+            <field name="name">tire.state.tree.view</field>
             <field name="model">tire.state</field>
             <field name="arch" type="xml">
                 <tree string="">
                     <field name="name"/>
+                    <field name="scrap_state"/>
                     <field name="active"/>
                 </tree>
             </field>

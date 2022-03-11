@@ -2,9 +2,9 @@
 <odoo>
     <data>
         <template id="report_purchase_order_equiport" inherit_id="purchase.report_purchaseorder_document">
-             <xpath expr="//t[1]/div[hasclass('page')]/table[hasclass('table')]/thead/tr/th[@name='th_description']"
+            <xpath expr="//t[1]/div[hasclass('page')]/table[hasclass('table')]/thead/tr/th[@name='th_description']"
                    position="before">
-                    <th name="th_product"><strong>Producto</strong></th>
+                <th name="th_product"><strong>Producto</strong></th>
             </xpath>
 
             <xpath expr="//t[1]/div[hasclass('page')]/table[hasclass('table')]/tbody/t[2]/tr/t[@t-if='not line.display_type']/td[@id='product']"
@@ -12,6 +12,22 @@
                 <td name="td_product">
                     <span t-field="line.product_id"/>
                 </td>
+            </xpath>
+            <xpath expr="//t[1]/t[@t-set='address']/p[@t-if='o.partner_id.vat']" position="replace">
+                <p t-if="o.partner_id.vat">
+                    <t t-if="o.partner_id.vat_type == 'vat_exterior'">
+                        <t t-esc="'Pasaporte' if o.partner_id.lang == 'es_DO' else 'Passport'"/>: <span
+                            t-field="o.partner_id.vat"/>
+                    </t>
+                    <t t-elif="o.partner_id.vat_type == 'vat_base'">
+                        <t t-esc="'Cédula' if o.partner_id.lang == 'es_DO' else 'ID Number'"/>: <span
+                            t-field="o.partner_id.vat"/>
+                    </t>
+                    <t t-else="">
+                        <t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span
+                            t-field="o.partner_id.vat"/>
+                    </t>
+                </p>
             </xpath>
         </template>
     </data>

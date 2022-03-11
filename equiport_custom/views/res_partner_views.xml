@@ -72,9 +72,11 @@
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']" position="inside">
                     <div name="credit_button_box" groups="equiport_custom.allowed_adm_credit">
                         <button class="oe_highlight" name="allow_credit" type="object" string="Habilitar Crédito"
-                                attrs="{'invisible':[('allowed_credit', '=', True)]}"/>
+                                attrs="{'invisible':[('allowed_credit', '=', True)]}"
+                                groups="equiport_custom.group_commercial_manager,equiport_custom.group_account_manager"/>
                         <button class="oe_highlight" name="block_credit" type="object" string="Bloquear Crédito"
-                                attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
+                                attrs="{'invisible':[('allowed_credit', '=', False)]}"
+                                groups="equiport_custom.group_commercial_manager,equiport_custom.group_account_manager"/>
                     </div>
                 </xpath>
 
@@ -90,9 +92,11 @@
                         </group>
                         <div name="rental_buttons">
                             <button name="allow_rental" type="object" string="Permitir alquiler sin documentos"
-                                    attrs="{'invisible': [('allowed_rental', '=', True)]}"/>
+                                    attrs="{'invisible': [('allowed_rental', '=', True)]}"
+                                    groups="equiport_custom.group_commercial_manager,equiport_custom.group_account_manager"/>
                             <button name="block_rental" type="object" string="No permitir alquiler sin documentos"
-                                    attrs="{'invisible': [('allowed_rental', '=', False)]}"/>
+                                    attrs="{'invisible': [('allowed_rental', '=', False)]}"
+                                    groups="equiport_custom.group_commercial_manager,equiport_custom.group_account_manager"/>
                         </div>
                     </page>
 

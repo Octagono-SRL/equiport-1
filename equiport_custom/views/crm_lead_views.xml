@@ -10,13 +10,16 @@
 
                 <button name="action_sale_quotations_new" type="object" class="oe_highlight" position="attributes">
                     <attribute name="string">Cotizar Venta</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+
                 </button>
                 <button name="action_rental_quotations_new" type="object" class="oe_highlight" position="attributes">
                     <attribute name="string">Cotizar Alquiler</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
                 </button>
-                <xpath expr="//button[@name='action_view_rental_quotation']/field[@name='rental_quotation_count']"
-                       position="attributes">
+                <xpath expr="//button[@name='action_view_rental_quotation']/field[@name='rental_quotation_count']" position="attributes">
                     <attribute name="string">Alquileres</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
                 </xpath>
 
                 <button class="oe_stat_button" type="object"
@@ -25,7 +28,7 @@
                         position="replace">
                     <button class="oe_stat_button" type="object"
                             attrs="{'invisible': ['|', ('rental_order_count', '=', 0), ('type', '=', 'lead')]}"
-                            name="action_view_rental_quotation" icon="fa-usd" context="{'is_rental_order': True}">
+                            name="action_view_rental_quotation" icon="fa-usd" context="{'is_rental_order': True}" groups="equiport_custom.group_commercial_user">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value"><field name="rental_amount_total" widget="monetary"
                                                               options="{'currency_field': 'company_currency'}"/></span>
@@ -38,17 +41,18 @@
                 <xpath expr="//button[@name='action_set_won_rainbowman']" position="before">
                     <button string="Cotizar Reparación" name="action_repair_quotations_new" type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|', ('type', '=', 'lead'), '&amp;', ('probability', '=', 0), ('active', '=', False)]}"/>
+                            attrs="{'invisible': ['|', ('type', '=', 'lead'), '&amp;', ('probability', '=', 0), ('active', '=', False)]}" groups="equiport_custom.group_commercial_user"/>
                 </xpath>
                 <button name="action_schedule_meeting" position="after">
                     <button class="oe_stat_button" type="object" name="action_view_repair_quotation"
                             icon="fa-pencil-square-o"
-                            attrs="{'invisible': ['|', ('repair_quotation_count', '=', 0), ('type', '=', 'lead')]}">
+                            attrs="{'invisible': ['|', ('repair_quotation_count', '=', 0), ('type', '=', 'lead')]}"
+                            groups="equiport_custom.group_commercial_user">
                         <field name="repair_quotation_count" widget="statinfo" string="Reparaciones"/>
                     </button>
                     <button class="oe_stat_button" type="object"
                             attrs="{'invisible': ['|', ('repair_order_count', '=', 0), ('type', '=', 'lead')]}"
-                            name="action_view_repair_quotation" icon="fa-usd" context="{'is_repair_order': True}">
+                            name="action_view_repair_quotation" icon="fa-usd" context="{'is_repair_order': True}" groups="equiport_custom.group_commercial_user">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value">
                                 <field name="repair_amount_total" widget="monetary"

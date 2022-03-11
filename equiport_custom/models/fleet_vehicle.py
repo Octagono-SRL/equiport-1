@@ -2,7 +2,7 @@
 from datetime import timedelta, datetime
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class FleetVehicle(models.Model):
@@ -30,7 +30,8 @@ class FleetVehicle(models.Model):
     product_unit_id = fields.Many2one(comodel_name='product.product', string="Unidad",
                                       domain="[('unit_type', '=', unit_type)]")
     unit_type = fields.Selection(
-        [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis'), ('utility', 'Utilitario')],
+        [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis'),
+         ('utility', 'Utilitario')],
         tracking=True, string="Tipo de unidad", default='vehicle')
     unit_brand_id = fields.Many2one('unit.model.brand', related="unit_model_id.brand_id", store=True, readonly=False,
                                     string="Marca de unidad")
@@ -63,6 +64,18 @@ class FleetVehicle(models.Model):
     # endregion
 
     # region Nuevas funciones
+
+    def button_restart_measurer(self):
+        self.with_context({}, allow_reset=[True, self])._reset_fleet_measure()
+
+    def _reset_fleet_measure(self):
+        date = fields.Date.context_today(self)
+        data = {'value': 0, 'date': date, 'vehicle_id': self.id}
+        if self.unit_type in ['utility', 'gen_set']:
+            self.env['fleet.unit.hourmeter'].create(data)
+        elif self.unit_type == 'vehicle':
+            self.env['fleet.vehicle.odometer'].create(data)
+
     @api.depends('odometer', 'hourmeter')
     def compute_use_cost(self):
         FleetVehicleHourometer = self.env['fleet.unit.hourmeter']
@@ -107,7 +120,7 @@ class FleetVehicle(models.Model):
         FleetVehicalHourometer = self.env['fleet.unit.hourmeter']
         for record in self:
             vehicle_hourmeter = FleetVehicalHourometer.search([('vehicle_id', '=', record.id)], limit=1,
-                                                              order='value desc')
+                                                              order='date desc')
             if vehicle_hourmeter:
                 record.hourmeter = vehicle_hourmeter.value
             else:
@@ -131,8 +144,10 @@ class FleetVehicle(models.Model):
                 record.name = (record.model_id.brand_id.name or '') + '/' + (record.model_id.name or '') + '/' + (
                         record.license_plate or _('No Plate'))
             else:
-                record.name = ((record.unit_model_id.brand_id.name + '/') if record.unit_model_id.brand_id.name else '') + (
-                        (record.unit_model_id.name + '/') if record.unit_model_id.name else '') + ((record.product_unit_id.name + '/') if record.product_unit_id.name else '') + (
+                record.name = ((
+                                       record.unit_model_id.brand_id.name + '/') if record.unit_model_id.brand_id.name else '') + (
+                                  (record.unit_model_id.name + '/') if record.unit_model_id.name else '') + (
+                                  (record.product_unit_id.name + '/') if record.product_unit_id.name else '') + (
                                       record.unit_lot_id.name or 'Sin Serial')
 
     def _compute_count_all(self):
@@ -200,7 +215,12 @@ class FleetUnitHourmeter(models.Model):
 
     @api.constrains('value')
     def check_greater_value(self):
+        print(self._context)
         for rec in self:
+            allow_reset = self._context.get('allow_reset', False)
+            if allow_reset:
+                if allow_reset[0] and rec.vehicle_id == allow_reset[1]:
+                    continue
             records = self.search([('id', '!=', rec.id), ('vehicle_id', '=', rec.vehicle_id.id)])
             if records:
                 for v in records.mapped('value'):
@@ -211,14 +231,25 @@ class FleetUnitHourmeter(models.Model):
 
 class FleetVehicleLogTires(models.Model):
     _name = 'fleet.vehicle.log.tires'
+    _inherit = ['mail.activity.mixin', 'mail.thread']
     _description = 'Historial de asignacion de neumaticos'
     _order = 'date desc'
 
     name = fields.Char(compute='_compute_vehicle_log_tire_name', store=True)
     date = fields.Date(string="Fecha de registro", default=fields.Date.context_today)
     tires_number = fields.Integer(string='Numero de neumaticos', default=4, required=True)
-    tires_set_ids = fields.One2many(comodel_name='fleet.vehicle.tires.set', inverse_name='vehicle_log_tires_id', string='Grupo de neumaticos')
+    #                                   states={'open': [('readonly', True)], 'close': [('readonly', True)]}
+    tires_set_ids = fields.One2many(comodel_name='fleet.vehicle.tires.set', inverse_name='vehicle_log_tires_id',
+                                    string='Grupo de neumaticos', tracking=True)
     vehicle_id = fields.Many2one('fleet.vehicle', 'Vehiculo', required=True)
+
+    state = fields.Selection(
+        [('draft', 'Borrador'), ('open', 'En uso'), ('close', 'Cerrado')],
+        'Estado', copy=False, default='draft', tracking=True,
+        help="Cuando el registro es creado, el estado es 'Borrador'.\n"
+             "Si el registro es confimado, el estado será 'En uso' y estara registrando los cambios en las lineas de neumaticos.\n"
+             "'Cerrado' Puede colocarse manualmente en cerrado siempre y cuando todos los neumaticos hayan sido retirados.\n"
+             "You can manually close an asset when the depreciation is over. If the last line of depreciation is posted, the asset automatically goes in that status.")
 
     @api.depends('vehicle_id', 'date')
     def _compute_vehicle_log_tire_name(self):
@@ -230,15 +261,46 @@ class FleetVehicleLogTires(models.Model):
                 name += ' / Set - ' + str(record.date)
             record.name = name
 
+    def button_validate(self):
+        self._action_validate()
+
+    def _action_validate(self):
+        # Validate no empty line
+        error_message = []
+        for line in self.tires_set_ids:
+            if not line.product_id or not line.product_lot_id:
+                error_message.append("""
+                Posicion %s
+                """ % (line.sequence_number))
+        if error_message:
+            raise UserError("Faltan las referencias de las siguientes posiciones: \n%s" % ('\n'.join(error_message)))
+
+        self.write({
+            'state': 'open'
+        })
+
+    def write(self, values):
+        # Add code here
+        print(values)
+        res = super(FleetVehicleLogTires, self).write(values)
+        print(values)
+        return res
+
     @api.onchange('tires_number')
-    def _onchange_tires_number(self):
-        if self.tires_number < 2:
-            self.tires_number = 4
+    def onchange_tires_number(self):
+        if self.tires_number < 4 and self.state == 'draft':
+            self.update({
+                'tires_number': 4
+            })
         empty_spaces = []
         for n in range(self.tires_number):
-            empty_spaces.append((0, 0, {'sequence_number': n+1}))
+            empty_spaces.append((0, 0, {'sequence_number': n + 1}))
 
-        self.tires_set_ids = empty_spaces
+        if len(self.tires_set_ids) > 0 and self.state == 'draft':
+            self.tires_set_ids = False
+        self.update({
+            'tires_set_ids': empty_spaces
+        })
 
     @api.constrains('date')
     def check_greater_date(self):
@@ -254,8 +316,9 @@ class FleetVehicleLogTires(models.Model):
     def check_tires_set_number(self):
         for rec in self:
             for line in rec.tires_set_ids:
-                if not line.product_id or not line.product_lot_id:
-                    raise ValidationError("Debe completar todas las lineas del grupo de neumaticos")
+                if not line.product_id:
+                    raise ValidationError(
+                        "Debe completar todas las lineas del grupo de neumaticos (Coloque Almenos el Producto)")
 
 
 class FleetTireSet(models.Model):
@@ -269,7 +332,7 @@ class FleetTireSet(models.Model):
                                            string='Registro de cambio de neumatico')
     product_id = fields.Many2one(comodel_name='product.product', string='Neumatico')
     product_lot_id = fields.Many2one(comodel_name='stock.production.lot', string='Referencia de neumatico',
-                                     domain="[('product_id', '=', product_id), ('assigned_tire', '=', False)]")
+                                     domain="[('product_id', '=', product_id),('positive_qty', '=', True), ('assigned_tire', '=', False), ('in_scrap', '=', False)]")
 
     @api.onchange('sequence')
     def keep_sequence_order(self):
@@ -292,7 +355,8 @@ class FleetTireSet(models.Model):
     @api.constrains('product_id', 'product_lot_id', 'vehicle_log_tires_id')
     def check_different_lot(self):
         for rec in self:
-            records = self.search([('id', '!=', rec.id), ('product_id', '=', rec.product_id.id), ('vehicle_log_tires_id', '=', rec.vehicle_log_tires_id.id)])
+            records = self.search([('id', '!=', rec.id), ('product_id', '=', rec.product_id.id),
+                                   ('vehicle_log_tires_id', '=', rec.vehicle_log_tires_id.id)])
             if records:
                 for v in records.mapped('product_lot_id'):
                     if rec.product_lot_id == v:
