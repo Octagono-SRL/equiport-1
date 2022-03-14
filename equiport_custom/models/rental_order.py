@@ -482,6 +482,16 @@ class RentalOrder(models.Model):
         res = super(RentalOrder, self).open_pickup()
         return res
 
+    def open_return(self):
+        for picking in self.picking_ids:
+            if picking.picking_type_code == 'outgoing' and picking.state not in ['done', 'cancel']:
+                raise UserError("Deben procesar el conduce {0} antes de realizar esta operacion".format(picking.name))
+
+            if picking.picking_type_code == 'incoming' and picking.state not in ['done', 'cancel']:
+                raise UserError("Deben procesar el conduce {0} antes de realizar esta operacion".format(picking.name))
+        res = super(RentalOrder, self).open_return()
+        return res
+
 
 class RentalOrderLine(models.Model):
     _inherit = ['sale.order.line']
