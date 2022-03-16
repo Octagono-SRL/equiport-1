@@ -436,6 +436,12 @@ class RentalOrder(models.Model):
     def open_pickup(self):
         if not self.env.user.has_group('equiport_custom.rental_stock_picking'):
             raise ValidationError("El personal de despacho es el encargado de seleccionar las unidades a despachar")
+        for picking in self.picking_ids:
+            if picking.picking_type_code == 'outgoing' and picking.state not in ['done', 'cancel']:
+                raise UserError("Deben procesar el conduce {0} antes de realizar esta operacion".format(picking.name))
+
+            if picking.picking_type_code == 'incoming' and picking.state not in ['done', 'cancel']:
+                raise UserError("Deben procesar el conduce {0} antes de realizar esta operacion".format(picking.name))
         if not self.access_granted:
             self = self.with_company(self.company_id)
             deposit_product = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
