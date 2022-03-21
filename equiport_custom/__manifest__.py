@@ -10,11 +10,11 @@
         for the company Equiport.
     """,
 
-    'author': "Wander Paniagua/ Enmanuel Febrier",
+    'author': "Octagono SRL",
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.4',
+    'version': '14.0.0.5',
 
     # any module necessary for this one to work correctly
     'depends': [
