@@ -33,11 +33,12 @@ class RentalProcessing(models.TransientModel):
                 check_list = self.order_id.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing').mapped(
                     'move_line_ids').ids
                 move_line_ids = self.env['stock.move.line'].search(
-                    [('product_id', '=', line.product_id.id), ('lot_id', '=', line.pickedup_lot_ids.ids), ('id', 'not in', list(check_list))])
+                    [('product_id', '=', line.product_id.id), ('location_dest_id', '=', line.company_id.rental_loc_id.id),('lot_id', '=', line.pickedup_lot_ids.ids), ('rent_state', '=', False), ('id', 'not in', list(check_list))])
                 if move_line_ids:
 
                     move_line_id = move_line_ids.filtered(lambda ml: self.order_id.name in ml.reference.split(' '))
 
+                    move_line_id.rent_state = 'rented'
                     move_line_id.lot_id.rent_state = 'rented'
                     move_line_id.picking_id = pick_output.id
                     pick_output.move_lines += move_line_id.move_id

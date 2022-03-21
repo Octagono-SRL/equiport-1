@@ -573,9 +573,10 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),
+         ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado'), ('scrap', 'Desecho')],
         string="Estado")
 
     in_booking = fields.Char(string="Número de reserva entrada")
@@ -593,9 +594,10 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     rent_state = fields.Selection(
-        [('available', 'Disponible'), ('to_check', 'Pendiente inspección'),
+        [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),
+         ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
-         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado')],
+         ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado'), ('scrap', 'Desecho')],
         string="Estado")
 
     def write(self, vals):

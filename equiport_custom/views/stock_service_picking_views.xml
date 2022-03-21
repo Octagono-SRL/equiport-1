@@ -9,12 +9,12 @@
                 <form string="Conduce de servicio">
                     <header>
                         <button name="button_confirm" string="Validar" type="object"
-                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['draft','done', 'cancel'])]}" groups="equiport_custom.group_inventory_user"/>
+                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['draft','done', 'cancel'])]}" groups="equiport_custom.group_inventory_user,equiport_custom.eq_group_purchase_user"/>
 
                         <button name="action_assign_to_me" string="Asignar a mi" type="object"
-                                attrs="{'invisible': [('user_id', '!=', False)]}" groups="equiport_custom.group_inventory_user"/>
+                                attrs="{'invisible': [('user_id', '!=', False)]}" groups="equiport_custom.group_inventory_user,equiport_custom.eq_group_purchase_user"/>
                         <button name="action_cancel" string="Cancelar" type="object"
-                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}" groups="equiport_custom.group_inventory_user"/>
+                                class="oe_highlight" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}" groups="equiport_custom.group_inventory_user,equiport_custom.eq_group_purchase_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done,cancel"/>
                     </header>
                     <sheet>

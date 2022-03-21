@@ -85,7 +85,7 @@
         </record>
 
         <!-- Inherit Form View to Modify it -->
-        <record id="rental_order_form_equiport_inherit" model="ir.ui.view">
+        <record id="rental_order_form_equiport_inherit2" model="ir.ui.view">
             <field name="name">rental.order.form.equiport.inherit</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale_renting.rental_order_form_view"/>

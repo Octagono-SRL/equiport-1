@@ -34,6 +34,7 @@ class AccountPayment(models.Model):
         res = super(AccountPayment, self).write(values)
 
         for rec in self:
+            rec = rec.sudo()
             if rec.check_number != rec.first_assigned_check_number \
                     and rec.first_assigned_check_number not in [False, '']:
                 rec.check_number = rec.first_assigned_check_number

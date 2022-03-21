@@ -112,9 +112,19 @@ class PurchaseOrder(models.Model):
         if not self.allowed_cancel_sign:
             raise ValidationError(
                 "El documento debe ser firmado, dirijase a la sección de aprobación de cancelación en la pestaña de firmas.")
-        self.allowed_cancel_date_sign = datetime.datetime.now()
-        self.allowed_cancel_signed_by = self.env.user.display_name
-        self.allowed_cancel = True
+        self.with_context(self._context, approved_cancel=True).write({
+            'allowed_cancel_date_sign': datetime.datetime.now(),
+            'allowed_cancel_signed_by': self.env.user.display_name,
+            'allowed_cancel': True
+        })
+
+    def sign_cancel_with_user(self):
+        env_user = self.env.user
+        if not env_user.sign_signature:
+            raise ValidationError("Su usuario no cuenta con una firma digital registrada")
+        self.write({
+            'allowed_cancel_sign': env_user.sign_signature
+        })
 
     # endregion
 
@@ -185,7 +195,7 @@ class PurchaseOrder(models.Model):
         company_currency_id = company_id.currency_id
         return company_currency_id._convert(amount, self.currency_id, self.company_id, self.date_order)
 
-    @api.depends('amount_total', 'company_id.active_op_approval')
+    @api.depends('amount_total', 'company_id.active_op_approval', 'allowed_confirm')
     def _check_approval_need(self):
         for rec in self:
             company_id = rec.company_id
@@ -423,12 +433,46 @@ class PurchaseOrder(models.Model):
         # endregion
 
         reset = False
-        if self.request_approval and self.allowed_confirm:
+        if self.request_approval and self.allowed_confirm and self.state in ['sent', 'to approve', 'draft']:
             reset = True
-        if (self.state == 'purchase' and vals.get('state', False) not in ['cancel', 'done']) or (
-                self.state == 'done' and vals.get('state', False) not in ['purchase']):
-            raise UserError(
-                'No puedes editar una orden confirmada. Cancele la orden; Solicite aprobación de ser requerido')
+            vals.update({
+                'request_approval': False,
+                'allowed_confirm': False,
+            })
+        mark_request_cancel = self._context.get('mark_request_cancel', False) or self._context.get('params', {}).get(
+            'mark_request_cancel', False) or self._context.get('approved_cancel', False) or \
+                              self._context.get('params', {}).get('approved_cancel', False)
+        if 'allowed_cancel_sign' in vals:
+            mark_request_cancel = True
+
+        if not mark_request_cancel and (
+                (self.state == 'purchase' and vals.get('state', False) not in ['cancel', 'done']) or (
+                self.state == 'done' and vals.get('state', False) not in ['purchase'])
+        ):
+            fields_list = [
+                'partner_id',
+                'partner_ref',
+                'requisition_id',
+                'currency_id',
+                'notes',
+                'date_order',
+                'date_planned',
+                'order_line',
+                'payment_term_id',
+                'fiscal_position_id',
+                'user_id',
+                'incoterm_id',
+                'picking_type_id'
+            ]
+            for field in fields_list:
+                if field in vals:
+                    raise UserError(
+                        'No puedes editar una orden confirmada. Cancele la orden; Solicite aprobación de ser requerido')
+
+            reset = False
+        if self.state == 'to approve' and vals.get('state', False) in ['purchase']:
+            reset = False
+
         res = super(PurchaseOrder, self).write(vals)
         if reset:
             body = """
@@ -461,17 +505,15 @@ class PurchaseOrder(models.Model):
                 body=body,
                 message_type='notification'
             )
-            self.write({
-                'request_approval': False,
-                'allowed_confirm': False,
-
-            })
         return res
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
         if self.env.context.get('mark_request_cancel'):
-            self.write({'requested_cancel': True})
+            self.write({
+                'requested_cancel': True,
+                'cancel_reason': self.env.context.get('cancel_reason', '')
+            })
 
         if self.env.context.get('mark_request_approval'):
             if not self.request_approval:

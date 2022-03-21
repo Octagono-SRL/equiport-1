@@ -44,10 +44,11 @@
                     <!--   TODO SUPUESTO A CAMBIAR EL GROUP USER-->
                     <button name="%(wizard_service_picking_act_window)d" type="action"
                             context="{'default_purchase_order_id': active_id}"
-                            groups="equiport_custom.group_operations_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager"
+                            groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_operations_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager"
                             attrs="{'invisible': ['|', ('state', '!=', 'purchase'), ('receivable_service', '=', False)]}"
                             string="Conduce de Servicio" class="oe_highlight"
                             help="Crear un conduce para recibir servicios"/>
+
                 </xpath>
 
                 <div class="oe_button_box" name="button_box" position="inside">
@@ -79,8 +80,10 @@
                                 <group name="user_ini_group"
                                        attrs="{'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}">
                                     <div name="user_ini_div">
-                                        <span>Firma requerida: <field name="op_ini_user_id"
-                                                                      options="{'no_open': 1}"/></span>
+                                        <span>Firma requerida:
+                                            <field name="op_ini_user_id"
+                                                   options="{'no_open': 1}"/>
+                                        </span>
                                         <field name="allowed_confirm_sign_one" widget="signature" nolabel="1"
                                                options="{'size': ['',200]}"
                                                attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_ini_user', '=', False)], 'invisible':[('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
@@ -91,12 +94,13 @@
                                                 attrs="{'invisible': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), '|', ('is_ini_user', '=', False), ('approval_level', 'not in', ['one', 'two', 'three'])]}"/>
                                     </div>
                                 </group>
-
                                 <group name="user_mid_group"
                                        attrs="{'invisible':[('approval_level', 'not in', ['two', 'three'])]}">
                                     <div name="user_mid_div">
-                                        <span>Firma requerida: <field name="op_mid_user_id"
-                                                                      options="{'no_open': 1}"/></span>
+                                        <span>Firma requerida:
+                                            <field name="op_mid_user_id"
+                                                   options="{'no_open': 1}"/>
+                                        </span>
                                         <field name="allowed_confirm_sign_two" widget="signature" nolabel="1"
                                                options="{'size': ['',200]}"
                                                attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_mid_user', '=', False)], 'invisible':[('approval_level', 'not in', ['two', 'three'])]}"/>
@@ -109,8 +113,10 @@
                                 <group name="user_top_group"
                                        attrs="{'invisible':[('approval_level', 'not in', ['three'])]}">
                                     <div name="user_top_div">
-                                        <span>Firma requerida: <field name="op_top_user_id"
-                                                                      options="{'no_open': 1}"/></span>
+                                        <span>Firma requerida:
+                                            <field name="op_top_user_id"
+                                                   options="{'no_open': 1}"/>
+                                        </span>
                                         <field name="allowed_confirm_sign_three" widget="signature" nolabel="1"
                                                options="{'size': ['',200]}"
                                                attrs="{'readonly': ['|', ('is_approval_group', '=', False), '|', ('allowed_confirm', '=', True), ('is_top_user', '=', False)], 'invisible':[('approval_level', 'not in', ['three'])]}"/>
@@ -137,6 +143,10 @@
                         </div>
                         <group name="cancel_sign" attrs="{'invisible': [('requested_cancel', '=', False)]}">
                             <group>
+                                <button name="sign_cancel_with_user" type="object"
+                                                string="Firmar"
+                                                class="btn btn-primary"
+                                                attrs="{'invisible': ['|', ('is_cancel_group', '=', False),('allowed_cancel', '=', True)]}"/>
                                 <field name="allowed_cancel_sign" widget="signature" nolabel="1"
                                        options="{'size': ['',200]}"
                                        attrs="{'readonly': ['|', ('is_cancel_group', '=', False),('allowed_cancel', '=', True)]}"/>
@@ -166,12 +176,13 @@
                         position="attributes">
                     <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
-<!--                <button name="action_rfq_send" states="sent" string="Re-Send by Email" type="object" context="{'send_rfq':True}"/>-->
-<!--                <button name="action_rfq_send" states="purchase"  type="object" context="{'send_rfq':False}" position="attributes">-->
-<!--                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>-->
-<!--                </button>-->
-                 <button name="action_rfq_send" states="draft" type="object" context="{'send_rfq':True}" class="oe_highlight"
-                            position="attributes">
+                <!--                <button name="action_rfq_send" states="sent" string="Re-Send by Email" type="object" context="{'send_rfq':True}"/>-->
+                <!--                <button name="action_rfq_send" states="purchase"  type="object" context="{'send_rfq':False}" position="attributes">-->
+                <!--                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>-->
+                <!--                </button>-->
+                <button name="action_rfq_send" states="draft" type="object" context="{'send_rfq':True}"
+                        class="oe_highlight"
+                        position="attributes">
                     <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
 
@@ -179,24 +190,47 @@
                         position="attributes">
                     <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
-                <button name="button_cancel" states="draft,to approve,sent,purchase" type="object" position="attributes">
+                <button name="button_cancel" states="draft,to approve,sent,purchase" type="object"
+                        position="attributes">
                     <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
                 <button name="button_done" type="object" states="purchase" position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_manager,equiport_custom.eq_group_purchase_manager</attribute>
+                    <attribute name="groups">
+                        equiport_custom.group_account_manager,equiport_custom.eq_group_purchase_manager
+                    </attribute>
                 </button>
 
-                <button name="print_quotation"  type="object" states="draft" class="oe_highlight" groups="base.group_user" position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                <button name="print_quotation" type="object" states="draft" class="oe_highlight"
+                        groups="base.group_user" position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
 
-<!--                <button name="button_confirm" type="object" states="sent"  class="oe_highlight" id="bid_confirm" position="attributes">-->
-<!--                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>-->
-<!--                </button>-->
+                <!--                <button name="button_confirm" type="object" states="sent"  class="oe_highlight" id="bid_confirm" position="attributes">-->
+                <!--                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>-->
+                <!--                </button>-->
 
-                <button name="button_confirm" type="object" states="draft"  id="draft_confirm" position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_manager</attribute>
+                <button name="button_confirm" type="object" states="draft" id="draft_confirm" position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
                 </button>
+
+
+                    <button name="button_confirm" type="object" states="sent"
+                            class="oe_highlight" id="bid_confirm"
+                            position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+
+                    <button name="button_confirm" type="object" states="draft"
+                            id="draft_confirm"
+                            position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+                <button name="button_draft" states="cancel"  type="object"
+                         position="attributes">
+                    <attribute name="groups">equiport_custom.eq_group_purchase_user</attribute>
+                </button>
+
+
 
             </field>
         </record>
