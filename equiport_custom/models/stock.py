@@ -249,6 +249,10 @@ class StockPicking(models.Model):
                     line.lot_id.out_boat = line.out_boat
                     line.lot_id.out_navy_line = line.out_navy_line
                     line.lot_id.gate_out_date = datetime.datetime.now()
+        elif not self.is_rental:
+            if self.picking_type_code == 'outgoing':
+                for line in self.move_line_ids_without_package:
+                    line.lot_id.rent_state = 'sold'
 
         return res
 
