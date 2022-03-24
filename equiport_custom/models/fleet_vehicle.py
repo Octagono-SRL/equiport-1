@@ -92,7 +92,7 @@ class FleetVehicle(models.Model):
                 cost = sum(services.mapped('amount'))
             if record.unit_type == 'gen_set' and cost > 0:
                 first_hourmeter = FleetVehicleHourometer.search([('vehicle_id', '=', record.id)], limit=1,
-                                                                order='value asc')
+                                                                order='create_date asc')
                 fuel_hourmeter = record.hourmeter - first_hourmeter.value
                 record.hourmeter_hr_cost = (fuel_hourmeter / cost)
             else:
@@ -100,7 +100,7 @@ class FleetVehicle(models.Model):
 
             if record.unit_type == 'vehicle' and cost > 0:
                 first_odometer = FleetVehicleOdometer.search([('vehicle_id', '=', record.id)], limit=1,
-                                                             order='value asc')
+                                                             order='create_date asc')
                 first_odometer = record.odometer - first_odometer.value
                 record.odometer_km_cost = (first_odometer / cost)
             else:
@@ -120,7 +120,7 @@ class FleetVehicle(models.Model):
         FleetVehicalHourometer = self.env['fleet.unit.hourmeter']
         for record in self:
             vehicle_hourmeter = FleetVehicalHourometer.search([('vehicle_id', '=', record.id)], limit=1,
-                                                              order='date desc')
+                                                              order='create_date desc')
             if vehicle_hourmeter:
                 record.hourmeter = vehicle_hourmeter.value
             else:
@@ -128,6 +128,14 @@ class FleetVehicle(models.Model):
 
     def _set_hourmeter(self):
         for record in self:
+            VehicleHourmeter = self.env['fleet.unit.hourmeter']
+            allow_reset = self._context.get('allow_reset', False)
+            if not allow_reset:
+                element = VehicleHourmeter.search([('vehicle_id', '=', record.id)], limit=1, order='create_date desc')
+                if element:
+                    if record.odometer <= element.value:
+                        raise ValidationError(
+                            "No puede crear un registro con un horometro menor o igual al ultimo registrado")
             if record.hourmeter:
                 date = fields.Date.context_today(record)
                 data = {'value': record.hourmeter, 'date': date, 'vehicle_id': record.id}
@@ -136,6 +144,37 @@ class FleetVehicle(models.Model):
     # endregion
 
     # region Funciones Heredadas
+
+    def _get_odometer(self):
+        FleetVehicalOdometer = self.env['fleet.vehicle.odometer']
+        for record in self:
+            vehicle_odometer = FleetVehicalOdometer.search([('vehicle_id', '=', record.id)], limit=1,
+                                                           order='create_date desc')
+            if vehicle_odometer:
+                record.odometer = vehicle_odometer.value
+            else:
+                record.odometer = 0
+
+    def _set_odometer(self):
+        VehicleOdometer = self.env['fleet.vehicle.odometer']
+        for record in self:
+            allow_reset = self._context.get('allow_reset', False)
+            if allow_reset:
+                if allow_reset[0] and record == allow_reset[1]:
+                    continue
+            element = VehicleOdometer.search([('vehicle_id', '=', record.id)], limit=1, order='create_date desc')
+            if element:
+                if record.odometer < element.value:
+                    raise ValidationError(
+                        "No puede crear un registro con un Odometro menor o igual al ultimo registrado")
+        res = super(FleetVehicle, self)._set_odometer()
+        return res
+        # for record in self:
+        #     if record.odometer:
+        #         date = fields.Date.context_today(record)
+        #         data = {'value': record.odometer, 'date': date, 'vehicle_id': record.id}
+        #         self.env['fleet.vehicle.odometer'].create(data)
+
     @api.depends('model_id.brand_id.name', 'model_id.name', 'license_plate', 'product_unit_id.name', 'unit_type',
                  'unit_model_id.name', 'unit_model_id.brand_id.name', 'unit_lot_id.name')
     def _compute_vehicle_name(self):
@@ -187,10 +226,15 @@ class FleetVehicle(models.Model):
     # endregion
 
 
+class FleetVehicleOdometer(models.Model):
+    _inherit = 'fleet.vehicle.odometer'
+    _order = 'create_date desc'
+
+
 class FleetUnitHourmeter(models.Model):
     _name = 'fleet.unit.hourmeter'
     _description = 'Historial de horometro para unidades'
-    _order = 'date desc'
+    _order = 'create_date desc'
 
     name = fields.Char(compute='_compute_vehicle_log_name', store=True)
     date = fields.Date(default=fields.Date.context_today)
@@ -213,20 +257,20 @@ class FleetUnitHourmeter(models.Model):
         if self.vehicle_id:
             self.unit = self.vehicle_id.hourmeter_unit
 
-    @api.constrains('value')
-    def check_greater_value(self):
-        print(self._context)
-        for rec in self:
-            allow_reset = self._context.get('allow_reset', False)
-            if allow_reset:
-                if allow_reset[0] and rec.vehicle_id == allow_reset[1]:
-                    continue
-            records = self.search([('id', '!=', rec.id), ('vehicle_id', '=', rec.vehicle_id.id)])
-            if records:
-                for v in records.mapped('value'):
-                    if rec.value <= v:
-                        raise ValidationError(
-                            "No puede crear un registro con un horometro menor o igual a uno ya existente")
+    # @api.constrains('value')
+    # def check_greater_value(self):
+    #     print(self._context)
+    #     for rec in self:
+    #         allow_reset = self._context.get('allow_reset', False)
+    #         if allow_reset:
+    #             if allow_reset[0] and rec.vehicle_id == allow_reset[1]:
+    #                 continue
+    #         records = self.search([('id', '!=', rec.id), ('vehicle_id', '=', rec.vehicle_id.id)])
+    #         if records:
+    #             for v in records.mapped('value'):
+    #                 if rec.value <= v:
+    #                     raise ValidationError(
+    #                         "No puede crear un registro con un horometro menor o igual a uno ya existente")
 
 
 class FleetVehicleLogTires(models.Model):
@@ -310,7 +354,7 @@ class FleetVehicleLogTires(models.Model):
                 for v in records.mapped('date'):
                     if rec.date <= v:
                         raise ValidationError(
-                            "No puede crear un registro con una menor o igual a uno ya existente")
+                            "No puede crear un registro con una fecha menor o igual a uno ya existente")
 
     @api.constrains('tires_number', 'tires_set_ids')
     def check_tires_set_number(self):
@@ -425,13 +469,13 @@ class FleetVehicleLogServices(models.Model):
                         raise ValidationError(
                             "El valor del Horómetro debe ser mayor de %.2f" % self.vehicle_id.hourmeter)
 
-    @api.onchange('odometer')
+    @api.onchange('odometer', 'vehicle_id')
     def check_odometer(self):
         if self.odometer > 0:
             if self.odometer < self.vehicle_id.odometer:
                 raise ValidationError("El valor del odómetro debe ser mayor de %.2f" % self.vehicle_id.odometer)
 
-    @api.onchange('hourmeter')
+    @api.onchange('hourmeter', 'vehicle_id')
     def check_hourmeter(self):
         if self.hourmeter > 0:
             if self.hourmeter < self.vehicle_id.hourmeter:
@@ -457,6 +501,17 @@ class FleetVehicleLogServices(models.Model):
 
     # endregion
 
+    def _set_odometer(self):
+        VehicleOdometer = self.env['fleet.vehicle.odometer']
+        for record in self:
+            element = VehicleOdometer.search([('vehicle_id', '=', record.id)], limit=1, order='create_date desc')
+            if element:
+                if record.odometer < element.value:
+                    raise ValidationError(
+                        "No puede crear un registro con un Odometro menor o igual al ultimo registrado")
+        res = super(FleetVehicleLogServices, self)._set_odometer()
+        return res
+
     def _get_hourmeter(self):
         FleetVehicalHourometer = self.env['fleet.unit.hourmeter']
         for record in self:
@@ -469,6 +524,12 @@ class FleetVehicleLogServices(models.Model):
 
     def _set_hourmeter(self):
         for record in self:
+            VehicleHourmeter = self.env['fleet.unit.hourmeter']
+            element = VehicleHourmeter.search([('vehicle_id', '=', record.id)], limit=1, order='create_date desc')
+            if element:
+                if record.odometer <= element.value:
+                    raise ValidationError(
+                        "No puede crear un registro con un horometro menor o igual al ultimo registrado")
             if record.hourmeter:
                 date = fields.Date.context_today(record)
                 data = {'value': record.hourmeter, 'date': date, 'vehicle_id': record.vehicle_id.id}
