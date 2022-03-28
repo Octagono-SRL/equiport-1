@@ -359,7 +359,7 @@ class RentalPaymentRegister(models.TransientModel):
                 else:
                     # Foreign currency on payment different than the one set on the journal entries.
                     amount_payment_currency = wizard.company_id.currency_id._convert(wizard.source_amount,
-                                                           wizard.payment_date)
+                                                                                     wizard.payment_date)
                     wizard.amount = amount_payment_currency
             elif payment_type == 'outbound':
                 deposit = self.env['account.payment'].search(
@@ -459,7 +459,6 @@ class RentalPaymentRegister(models.TransientModel):
 
         return payment_vals
 
-
     def _create_payments(self):
         self.ensure_one()
         batches = self._get_batches()
@@ -469,43 +468,45 @@ class RentalPaymentRegister(models.TransientModel):
         to_reconcile.append(batches[0]['lines'])
         payments = self.env['account.payment'].create(payment_vals_list)
 
+        # region different currency
         # If payments are made using a currency different than the source one, ensure the balance match exactly in
         # order to fully paid the source journal items.
         # For example, suppose a new currency B having a rate 100:1 regarding the company currency A.
         # If you try to pay 12.15A using 0.12B, the computed balance will be 12.00A for the payment instead of 12.15A.
         # if edit_mode:
         # payments.partner_type = 'customer'
-        for payment, lines in zip(payments, to_reconcile):
-            # Batches are made using the same currency so making 'lines.currency_id' is ok.
-            if payment.currency_id != lines.currency_id:
-                liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
-                source_balance = abs(sum(lines.mapped('amount_residual')))
-                payment_rate = liquidity_lines[0].amount_currency / liquidity_lines[0].balance
-                source_balance_converted = abs(source_balance) * payment_rate
-
-                # Translate the balance into the payment currency is order to be able to compare them.
-                # In case in both have the same value (12.15 * 0.01 ~= 0.12 in our example), it means the user
-                # attempt to fully paid the source lines and then, we need to manually fix them to get a perfect
-                # match.
-                payment_balance = abs(sum(counterpart_lines.mapped('balance')))
-                payment_amount_currency = abs(sum(counterpart_lines.mapped('amount_currency')))
-                if not payment.currency_id.is_zero(source_balance_converted - payment_amount_currency):
-                    continue
-
-                delta_balance = source_balance - payment_balance
-
-                # Balance are already the same.
-                if self.company_currency_id.is_zero(delta_balance):
-                    continue
-
-                # Fix the balance but make sure to peek the liquidity and counterpart lines first.
-                debit_lines = (liquidity_lines + counterpart_lines).filtered('debit')
-                credit_lines = (liquidity_lines + counterpart_lines).filtered('credit')
-
-                payment.move_id.write({'line_ids': [
-                    (1, debit_lines[0].id, {'debit': debit_lines[0].debit + delta_balance}),
-                    (1, credit_lines[0].id, {'credit': credit_lines[0].credit + delta_balance}),
-                ]})
+        # for payment, lines in zip(payments, to_reconcile):
+        #     # Batches are made using the same currency so making 'lines.currency_id' is ok.
+        #     if payment.currency_id != lines.currency_id:
+        #         liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
+        #         source_balance = abs(sum(lines.mapped('amount_residual')))
+        #         payment_rate = liquidity_lines[0].amount_currency / liquidity_lines[0].balance
+        #         source_balance_converted = abs(source_balance) * payment_rate
+        #
+        #         # Translate the balance into the payment currency is order to be able to compare them.
+        #         # In case in both have the same value (12.15 * 0.01 ~= 0.12 in our example), it means the user
+        #         # attempt to fully paid the source lines and then, we need to manually fix them to get a perfect
+        #         # match.
+        #         payment_balance = abs(sum(counterpart_lines.mapped('balance')))
+        #         payment_amount_currency = abs(sum(counterpart_lines.mapped('amount_currency')))
+        #         if not payment.currency_id.is_zero(source_balance_converted - payment_amount_currency):
+        #             continue
+        #
+        #         delta_balance = source_balance - payment_balance
+        #
+        #         # Balance are already the same.
+        #         if self.company_currency_id.is_zero(delta_balance):
+        #             continue
+        #
+        #         # Fix the balance but make sure to peek the liquidity and counterpart lines first.
+        #         debit_lines = (liquidity_lines + counterpart_lines).filtered('debit')
+        #         credit_lines = (liquidity_lines + counterpart_lines).filtered('credit')
+        #
+        #         payment.move_id.write({'line_ids': [
+        #             (1, debit_lines[0].id, {'debit': debit_lines[0].debit + delta_balance}),
+        #             (1, credit_lines[0].id, {'credit': credit_lines[0].credit + delta_balance}),
+        #         ]})
+        # endregion
 
         payments.action_post()
 
