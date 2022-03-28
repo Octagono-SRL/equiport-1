@@ -434,6 +434,7 @@ class RentalOrder(models.Model):
                                                                 '\n**Contrato de arrendamiento**'}}
 
     def open_pickup(self):
+        self = self.sudo()
         if not self.env.user.has_group('equiport_custom.rental_stock_picking'):
             raise ValidationError("El personal de despacho es el encargado de seleccionar las unidades a despachar")
         for picking in self.picking_ids:
@@ -448,7 +449,7 @@ class RentalOrder(models.Model):
             partner = self.partner_id
             deposit_status = self.deposit_status
             if partner.allowed_credit:
-                user_id = self.env['res.users'].search([
+                user_id = self.env['res.users'].sudo().search([
                     ('partner_id', '=', partner.id)], limit=1)
                 if user_id and not user_id.has_group('base.group_portal') or not \
                         user_id:
@@ -489,6 +490,7 @@ class RentalOrder(models.Model):
         return res
 
     def open_return(self):
+        self.sudo()
         for picking in self.picking_ids:
             if picking.picking_type_code == 'outgoing' and picking.state not in ['done', 'cancel']:
                 raise UserError("Deben procesar el conduce {0} antes de realizar esta operacion".format(picking.name))
