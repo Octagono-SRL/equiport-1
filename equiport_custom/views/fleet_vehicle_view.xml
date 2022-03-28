@@ -386,6 +386,9 @@
                     <field name="hr_waited" optional="hide"/>
                     <field name="km_waited" optional="hide"/>
                     <field name="odometer" optional="hide"/>
+                    <field name="is_fuel_replenishment" invisible="1"/>
+                    <field name="fuel_product_unit" optional="hide"/>
+                    <field name="fuel_product_qty" optional="hide"/>
                     <field name="hourmeter" optional="hide"/>
                     <field name="check_done" optional="hide"/>
                     <field name="check_notify" invisible="1"/>

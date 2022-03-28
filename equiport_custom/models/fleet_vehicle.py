@@ -426,6 +426,26 @@ class FleetVehicleLogServices(models.Model):
         ('hours', 'Hr')
     ], 'Medida horómetro', default='hours', help='Medida de horometro ', required=True)
 
+    is_fuel_replenishment = fields.Boolean("Reposicion de combustible", compute='_compute_fuel_replenishment')
+    fuel_product_qty = fields.Boolean("Cantidad de combustible", compute='_compute_fuel_product_data', store=True)
+    fuel_product_unit = fields.Boolean("Unidad de medida de combustible", compute='_compute_fuel_product_data', store=True)
+
+    @api.depends('service_type_id', 'repair_id', 'state')
+    def _compute_fuel_replenishment(self):
+        for rec in self:
+            if rec.service_type_id in [self.env.ref('equiport_custom.fuel_maintenance'), self.env.ref('equiport_custom.fuel_service')]:
+                rec.is_fuel_replenishment = True
+            else:
+                rec.is_fuel_replenishment = False
+
+    @api.depends('is_fuel_replenishment', 'service_type_id', 'repair_id')
+    def _compute_fuel_product_data(self):
+        for rec in self:
+            rec.fuel_product_qty = False
+            rec.fuel_product_unit = False
+            # if rec.repair_id and rec.service_type_id == self.env.ref('equiport_custom.fuel_maintenance'):
+            #     pass
+
     # region Alerts
     km_waited = fields.Float(string="Kilometros próximo cambio", compute='_next_odometer_service', default=0.0,
                              store=True)
