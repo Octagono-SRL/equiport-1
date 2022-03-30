@@ -250,6 +250,16 @@ class AccountMove(models.Model):
                 raise ValidationError("No puede guardar una factura con monto total de cero (0)")
         return res
 
+    def write(self, values):
+        verify_amount = False
+        if 'invoice_line_ids' in values:
+            verify_amount = True
+        res = super(AccountMove, self).write(values)
+        if verify_amount and sum(self.invoice_line_ids.mapped(
+                'price_unit')) == 0 and self.is_invoice():
+            raise ValidationError("No puede guardar una factura con monto total de cero (0)")
+        return res
+
     # endregion
 
 
