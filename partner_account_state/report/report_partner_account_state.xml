@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--    region Header-->
+    <template id="report_partner_account_state_header">
+        <t t-set="company" t-value="doc.company_id"/>
+        <div class="header">
+            <div class="row mb8">
+                <div class="col-6">
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 120px;" alt="Logo"/>
+                </div>
+                <div class="col-6 text-right mb4">
+                    <div name="company_address" class="float-right mb4">
+                        <strong t-esc="company.partner_id.name"/>
+                        <span t-esc="company.partner_id" class="text-muted"
+                              t-options='{"widget": "contact", "fields": ["address"], "no_marker": true}'/>
+                        <span>
+                            <strong>RNC:</strong>
+                            <span t-if="company.vat" t-esc="company.vat"/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+    <!--    endregion-->
+    <!--                                         Segmento header                                                         -->
+
+    <template id="report_partner_account_state_document">
+        <t t-set="doc_list" t-value="list(docs)"/>
+        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+        <div class="article" style="font-family: Calibri, Arial,'Times New Roman'">
+            <div class="oe_structure"/>
+            <!--                                         Segmento negocio                                                         -->
+            <div>
+                <h3>
+                    Estado de Cuenta
+                </h3>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <strong style="font-weight:bold;"> Moneda:</strong>
+                    <span t-field="doc.currency_id"/>
+                    <br/>
+                </div>
+                <div class="col-8" style="text-align:right;">
+                    <t t-if="doc.date_from">
+                        <strong>Desde:</strong>
+                        <span t-field="doc.date_from"/>
+                        <br/>
+                    </t>
+
+                    <strong>A la Fecha:</strong>
+                    <span t-field="doc.date_to"/>
+                    <br/>
+                </div>
+            </div>
+
+            <!--                region DATA Cliente-->
+
+
+            <div style="background-color:#DEE5EC !important; width:100%;">
+                <p style="background-color:#DEE5EC !important; width:100%;">DATOS DEL CLIENTE </p>
+            </div>
+
+
+            <div class="row mb-4" style="text-align:left;">
+                <div class="col-4">
+                    <p t-field="doc.partner_id"
+                       t-options='{"widget": "contact", "fields": ["address", "name"] }'/>
+                </div>
+                <div class="col-4">
+                    <p t-if="doc.partner_id.vat">
+                        <strong>RNC/Cédula:</strong><br/>
+                        <span t-field="doc.partner_id.vat"/>
+                    </p>
+
+                </div>
+                <div class="col-4"></div>
+            </div>
+            <!--                endregion-->
+            <!--            region DATA TABLE-->
+            <t t-call="partner_account_state.report_account_table">
+                <t t-set="target_lines" t-value="target_lines"/>
+            </t>
+            <!--            endregion-->
+
+        </div>
+    </template>
+
+    <template id="report_account_table">
+        <table class="table table-sm o_main_table" style="width:100%; table-bordered;">
+            <!-- In case we want to repeat the header, remove "display: table-row-group" -->
+            <thead style="display: table-row-group;">
+                <tr style="background-color:#767676 !important; width:100%; font-size:15px; color:#FFFFFF;">
+                    <!--                        <p style="background-color:#DEE5EC !important; width:100%; margin-bottom:0;  large:30px;">-->
+                    <!--                        </p>-->
+                    <th name="th_move_id" class="text-left">Número de documento</th>
+                    <th name="th_invoice_date" class="text-center">Fecha de documento</th>
+                    <th name="th_l10n_do_fiscal_number" class="text-left">NCF</th>
+                    <th name="th_invoice_payment_term_id" class="text-right">Plazo de pago</th>
+                    <th name="th_trans_days" class="text-right">Dias Transc.</th>
+                    <th name="th_amount_total" class="text-right">Total</th>
+                    <th name="th_amount_residual" class="text-right">Total Pendiente</th>
+                </tr>
+            </thead>
+            <tbody class="sale_tbody" style="font-size:13px;">
+
+                <t t-set="current_subtotal" t-value="0"/>
+
+                <t t-foreach="target_lines" t-as="line">
+
+                    <!--                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">-->
+                    <tr class="bg-200 font-weight-bold">
+                        <td name="td_move_id">
+                            <span t-field="line.move_id"/>
+                        </td>
+                        <td name="td_invoice_date">
+                            <span t-field="line.invoice_date"/>
+                        </td>
+                        <td name="td_l10n_do_fiscal_number">
+                            <span t-field="line.l10n_do_fiscal_number"/>
+                        </td>
+                        <td name="td_invoice_payment_term_id" class="text-right">
+                            <span t-field="line.invoice_payment_term_id"/>
+                        </td>
+                        <td name="td_trans_days" class="text-right">
+                            <span t-field="line.trans_days"/>
+                        </td>
+                        <td name="td_amount_total" class="text-right">
+                            <span t-field="line.amount_total"
+                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </td>
+                        <td name="td_amount_residual" class="text-right">
+                            <span t-field="line.amount_residual"
+                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+
+        <div class="clearfix" name="so_total_summary">
+            <div id="total" class="row" name="total">
+                <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto">
+                    <table class="table table-sm" style="margin-left: auto;">
+                        <t t-if="last">
+                            <tr class="border-black o_subtotal" style="">
+                                <td name="td_amount_untaxed_label">
+                                    <strong>Total Adeudado</strong>
+                                </td>
+                                <td name="td_amount_untaxed" class="text-right">
+                                    <span t-field="doc.amount_total"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td name="td_amount_total_label">
+                                    <strong>Total Pendiente</strong>
+                                </td>
+                                <td name="td_amount_total" class="text-right">
+                                    <span t-field="doc.amount_residual"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-else="">
+                            <tr class="border-black o_subtotal" style="">
+                                <td name="td_amount_untaxed_label">
+                                    <strong>Adeudado en pagina</strong>
+                                </td>
+                                <td name="td_amount_untaxed" class="text-right">
+                                    <span t-esc="sum(target_lines.mapped('amount_total'))"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td name="td_amount_total_label">
+                                    <strong>Pendiente en pagina</strong>
+                                </td>
+                                <td name="td_amount_total" class="text-right">
+                                    <span t-esc="sum(target_lines.mapped('amount_residual'))"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td name="td_amount_total_label" style="color:#a6162e">
+                                    <strong>Continua en siguiente pagina...</strong>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <template id="report_partner_account_state">
+        <main>
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="line_list" t-value="doc.split_list_len(doc.line_ids, 15)"/>
+                <t t-foreach="line_list" t-as="target_lines">
+                    <t t-set="last" t-value="False"/>
+                    <t t-if="len(line_list) > 0 and line_list[-1] == target_lines">
+                        <t t-set="last" t-value="True"/>
+                    </t>
+                    <t t-call="partner_account_state.report_partner_account_state_header"/>
+                    <t t-call="partner_account_state.report_partner_account_state_document"
+                       t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </main>
+    </template>
+
+    <record id="report_action_partner_account_state" model="ir.actions.report">
+        <field name="name">Estado de cuenta</field>
+        <field name="model">report.partner.account</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">partner_account_state.report_partner_account_state</field>
+        <field name="report_file">partner_account_state.report_partner_account_state</field>
+        <field name="print_report_name">
+            'Estado de cuenta - %s' % (object.partner_id.name)
+        </field>
+        <field name="binding_model_id" ref="model_report_partner_account"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>
+

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_report_partner_account,access_report_partner_account,model_report_partner_account,account.group_account_user,1,1,1,1
+access_report_partner_account_line,access_report_partner_account_line,model_report_partner_account_line,account.group_account_user,1,1,1,1
+access_wizard_generate_account_state,access_wizard_generate_account_state,model_wizard_generate_account_state,account.group_account_user,1,1,1,1
