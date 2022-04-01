@@ -7,13 +7,13 @@
             <field name="arch" type="xml">
                 <form create="0">
                     <header>
-                        <button name="action_document_print" string="Imprimir Documento" class="oe_highlight" type="object"/>
+                        <button name="action_document_print" string="Print Document" class="oe_highlight" type="object"/>
                     </header>
                     <sheet>
                         <group col="3">
                             <group colspan="2">
                                 <div class="oe_left">
-                                    <h1>Estado de Cuenta</h1>
+                                    <h1>Account status</h1>
                                     <div attrs="{'invisible': [('date_from', '=', False)]}">
                                         <label for="date_from"/>
                                         <field name="date_from" readonly="1"/>
@@ -32,7 +32,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Documentos">
+                            <page string="Documents">
                                 <field name="line_ids">
                                     <tree editable="bottom">
                                         <field name="company_id" invisible="1"/>

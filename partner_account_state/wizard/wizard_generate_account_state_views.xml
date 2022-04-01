@@ -17,8 +17,8 @@
                         </group>
                     </sheet>
                     <footer>
-                        <button name="generate_account_state" string="Generar" type="object" class="oe_highlight"/>
-                        <button string="Atras" class="btn-secondary" special="cancel"/>
+                        <button name="generate_account_state" string="Generate" type="object" class="oe_highlight"/>
+                        <button string="Back" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>

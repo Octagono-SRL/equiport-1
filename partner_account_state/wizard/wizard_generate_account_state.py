@@ -6,9 +6,9 @@ class WizardGenerateAccountState(models.TransientModel):
     _name = 'wizard.generate.account.state'
     _description = 'Wizard to select details for account state'
 
-    currency_id = fields.Many2one(comodel_name='res.currency', string="Moneda")
-    date_from = fields.Date(string="Desde")
-    date_to = fields.Date(string="Hasta", default=fields.Date.today())
+    currency_id = fields.Many2one(comodel_name='res.currency', string="Currency")
+    date_from = fields.Date(string="From")
+    date_to = fields.Date(string="To", default=fields.Date.today())
     partner_id = fields.Many2one(comodel_name='res.partner', default=lambda s: s._context.get('active_id'))
 
     def generate_account_state(self):
@@ -27,7 +27,7 @@ class WizardGenerateAccountState(models.TransientModel):
 
         values = {}
         if not self.partner_id.invoice_ids and not self.partner_id.unpaid_invoices:
-            raise ValidationError("El reporte no puede ser generado. No existen ordenes de compras confirmadas.")
+            raise ValidationError(_("El reporte no puede ser generado. No existen ordenes de compras confirmadas."))
         if self.partner_id.unpaid_invoices:
             report_lines = []
             if self.date_from:
@@ -52,24 +52,12 @@ class WizardGenerateAccountState(models.TransientModel):
                 'line_ids': report_lines
             })
 
-        # elif self.unpaid_invoices:
-        #     report_lines = []
-        #     for inv in self.unpaid_invoices:
-        #         report_lines.append((0, 0, {
-        #             'move_id': inv.id
-        #         }))
-        #     values.update({
-        #         'partner_id': self.id,
-        #         'credit_limit': self.credit_limit,
-        #         'line_ids': report_lines
-        #     })
-
         account_state = model_report_view.create(values)
 
         action = {'type': 'ir.actions.act_window',
                   'views': [(form_view_id, 'form')],
                   'view_mode': 'form',
-                  'name': _('Estado de Cuenta'),
+                  'name': _('Account status'),
                   'res_model': 'report.partner.account',
                   'res_id': account_state.id,
                   }

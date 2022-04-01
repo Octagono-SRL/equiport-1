@@ -10,7 +10,7 @@ class ResPartner(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'target': 'new',
-            'name': _('Generar Estado de Cuenta'),
+            'name': _('Generate Account State'),
             'res_model': 'wizard.generate.account.state',
             'context': {
                 'active_id': self.id

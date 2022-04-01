@@ -34,23 +34,23 @@
             <!--                                         Segmento negocio                                                         -->
             <div>
                 <h3>
-                    Estado de Cuenta
+                    Account status
                 </h3>
             </div>
             <div class="row mb-3">
                 <div class="col-4">
-                    <strong style="font-weight:bold;"> Moneda:</strong>
+                    <strong style="font-weight:bold;">Currency:</strong>
                     <span t-field="doc.currency_id"/>
                     <br/>
                 </div>
                 <div class="col-8" style="text-align:right;">
                     <t t-if="doc.date_from">
-                        <strong>Desde:</strong>
+                        <strong>From:</strong>
                         <span t-field="doc.date_from"/>
                         <br/>
                     </t>
 
-                    <strong>A la Fecha:</strong>
+                    <strong>To:</strong>
                     <span t-field="doc.date_to"/>
                     <br/>
                 </div>
@@ -60,7 +60,7 @@
 
 
             <div style="background-color:#DEE5EC !important; width:100%;">
-                <p style="background-color:#DEE5EC !important; width:100%;">DATOS DEL CLIENTE </p>
+                <p style="background-color:#DEE5EC !important; width:100%;">CUSTOMER INFO</p>
             </div>
 
 
@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-4">
                     <p t-if="doc.partner_id.vat">
-                        <strong>RNC/Cédula:</strong><br/>
+                        <strong>Tax ID:</strong><br/>
                         <span t-field="doc.partner_id.vat"/>
                     </p>
 
@@ -93,15 +93,13 @@
             <!-- In case we want to repeat the header, remove "display: table-row-group" -->
             <thead style="display: table-row-group;">
                 <tr style="background-color:#767676 !important; width:100%; font-size:15px; color:#FFFFFF;">
-                    <!--                        <p style="background-color:#DEE5EC !important; width:100%; margin-bottom:0;  large:30px;">-->
-                    <!--                        </p>-->
-                    <th name="th_move_id" class="text-left">Número de documento</th>
-                    <th name="th_invoice_date" class="text-center">Fecha de documento</th>
+                    <th name="th_move_id" class="text-left">Document Number</th>
+                    <th name="th_invoice_date" class="text-center">Document Date</th>
                     <th name="th_l10n_do_fiscal_number" class="text-left">NCF</th>
-                    <th name="th_invoice_payment_term_id" class="text-right">Plazo de pago</th>
-                    <th name="th_trans_days" class="text-right">Dias Transc.</th>
-                    <th name="th_amount_total" class="text-right">Total</th>
-                    <th name="th_amount_residual" class="text-right">Total Pendiente</th>
+                    <th name="th_invoice_payment_term_id" class="text-right">Payment Term</th>
+                    <th name="th_trans_days" class="text-right">Aging</th>
+                    <th name="th_amount_total" class="text-right">Document Total</th>
+                    <th name="th_amount_residual" class="text-right">Document Pending</th>
                 </tr>
             </thead>
             <tbody class="sale_tbody" style="font-size:13px;">
@@ -147,7 +145,7 @@
                         <t t-if="last">
                             <tr class="border-black o_subtotal" style="">
                                 <td name="td_amount_untaxed_label">
-                                    <strong>Total Adeudado</strong>
+                                    <strong>Total Owed</strong>
                                 </td>
                                 <td name="td_amount_untaxed" class="text-right">
                                     <span t-field="doc.amount_total"
@@ -156,7 +154,7 @@
                             </tr>
                             <tr class="border-black o_total">
                                 <td name="td_amount_total_label">
-                                    <strong>Total Pendiente</strong>
+                                    <strong>Total Pending</strong>
                                 </td>
                                 <td name="td_amount_total" class="text-right">
                                     <span t-field="doc.amount_residual"
@@ -167,7 +165,7 @@
                         <t t-else="">
                             <tr class="border-black o_subtotal" style="">
                                 <td name="td_amount_untaxed_label">
-                                    <strong>Adeudado en pagina</strong>
+                                    <strong>Total on page</strong>
                                 </td>
                                 <td name="td_amount_untaxed" class="text-right">
                                     <span t-esc="sum(target_lines.mapped('amount_total'))"
@@ -176,7 +174,7 @@
                             </tr>
                             <tr class="border-black o_total">
                                 <td name="td_amount_total_label">
-                                    <strong>Pendiente en pagina</strong>
+                                    <strong>Pending on page</strong>
                                 </td>
                                 <td name="td_amount_total" class="text-right">
                                     <span t-esc="sum(target_lines.mapped('amount_residual'))"
@@ -185,7 +183,7 @@
                             </tr>
                             <tr class="border-black o_total">
                                 <td name="td_amount_total_label" style="color:#a6162e">
-                                    <strong>Continua en siguiente pagina...</strong>
+                                    <strong>Continue on next page...</strong>
                                 </td>
                             </tr>
                         </t>
@@ -214,13 +212,13 @@
     </template>
 
     <record id="report_action_partner_account_state" model="ir.actions.report">
-        <field name="name">Estado de cuenta</field>
+        <field name="name">Account status</field>
         <field name="model">report.partner.account</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">partner_account_state.report_partner_account_state</field>
         <field name="report_file">partner_account_state.report_partner_account_state</field>
         <field name="print_report_name">
-            'Estado de cuenta - %s' % (object.partner_id.name)
+            'Account status - %s' % (object.partner_id.name)
         </field>
         <field name="binding_model_id" ref="model_report_partner_account"/>
         <field name="binding_type">report</field>

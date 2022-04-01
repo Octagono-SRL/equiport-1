@@ -11,7 +11,7 @@
                     <button type="object" class="oe_stat_button" name="action_view_account_state" icon="fa-list" attrs="{'invisible': [('total_due', '=', 0)]}">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value"><field name="total_due" widget="monetary" options="{'currency_field': 'currency_id'}"/></span>
-                            <span class="o_stat_text">Estado de Cuenta</span>
+                            <span class="o_stat_text">Account status</span>
                         </div>
                     </button>
                 </div>

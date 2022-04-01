@@ -1,0 +1,379 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* partner_account_state
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e-20220328\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-01 18:28+0000\n"
+"PO-Revision-Date: 2022-04-01 18:28+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: partner_account_state
+#: model:ir.actions.report,print_report_name:partner_account_state.report_action_partner_account_state
+msgid ""
+"\n"
+"            'Account status - %s' % (object.partner_id.name)\n"
+"        "
+msgstr ""
+"\n"
+"            'Estado de cuenta - %s' % (object.partner_id.name)\n"
+"        "
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.res_partner_inherit_partner_account_state
+msgid "<span class=\"o_stat_text\">Account status</span>"
+msgstr "<span class=\"o_stat_text\">Estado de Cuenta</span>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_document
+msgid "<strong style=\"font-weight:bold;\">Currency:</strong>"
+msgstr "<strong style=\"font-weight:bold;\">Moneda:</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "<strong>Continue on next page...</strong>"
+msgstr "<strong>Continua en la siguiente página...</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "<strong>Total on page</strong>"
+msgstr "<strong>Total en página</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_document
+msgid "<strong>From:</strong>"
+msgstr "<strong>Desde:</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "<strong>Pending on page</strong>"
+msgstr "<strong>Pendiente en página</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_header
+msgid "<strong>RNC:</strong>"
+msgstr "<strong>RNC:</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_document
+msgid "<strong>Tax ID:</strong><br/>"
+msgstr "<strong>RNC:</strong><br/>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_document
+msgid "<strong>To:</strong>"
+msgstr "<strong>A la fecha:</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "<strong>Total Owed</strong>"
+msgstr "<strong>Total Adeudado</strong>"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "<strong>Total Pending</strong>"
+msgstr "<strong>Total Pendiente</strong>"
+
+#. module: partner_account_state
+#: model:ir.actions.report,name:partner_account_state.report_action_partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_from_view
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_document
+msgid "Account status"
+msgstr "Estado de Cuenta"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__trans_days
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+#, python-format
+msgid "Aging"
+msgstr "Dias Transc."
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__amount_residual
+#, python-format
+msgid "Amount Residual"
+msgstr "Monto Pendiente"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.wizard_generat_account_state_form_view
+msgid "Back"
+msgstr "Atrás"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_document
+msgid "CUSTOMER INFO"
+msgstr "DATOS DEL CLIENTE"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__company_id
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__company_id
+msgid "Company"
+msgstr "Compañia"
+
+#. module: partner_account_state
+#: model:ir.model,name:partner_account_state.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__create_uid
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__create_uid
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__create_date
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__create_date
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__credit_limit
+#, python-format
+msgid "Credit Limit"
+msgstr "Limite de crédito"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__currency_id
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__currency_id
+#, python-format
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__partner_id
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__partner_id
+#, python-format
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__move_date
+msgid "Date"
+msgstr "Fecha"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__date_from
+msgid "From"
+msgstr "Desde"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__display_name
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__display_name
+#: model:ir.model.fields,field_description:partner_account_state.field_res_partner__display_name
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__invoice_date
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+#, python-format
+msgid "Document Date"
+msgstr "Fecha de documento"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__move_id
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+#, python-format
+msgid "Document Number"
+msgstr "Número de documento"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "Document Pending"
+msgstr "Pendiente"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "Document Total"
+msgstr "Total"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_from_view
+msgid "Documents"
+msgstr "Documentos"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/wizard/wizard_generate_account_state.py:0
+#, python-format
+msgid "Account status"
+msgstr "Estado de cuenta"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__date_from
+#, python-format
+msgid "From"
+msgstr "Desde"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.wizard_generat_account_state_form_view
+msgid "Generate"
+msgstr "Generar"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/models/res_partner.py:0
+#, python-format
+msgid "Generate Account State"
+msgstr "Generar Estado de Cuenta"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__date_to
+msgid "To"
+msgstr "Hasta"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__id
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__id
+#: model:ir.model.fields,field_description:partner_account_state.field_res_partner__id
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__id
+msgid "ID"
+msgstr "ID (identificación)"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account____last_update
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line____last_update
+#: model:ir.model.fields,field_description:partner_account_state.field_res_partner____last_update
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state____last_update
+msgid "Last Modified on"
+msgstr "Última modificación en"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__write_uid
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__write_uid
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__write_date
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__write_date
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__line_ids
+msgid "Line"
+msgstr "Linea"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_header
+msgid "Logo"
+msgstr "Logo"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model,name:partner_account_state.model_report_partner_account
+#, python-format
+msgid "Modelo para visualizar el estado de cuentas de los clientes"
+msgstr ""
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model,name:partner_account_state.model_report_partner_account_line
+#, python-format
+msgid ""
+"Modelo para visualizar las lineas del estado de cuentas de los clientes"
+msgstr ""
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__l10n_do_fiscal_number
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+#, python-format
+msgid "NCF"
+msgstr "NCF"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_wizard_generate_account_state__partner_id
+msgid "Partner"
+msgstr "Contacto"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "Payment Term"
+msgstr "Plazo de pago"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__invoice_payment_term_id
+msgid "Payment Terms"
+msgstr "Plazos de pago"
+
+#. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_from_view
+msgid "Print Document"
+msgstr "Imprimir Documento"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__report_partner_id
+msgid "Report Partner"
+msgstr "Reporte de Contacto"
+
+#. module: partner_account_state
+#: model:ir.model.fields,help:partner_account_state.field_report_partner_account_line__l10n_do_fiscal_number
+msgid "Stored field equivalent of l10n_latam_document number"
+msgstr ""
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#, python-format
+msgid "There is not information to process the PDF"
+msgstr "No hay informacion para procesar el PDF"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__name
+#, python-format
+msgid "Title"
+msgstr "Titulo"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__date_to
+#, python-format
+msgid "To"
+msgstr "A la fecha"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__amount_total
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__amount_total
+#, python-format
+msgid "Total"
+msgstr "Total"
+
+#. module: partner_account_state
+#: code:addons/partner_account_state/report/report_partner_account.py:0
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account__amount_residual
+#, python-format
+msgid "Total Owed"
+msgstr "Total Adeudado"
+
+#. module: partner_account_state
+#: model:ir.model,name:partner_account_state.model_wizard_generate_account_state
+msgid "Wizard to select details for account state"
+msgstr ""
