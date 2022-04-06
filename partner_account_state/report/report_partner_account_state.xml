@@ -163,7 +163,7 @@
                             </tr>
                         </t>
                         <t t-else="">
-                            <tr class="border-black o_subtotal" style="">
+                            <tr class="border-black o_subtotal" style="" t-if="False">
                                 <td name="td_amount_untaxed_label">
                                     <strong>Total on page</strong>
                                 </td>
@@ -172,7 +172,7 @@
                                           t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                 </td>
                             </tr>
-                            <tr class="border-black o_total">
+                            <tr class="border-black o_total" t-if="False">
                                 <td name="td_amount_total_label">
                                     <strong>Pending on page</strong>
                                 </td>

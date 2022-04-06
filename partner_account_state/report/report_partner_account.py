@@ -55,6 +55,7 @@ class ReportPartnerAccount(models.TransientModel):
 class ReportPartnerAccountLine(models.TransientModel):
     _name = 'report.partner.account.line'
     _description = _("Modelo para visualizar las lineas del estado de cuentas de los clientes")
+    _order = 'trans_days DESC'
 
     report_partner_id = fields.Many2one(comodel_name='report.partner.account')
     partner_id = fields.Many2one(related='report_partner_id.partner_id', string=_('Customer'))
@@ -62,7 +63,7 @@ class ReportPartnerAccountLine(models.TransientModel):
     invoice_date = fields.Date(related='move_id.invoice_date', string=_("Document Date"))
     move_date = fields.Date(related='move_id.date')
     invoice_payment_term_id = fields.Many2one(related='move_id.invoice_payment_term_id')
-    trans_days = fields.Integer(compute="_compute_trans_days", string=_("Aging"))
+    trans_days = fields.Integer(compute="_compute_trans_days", string=_("Aging"), store=True)
     l10n_do_fiscal_number = fields.Char(related='move_id.l10n_do_fiscal_number', string=_("NCF"))
     amount_total = fields.Monetary(related='move_id.amount_total', string=_("Total"))
     amount_residual = fields.Monetary(related='move_id.amount_residual', string=_("Amount Residual"))
