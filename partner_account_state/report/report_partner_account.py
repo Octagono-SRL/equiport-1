@@ -102,20 +102,20 @@ class ReportPartnerAccount(models.TransientModel):
         worksheet.write(3, 2, self.partner_id.street + ', ' + self.partner_id.city + ', ' + self.partner_id.country_id.name)
 
         for col, header in enumerate(file_header):
-            worksheet.write(str(col), 2, str(header), bold)
+            worksheet.write(col, 2, str(header), bold)
 
         lines = self.line_ids
 
         pos = 0
         for i, line in enumerate(lines):
             pos += 1
-            worksheet.write(str(i + 4), 3, str(line.move_id.name), bold)
-            worksheet.write(str(i + 4), 4, str(line.invoice_date), bold)
-            worksheet.write(str(i + 4), 5, str(line.l10n_do_fiscal_number), bold)
-            worksheet.write(str(i + 4), 6, str(line.invoice_payment_term_id.name), bold)
-            worksheet.write(str(i + 4), 7, str(line.trans_days), bold)
-            worksheet.write(str(i + 4), 8, str(line.amount_total), bold)
-            worksheet.write(str(i + 4), 9, str(line.amount_residual), bold)
+            worksheet.write(i + 4, 3, str(line.move_id.name), bold)
+            worksheet.write(i + 4, 4, str(line.invoice_date), bold)
+            worksheet.write(i + 4, 5, str(line.l10n_do_fiscal_number), bold)
+            worksheet.write(i + 4, 6, str(line.invoice_payment_term_id.name), bold)
+            worksheet.write(i + 4, 7, str(line.trans_days), bold)
+            worksheet.write(i + 4, 8, str(line.amount_total), bold)
+            worksheet.write(i + 4, 9, str(line.amount_residual), bold)
 
         amount_total = sum(lines.mapped('amount_total'))
         amount_residual = sum(lines.mapped('amount_residual'))
