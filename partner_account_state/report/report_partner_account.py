@@ -92,11 +92,11 @@ class ReportPartnerAccount(models.TransientModel):
 
         #Nombre de cliente
         worksheet.write(2, 1, 'Cliente:', bold)
-        worksheet.write(2, 2, self.company_id.partner_id.name)
+        worksheet.write(2, 2, self.partner_id.name)
 
         #RNC
         worksheet.write(2, 3, 'RNC:', bold)
-        worksheet.write(2, 4, self.company_id.vat)
+        worksheet.write(2, 4, self.partner_id.vat)
 
         #Dirección
         worksheet.write(3, 1, 'Dirección:', bold)
