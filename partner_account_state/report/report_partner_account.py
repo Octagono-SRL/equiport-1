@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta, date
+import datetime
 import math
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import xlsxwriter
 import base64
-import string
+# import string
 
 
 class ReportPartnerAccount(models.TransientModel):
