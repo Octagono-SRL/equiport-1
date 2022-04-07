@@ -32,7 +32,7 @@ class ReportPartnerAccount(models.TransientModel):
                                       compute='_compute_amount')
 
     report = fields.Binary(string='Reporte')
-    report_name = fields.Char()
+    report_name = fields.Char(string='Nombre del Reporte')
 
     @api.depends('line_ids', 'partner_id')
     def _compute_amount(self):
@@ -71,7 +71,8 @@ class ReportPartnerAccount(models.TransientModel):
         # Headers del Excel
         file_header = ['Número de Documento', 'Fecha de Documento', 'NCF', 'Plazo de pago', 'Días Transc.', 'Total', 'Pendiente']
         bold = workbook.add_format({'font_size': 14,
-                                    'bold': 1})
+                                    'bold': 1,
+                                    'bg_color': '#FFF68F'})
 
         self.ensure_one()
 
@@ -82,51 +83,47 @@ class ReportPartnerAccount(models.TransientModel):
         date_to = self.date_to
 
         #Campos de fechas en reporte
-        worksheet.write(2, 5, 'Desde:')
+        worksheet.write(2, 5, 'Desde:', bold)
         worksheet.write(2, 6, date_from)
-        worksheet.write(3, 6, 'A la fecha:')
-        worksheet.write(3, 5, date_to)
+        worksheet.write(3, 5, 'A la fecha:', bold)
+        worksheet.write(3, 6, date_to)
 
-        worksheet.write(1, 1, 'Datos del Cliente')
+        worksheet.write(1, 1, 'Datos del Cliente', bold)
 
         #Nombre de cliente
-        worksheet.write(2, 1, 'Cliente')
+        worksheet.write(2, 1, 'Cliente:', bold)
         worksheet.write(2, 2, self.company_id.partner_id.name)
 
         #RNC
-        worksheet.write(2, 3, 'RNC')
+        worksheet.write(2, 3, 'RNC:', bold)
         worksheet.write(2, 4, self.company_id.vat)
 
         #Dirección
-        worksheet.write(3, 1, 'Dirección')
+        worksheet.write(3, 1, 'Dirección:', bold)
         worksheet.write(3, 2, self.partner_id.street + ', ' + self.partner_id.city + ', ' + self.partner_id.country_id.name)
 
         for col, header in enumerate(file_header):
-            worksheet.write(col, 2, str(header), bold)
+            worksheet.write(4, col + 1, str(header), bold)
 
         lines = self.line_ids
 
         pos = 0
         for i, line in enumerate(lines):
             pos += 1
-            worksheet.write(i + 4, 3, str(line.move_id.name), bold)
-            worksheet.write(i + 4, 4, str(line.invoice_date), bold)
-            worksheet.write(i + 4, 5, str(line.l10n_do_fiscal_number), bold)
-            worksheet.write(i + 4, 6, str(line.invoice_payment_term_id.name), bold)
-            worksheet.write(i + 4, 7, str(line.trans_days), bold)
-            worksheet.write(i + 4, 8, str(line.amount_total), bold)
-            worksheet.write(i + 4, 9, str(line.amount_residual), bold)
+            worksheet.write(i + 5, 2, str(line.move_id.name))
+            worksheet.write(i + 5, 3, str(line.invoice_date))
+            worksheet.write(i + 5, 4, str(line.l10n_do_fiscal_number))
+            worksheet.write(i + 5, 5, str(line.invoice_payment_term_id.name))
+            worksheet.write(i + 5, 6, str(line.trans_days))
+            worksheet.write(i + 5, 7, str(line.amount_total), money)
+            worksheet.write(i + 5, 8, str(line.amount_residual), money)
 
         amount_total = sum(lines.mapped('amount_total'))
         amount_residual = sum(lines.mapped('amount_residual'))
 
-        worksheet.write(pos + 5, 9, sum(lines.mapped('amount_residual')), money)
-        worksheet.write(pos + 6, 9, (amount_total - amount_residual), money)
+        worksheet.write(pos + 5, 8, sum(lines.mapped('amount_residual')), money)
+        worksheet.write(pos + 6, 8, (amount_total - amount_residual), money)
         pos = 0
-
-        # format1 = workbook.add_format({'font_size': 14,
-        #                               'align': 'vcenter',
-        #                               'Bold': True})
 
         workbook.close()
 
@@ -135,16 +132,6 @@ class ReportPartnerAccount(models.TransientModel):
             'report': base64.b64encode(
                 open(file_path, 'rb').read())
         })
-
-        # return {
-        #     'type': 'ir.actions.act_window',
-        #     'res_model': 'historical.balance.report.wizard',
-        #     'view_mode': 'form',
-        #     'view_type': 'form',
-        #     'res_id': this.id,
-        #     'views': [(False, 'form')],
-        #     'target': 'new',
-        # }
 
 
 class ReportPartnerAccountLine(models.TransientModel):
