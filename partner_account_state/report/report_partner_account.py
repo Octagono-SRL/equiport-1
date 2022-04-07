@@ -30,8 +30,9 @@ class ReportPartnerAccount(models.TransientModel):
                                    compute='_compute_amount')
     amount_residual = fields.Monetary(string=_('Total Owed'), store=True, readonly=True,
                                       compute='_compute_amount')
-    report = fields.Binary(string='Reporte')
 
+    report = fields.Binary(string='Reporte')
+    report_name = fields.Char()
 
     @api.depends('line_ids', 'partner_id')
     def _compute_amount(self):
