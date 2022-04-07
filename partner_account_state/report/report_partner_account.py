@@ -72,7 +72,7 @@ class ReportPartnerAccount(models.TransientModel):
         file_header = ['Número de Documento', 'Fecha de Documento', 'NCF', 'Plazo de pago', 'Días Transc.', 'Total', 'Pendiente']
         bold = workbook.add_format({'font_size': 14,
                                     'bold': 1,
-                                    'bg_color': '#FFF68F'})
+                                    'bg_color': '#FFF9BA'})
 
         self.ensure_one()
 
@@ -103,26 +103,26 @@ class ReportPartnerAccount(models.TransientModel):
         worksheet.write(3, 2, self.partner_id.street + ', ' + self.partner_id.city + ', ' + self.partner_id.country_id.name)
 
         for col, header in enumerate(file_header):
-            worksheet.write(4, col + 1, str(header), bold)
+            worksheet.write(5, col + 1, str(header), bold)
 
         lines = self.line_ids
 
         pos = 0
         for i, line in enumerate(lines):
             pos += 1
-            worksheet.write(i + 5, 2, str(line.move_id.name))
-            worksheet.write(i + 5, 3, str(line.invoice_date))
-            worksheet.write(i + 5, 4, str(line.l10n_do_fiscal_number))
-            worksheet.write(i + 5, 5, str(line.invoice_payment_term_id.name))
-            worksheet.write(i + 5, 6, str(line.trans_days))
-            worksheet.write(i + 5, 7, str(line.amount_total), money)
-            worksheet.write(i + 5, 8, str(line.amount_residual), money)
+            worksheet.write(i + 6, 1, str(line.move_id.name))
+            worksheet.write(i + 6, 2, str(line.invoice_date))
+            worksheet.write(i + 6, 3, str(line.l10n_do_fiscal_number))
+            worksheet.write(i + 6, 4, str(line.invoice_payment_term_id.name))
+            worksheet.write(i + 6, 5, str(line.trans_days))
+            worksheet.write(i + 6, 6, str(line.amount_total), money)
+            worksheet.write(i + 6, 7, str(line.amount_residual), money)
 
         amount_total = sum(lines.mapped('amount_total'))
         amount_residual = sum(lines.mapped('amount_residual'))
 
-        worksheet.write(pos + 5, 8, sum(lines.mapped('amount_residual')), money)
-        worksheet.write(pos + 6, 8, (amount_total - amount_residual), money)
+        worksheet.write(pos + 5, 7, sum(lines.mapped('amount_residual')), money)
+        worksheet.write(pos + 6, 7, (amount_total - amount_residual), money)
         pos = 0
 
         workbook.close()
