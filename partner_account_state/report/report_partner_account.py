@@ -84,9 +84,9 @@ class ReportPartnerAccount(models.TransientModel):
 
         #Campos de fechas en reporte
         worksheet.write(2, 5, 'Desde:', bold)
-        worksheet.write(2, 6, date_from)
+        worksheet.write(2, 6, str(date_from))
         worksheet.write(3, 5, 'A la fecha:', bold)
-        worksheet.write(3, 6, date_to)
+        worksheet.write(3, 6, str(date_to))
 
         worksheet.write(1, 1, 'Datos del Cliente', bold)
 
@@ -121,8 +121,10 @@ class ReportPartnerAccount(models.TransientModel):
         amount_total = sum(lines.mapped('amount_total'))
         amount_residual = sum(lines.mapped('amount_residual'))
 
-        worksheet.write(pos + 5, 7, sum(lines.mapped('amount_residual')), money)
-        worksheet.write(pos + 6, 7, (amount_total - amount_residual), money)
+        worksheet.write(pos + 6, 6, 'Total Adeudado', bold)
+        worksheet.write(pos + 7, 6, 'Total Pendiente', bold)
+        worksheet.write(pos + 7, 7, amount_total, money)
+        worksheet.write(pos + 6, 7, sum(lines.mapped('amount_residual')), money)
         pos = 0
 
         workbook.close()
