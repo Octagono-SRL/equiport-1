@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_generat_account_state_form_view" model="ir.ui.view">
+            <field name="name">wizard.generate.account.state.form.view</field>
+            <field name="model">wizard.generate.account.state</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="currency_id" required="1"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to" required="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="generate_account_state" string="Generate" type="object" class="oe_highlight"/>
+                        <button string="Back" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

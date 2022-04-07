@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="report_partner_account_from_view" model="ir.ui.view">
+            <field name="name">report_partner_account_from_view</field>
+            <field name="model">report.partner.account</field>
+            <field name="arch" type="xml">
+                <form create="0">
+                    <header>
+                        <button name="action_document_print" string="Print Document" class="oe_highlight" type="object"/>
+                    </header>
+                    <sheet>
+                        <group col="3">
+                            <group colspan="2">
+                                <div class="oe_left">
+                                    <h1>Account status</h1>
+                                    <div attrs="{'invisible': [('date_from', '=', False)]}">
+                                        <label for="date_from"/>
+                                        <field name="date_from" readonly="1"/>
+                                    </div>
+                                    <div>
+                                        <label for="date_to"/>
+                                        <field name="date_to" readonly="1"/>
+                                    </div>
+                                </div>
+                            </group>
+                            <group colspan="1">
+                                <field name="partner_id" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" readonly="1"/>
+                                <field name="credit_limit" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Documents">
+                                <field name="line_ids">
+                                    <tree editable="bottom">
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="partner_id" invisible="1"/>
+                                        <field name="report_partner_id" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="move_id"/>
+                                        <field name="move_date" invisible="1"/>
+                                        <field name="invoice_date"/>
+                                        <field name="l10n_do_fiscal_number"/>
+                                        <field name="invoice_payment_term_id"/>
+                                        <field name="trans_days"/>
+                                        <field name="amount_total"/>
+                                        <field name="amount_residual"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_residual" class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
