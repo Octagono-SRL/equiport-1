@@ -8,12 +8,15 @@
                 <form create="0">
                     <header>
                         <button name="action_document_print" string="Print Document" class="oe_highlight" type="object"/>
+                        <button name="generate_xlsx_report" class="oe_highlight" type="object" string="Print XLSX Report"/>
                     </header>
                     <sheet>
                         <group col="3">
                             <group colspan="2">
                                 <div class="oe_left">
                                     <h1>Account status</h1>
+                                    <separator colspan="2" string="Archivo XLS"/>
+                                    <field name="report" filename="report_name" readonly="1"/>
                                     <div attrs="{'invisible': [('date_from', '=', False)]}">
                                         <label for="date_from"/>
                                         <field name="date_from" readonly="1"/>

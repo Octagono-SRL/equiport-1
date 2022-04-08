@@ -280,6 +280,11 @@ msgid "Logo"
 msgstr "Logo"
 
 #. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_state_footer
+msgid "Page:"
+msgstr "Página:"
+
+#. module: partner_account_state
 #: code:addons/partner_account_state/report/report_partner_account.py:0
 #: model:ir.model,name:partner_account_state.model_report_partner_account
 #, python-format

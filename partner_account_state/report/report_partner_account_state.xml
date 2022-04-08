@@ -24,6 +24,26 @@
 
     </template>
     <!--    endregion-->
+    <!--    region Footer-->
+    <template id="report_partner_account_state_footer">
+        <t t-set="company" t-value="doc.company_id"/>
+        <div t-attf-class="footer o_boxed_footer o_company_#{company.id}_layout">
+            <div class="text-center">
+                <ul class="list-inline">
+                    <li t-if="company.phone" class="list-inline-item"><span class="o_force_ltr" t-field="company.phone"/></li>
+                    <li t-if="company.email" class="list-inline-item"><span t-field="company.email"/></li>
+                    <li t-if="company.website" class="list-inline-item"><span t-field="company.website"/></li>
+                    <li t-if="company.vat" class="list-inline-item"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
+                </ul>
+                <div t-field="company.report_footer"/>
+                <div t-if="report_type == 'pdf'">
+                    Page: <span t-esc="line_list.index(target_lines) + 1"/>/ <span t-esc="len(line_list)"/>
+                </div>
+            </div>
+        </div>
+
+    </template>
+    <!--    endregion-->
     <!--                                         Segmento header                                                         -->
 
     <template id="report_partner_account_state_document">
@@ -206,6 +226,7 @@
                     <t t-call="partner_account_state.report_partner_account_state_header"/>
                     <t t-call="partner_account_state.report_partner_account_state_document"
                        t-lang="doc.partner_id.lang"/>
+                    <t t-call="partner_account_state.report_partner_account_state_footer"/>
                 </t>
             </t>
         </main>
