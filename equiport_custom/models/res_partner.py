@@ -45,8 +45,22 @@ class ResPartner(models.Model):
 
     # Credito
     allowed_credit = fields.Boolean(string="Permitir crédito", default=False, tracking=True)
-    credit_warning = fields.Float(string="Alerta en (%)", default=75)
-    over_credit = fields.Boolean(string="Permitir extra crédito")
+    credit_warning = fields.Float(string="Alerta en (%)", default=75, tracking=True)
+    over_credit = fields.Boolean(string="Permitir extra crédito", tracking=True)
+    date_last_credit = fields.Date(string="Ultima fecha de modificacion de credito", tracking=True,
+                                   default=fields.Date.today())
+
+    @api.onchange('credit_limit')
+    def update_date_last_credit(self):
+        self.update({
+            'date_last_credit': fields.Date.today()
+        })
+
+    @api.onchange('property_product_pricelist')
+    def set_credit_zero(self):
+        self.update({
+            'credit_limit': 0
+        })
 
     @api.constrains("vat_type", "vat")
     def nif_length_constrain(self):

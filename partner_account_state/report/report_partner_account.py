@@ -6,6 +6,8 @@ from odoo.exceptions import UserError
 import xlsxwriter
 import base64
 from odoo.tools.config import config
+
+
 # import string
 
 
@@ -148,15 +150,72 @@ class ReportPartnerAccountLine(models.TransientModel):
     report_partner_id = fields.Many2one(comodel_name='report.partner.account')
     partner_id = fields.Many2one(related='report_partner_id.partner_id', string=_('Customer'))
     move_id = fields.Many2one(string=_("Document Number"), comodel_name='account.move')
-    invoice_date = fields.Date(related='move_id.invoice_date', string=_("Document Date"))
+    move_line_id = fields.Many2one(string=_("Account Move Line"), comodel_name='account.move.line')
+    invoice_date = fields.Date(compute='compute_date_details', string=_("Document Date"))
+    # invoice_date = fields.Date(related='move_id.invoice_date', string=_("Document Date"))
     move_date = fields.Date(related='move_id.date')
-    invoice_payment_term_id = fields.Many2one(related='move_id.invoice_payment_term_id')
+    invoice_payment_term_id = fields.Many2one(comodel_name='account.payment.term', compute='compute_date_details',
+                                              string=_('Payment Terms'))
+    # invoice_payment_term_id = fields.Many2one(related='move_id.invoice_payment_term_id')
     trans_days = fields.Integer(compute="_compute_trans_days", string=_("Aging"), store=True)
-    l10n_do_fiscal_number = fields.Char(related='move_id.l10n_do_fiscal_number', string=_("NCF"))
-    amount_total = fields.Monetary(related='move_id.amount_total', string=_("Total"))
-    amount_residual = fields.Monetary(related='move_id.amount_residual', string=_("Amount Residual"))
-    currency_id = fields.Many2one(related='move_id.currency_id', string=_("Currency"))
+    # l10n_do_fiscal_number = fields.Char(related='move_id.l10n_do_fiscal_number', string=_("NCF"))
+    l10n_do_fiscal_number = fields.Char(compute='compute_ncf_label', string=_("NCF"))
+    # amount_total = fields.Monetary(compute='compute_all_amount' related='move_id.amount_total', string=_("Total"))
+    amount_total = fields.Monetary(compute='compute_all_amount', string=_("Total"))
+    amount_residual = fields.Monetary(compute='compute_all_amount', string=_("Amount Residual"))
+    # amount_residual = fields.Monetary(related='move_id.amount_residual', string=_("Amount Residual"))
+    currency_id = fields.Many2one(comodel_name='res.currency', compute='compute_currency', string=_("Currency"))
+    # currency_id = fields.Many2one(related='move_id.currency_id', string=_("Currency"))
     company_id = fields.Many2one(comodel_name='res.company', default=lambda s: s.env.company)
+
+    @api.depends('move_id', 'move_line_id')
+    def compute_all_amount(self):
+        # today = fields.Date.context_today(self)
+        for rec in self:
+            if rec.move_id.is_invoice():
+                rec.amount_total = rec.move_id.amount_total
+                rec.amount_residual = rec.move_id.amount_residual
+            elif not rec.move_id.is_invoice() and rec.move_line_id:
+                if rec.currency_id != rec.company_id.currency_id:
+                    rec.amount_total = rec.move_line_id.amount_currency
+                    rec.amount_residual = rec.move_line_id.amount_residual_currency
+                else:
+                    rec.amount_total = rec.move_line_id.balance
+                    rec.amount_residual = rec.move_line_id.amount_residual
+            else:
+                rec.amount_total = 0
+                rec.amount_residual = 0
+
+    @api.depends('move_id', 'move_line_id')
+    def compute_currency(self):
+        # today = fields.Date.context_today(self)
+        for rec in self:
+            if rec.move_id.is_invoice():
+                rec.currency_id = rec.move_id.currency_id
+            elif not rec.move_id.is_invoice() and rec.move_line_id:
+                rec.currency_id = rec.move_line_id.currency_id
+
+    @api.depends('move_id', 'move_line_id')
+    def compute_ncf_label(self):
+        # today = fields.Date.context_today(self)
+        for rec in self:
+            if rec.move_id.is_invoice():
+                rec.l10n_do_fiscal_number = rec.move_id.l10n_do_fiscal_number
+            elif not rec.move_id.is_invoice() and rec.move_line_id:
+                rec.l10n_do_fiscal_number = rec.move_line_id.name
+
+    @api.depends('move_id', 'move_line_id')
+    def compute_date_details(self):
+        # today = fields.Date.context_today(self)
+        for rec in self:
+            if rec.move_id.is_invoice():
+                rec.invoice_date = rec.move_id.invoice_date
+                rec.invoice_payment_term_id = rec.move_id.invoice_payment_term_id
+            elif not rec.move_id.is_invoice() and rec.move_line_id:
+                check_date = rec.move_line_id.date_maturity if rec.move_line_id.date_maturity else rec.move_line_id.date
+                term = rec.move_id.invoice_payment_term_id if rec.move_id.invoice_payment_term_id else rec.partner_id.property_payment_term_id
+                rec.invoice_date = check_date
+                rec.invoice_payment_term_id = term
 
     @api.depends('move_id', 'invoice_date', 'invoice_payment_term_id')
     def _compute_trans_days(self):

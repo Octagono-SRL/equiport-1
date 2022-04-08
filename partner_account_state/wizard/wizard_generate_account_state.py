@@ -37,18 +37,49 @@ class WizardGenerateAccountState(models.TransientModel):
                     report_lines.append((0, 0, {
                         'move_id': inv.id
                     }))
+
+                for aml in self.partner_id.unreconciled_aml_ids.filtered(
+                        lambda s: s.currency_id == self.currency_id):
+                    check_date = aml.date_maturity if aml.date_maturity else aml.date
+                    if aml.company_id == self.env.company and not aml.blocked and (
+                            self.date_from <= check_date <= self.date_to):
+                        if not aml.move_id.is_invoice():
+                            report_lines.append((0, 0, {
+                                'move_id': aml.move_id.id,
+                                'move_line_id': aml.id,
+                            }))
+                        # amount = aml.amount_residual
+                        # total_due += amount
+                        # is_overdue = today > aml.date_maturity if aml.date_maturity else today > aml.date
+                        # if is_overdue:
+                        #     total_overdue += amount
             else:
                 for inv in self.partner_id.unpaid_invoices.filtered(
                         lambda s: s.state == 'posted' and s.currency_id == self.currency_id and s.invoice_date <= self.date_to):
                     report_lines.append((0, 0, {
                         'move_id': inv.id
                     }))
+
+                for aml in self.partner_id.unreconciled_aml_ids.filtered(
+                        lambda s: s.currency_id == self.currency_id):
+                    check_date = aml.date_maturity if aml.date_maturity else aml.date
+                    if aml.company_id == self.env.company and not aml.blocked and check_date <= self.date_to:
+                        if not aml.move_id.is_invoice():
+                            report_lines.append((0, 0, {
+                                'move_id': aml.move_id.id,
+                                'move_line_id': aml.id,
+                            }))
             values.update({
                 'partner_id': self.partner_id.id,
                 'currency_id': self.currency_id.id,
                 'date_from': self.date_from,
                 'date_to': self.date_to,
-                'credit_limit': self.partner_id.credit_limit,
+                # 'credit_limit': self.partner_id.credit_limit,
+                'credit_limit': self.partner_id.property_product_pricelist.currency_id._convert(
+                    self.partner_id.credit_limit,
+                    self.currency_id,
+                    self.env.company,
+                    fields.Date.context_today(self)),
                 'line_ids': report_lines
             })
 

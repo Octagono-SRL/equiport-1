@@ -67,6 +67,7 @@
                     <field name="credit_warning"
                            attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
                     <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
+                    <field name="date_last_credit" force_save="1" attrs="{'invisible':[('allowed_credit', '=', False)], 'readonly':[('allowed_credit', '=', True)]}"/>
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']" position="inside">
