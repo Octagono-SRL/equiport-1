@@ -111,9 +111,9 @@
                                 <field name="container_long_id"/>
                                 <field name="container_type" invisible="1"/>
                                 <field name="container_type_id"
-                                       attrs="{'required': [('container_long', '!=', False)]}"/>
+                                       attrs="{'required': [('container_long_id', '!=', False)]}"/>
                                 <field name="product_container_id"
-                                       attrs="{'required': [('container_long', '!=', False)]}"
+                                       attrs="{'required': [('container_long_id', '!=', False)]}"
                                        domain="[('container_type_id', '=', container_type_id), ('unit_size_id', '=', container_long_id), ('unit_type', '=', 'container')]"/>
                                 <field name="container_lot_id"
                                        attrs="{'required': [('product_container_id', '!=', False)]}"
