@@ -5,6 +5,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import xlsxwriter
 import base64
+from odoo.tools.config import config
 # import string
 
 
@@ -60,7 +61,8 @@ class ReportPartnerAccount(models.TransientModel):
         this = self[0]
 
         mfl_date = "{0}{1}{2}".format(self.date_to.year, self.date_to.month, self.date_to.day)
-        file_path = '/tmp/Estado de Cuenta-{}.xlsx'.format(mfl_date)
+        root_path = config.get('data_dir') if config.get('data_dir', False) else '/temp'
+        file_path = '{root}/Estado de Cuenta-{date}.xlsx'.format(root=root_path, date=mfl_date)
 
         workbook = xlsxwriter.Workbook(file_path, {'strings_to_numbers': True})
         worksheet = workbook.add_worksheet()
@@ -69,7 +71,8 @@ class ReportPartnerAccount(models.TransientModel):
         money = workbook.add_format({'num_format': '$#,##0'})
 
         # Headers del Excel
-        file_header = ['Número de Documento', 'Fecha de Documento', 'NCF', 'Plazo de pago', 'Días Transc.', 'Total', 'Pendiente']
+        file_header = ['Número de Documento', 'Fecha de Documento', 'NCF', 'Plazo de pago', 'Días Transc.', 'Total',
+                       'Pendiente']
         bold = workbook.add_format({'font_size': 14,
                                     'bold': 1,
                                     'bg_color': '#FFF9BA'})
@@ -79,10 +82,10 @@ class ReportPartnerAccount(models.TransientModel):
         # List the alphabet
         # Esto es para graduar las lineas del excel
         # alphabet = ["%s%d" % (l, 1) for l in string.ascii_uppercase]
-        date_from = self.date_from
+        date_from = self.date_from if self.date_from else 'N/A'
         date_to = self.date_to
 
-        #Campos de fechas en reporte
+        # Campos de fechas en reporte
         worksheet.write(2, 5, 'Desde:', bold)
         worksheet.write(2, 6, str(date_from))
         worksheet.write(3, 5, 'A la fecha:', bold)
@@ -90,17 +93,18 @@ class ReportPartnerAccount(models.TransientModel):
 
         worksheet.write(1, 1, 'Datos del Cliente', bold)
 
-        #Nombre de cliente
+        # Nombre de cliente
         worksheet.write(2, 1, 'Cliente:', bold)
         worksheet.write(2, 2, self.partner_id.name)
 
-        #RNC
+        # RNC
         worksheet.write(2, 3, 'RNC:', bold)
         worksheet.write(2, 4, self.partner_id.vat)
 
-        #Dirección
+        # Dirección
         worksheet.write(3, 1, 'Dirección:', bold)
-        worksheet.write(3, 2, self.partner_id.street + ', ' + self.partner_id.city + ', ' + self.partner_id.country_id.name)
+        worksheet.write(3, 2, '{0}, {1}, {2}'.format(self.partner_id.street, self.partner_id.city,
+                                                     self.partner_id.country_id.name))
 
         for col, header in enumerate(file_header):
             worksheet.write(5, col + 1, str(header), bold)
@@ -130,7 +134,7 @@ class ReportPartnerAccount(models.TransientModel):
         workbook.close()
 
         this.write({
-            'report_name': file_path.replace('/tmp/', ''),
+            'report_name': file_path.replace('{0}/'.format(root_path), ''),
             'report': base64.b64encode(
                 open(file_path, 'rb').read())
         })
