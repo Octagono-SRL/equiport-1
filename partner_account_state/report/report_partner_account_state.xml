@@ -217,7 +217,7 @@
     <template id="report_partner_account_state">
         <main>
             <t t-foreach="docs" t-as="doc">
-                <t t-set="line_list" t-value="doc.split_list_len(doc.line_ids, 15)"/>
+                <t t-set="line_list" t-value="doc.split_list_len(doc.line_ids, 10)"/>
                 <t t-foreach="line_list" t-as="target_lines">
                     <t t-set="last" t-value="False"/>
                     <t t-if="len(line_list) > 0 and line_list[-1] == target_lines">
