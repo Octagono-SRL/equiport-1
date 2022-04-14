@@ -140,7 +140,7 @@ class RepairOrder(models.Model):
         context = dict(self.env.context)
         context.pop('default_lot_id', None)
 
-        return super(RepairOrder, self).action_repair_end()
+        return super(RepairOrder, self.with_context(context)).action_repair_end()
 
     def action_repair_done(self):
         """ Creates stock move for operation and stock move for final product of repair order.
@@ -150,7 +150,7 @@ class RepairOrder(models.Model):
         self = self.with_user(self.env.ref('base.user_root'))
         context = dict(self.env.context)
         context.pop('default_lot_id', None)
-        res = super(RepairOrder, self).action_repair_done()
+        res = super(RepairOrder, self.with_context(context)).action_repair_done()
         for repair in self:
             picking = self.env['stock.picking'].create({
                 'name': f'Orden de reparación: {repair.name}',
