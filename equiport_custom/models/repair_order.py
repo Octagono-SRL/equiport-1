@@ -137,6 +137,9 @@ class RepairOrder(models.Model):
         if self.product_id.unit_type and self.lot_id:
             self.lot_id.rent_state = 'available'
 
+        context = dict(self.env.context)
+        context.pop('default_lot_id', None)
+
         return super(RepairOrder, self).action_repair_end()
 
     def action_repair_done(self):
@@ -145,6 +148,8 @@ class RepairOrder(models.Model):
 
         """
         self = self.with_user(self.env.ref('base.user_root'))
+        context = dict(self.env.context)
+        context.pop('default_lot_id', None)
         res = super(RepairOrder, self).action_repair_done()
         for repair in self:
             picking = self.env['stock.picking'].create({
