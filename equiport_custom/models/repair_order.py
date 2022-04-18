@@ -152,17 +152,29 @@ class RepairOrder(models.Model):
         context.pop('default_lot_id', None)
         res = super(RepairOrder, self.with_context(context)).action_repair_done()
         for repair in self:
-            picking = self.env['stock.picking'].create({
-                'name': f'Orden de reparación: {repair.name}',
-                'partner_id': repair.partner_id.id,
-                'picking_type_id': self.env.ref('stock.picking_type_out').id,
-                'location_id': repair.location_id.id,
-                'location_dest_id': self.env['stock.location'].search(
-                    [('usage', '=', 'production'), ('company_id', '=', repair.company_id.id)], limit=1).id,
-                'move_lines': [],
-                'repair_id': repair.id,
-                'origin': repair.name,
-            })
+            picking = None
+            if repair.picking_ids == 0:
+                picking = self.env['stock.picking'].create({
+                    'name': f'Orden de reparación: {repair.name}',
+                    'partner_id': repair.partner_id.id,
+                    'picking_type_id': self.env.ref('stock.picking_type_out').id,
+                    'location_id': repair.location_id.id,
+                    'location_dest_id': self.env['stock.location'].search(
+                        [('usage', '=', 'production'), ('company_id', '=', repair.company_id.id)], limit=1).id,
+                    'move_lines': [],
+                    'material_picking': True,
+                    'repair_id': repair.id,
+                    'origin': repair.name,
+                })
+            else:
+                repair.picking_ids[0].write({
+                    'partner_id': repair.partner_id.id,
+                    'location_id': repair.location_id.id,
+                    'location_dest_id': self.env['stock.location'].search(
+                        [('usage', '=', 'production'), ('company_id', '=', repair.company_id.id)], limit=1).id,
+                    'material_picking': True,
+                })
+                picking = repair.picking_ids[0]
 
             for line in repair.operations.filtered(lambda l: l.product_id.type in ['product', 'consu']):
                 move_line_ids = self.env['stock.move.line'].search(
