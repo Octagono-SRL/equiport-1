@@ -135,7 +135,10 @@ class RepairOrder(models.Model):
                 raise ValidationError("Se deben registar las horas trabajadas en el área de operaciones")
 
         if self.product_id.unit_type and self.lot_id:
-            self.lot_id.rent_state = 'available'
+            if self.location_id == self.company_id.rental_loc_id:
+                self.lot_id.rent_state = 'rented'
+            else:
+                self.lot_id.rent_state = 'available'
 
         context = dict(self.env.context)
         context.pop('default_lot_id', None)
