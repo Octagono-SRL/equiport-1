@@ -138,7 +138,7 @@ class ProjectTask(models.Model):
                         'Horómetro': False,
                     })
 
-                if not task.container_type_id:
+                if not task.container_type_id and task.product_container_id:
                     validate_fields.update({
                         'Tipo de contenedor': False,
                     })
@@ -225,13 +225,13 @@ class ProjectTask(models.Model):
     container_long_id = fields.Many2one(comodel_name='unit.model.size', domain=[('unit_type', '=', 'container')],
                                         string="Long. Contenedor")
 
-    @api.onchange('chassis_long')
-    def set_unit_chassis_long(self):
-        self.container_long = self.chassis_long
+    # @api.onchange('chassis_long')
+    # def set_unit_chassis_long(self):
+    #     self.container_long = self.chassis_long
 
-    @api.onchange('container_long')
-    def set_unit_container_long(self):
-        self.chassis_long = self.container_long
+    # @api.onchange('container_long')
+    # def set_unit_container_long(self):
+    #     self.chassis_long = self.container_long
 
     container = fields.Char(string="Contenedor nombre")
     product_container_id = fields.Many2one('product.product', string="Contenedor")
