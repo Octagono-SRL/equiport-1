@@ -7,7 +7,7 @@
     'author': 'Octagono',
     'website': '',
     'license': 'LGPL-3',
-    'depends': ['base', 'account', 'account_followup', 'l10n_do_accounting'],
+    'depends': ['base', 'account', 'account_followup', 'l10n_do_accounting', 'sales_team'],
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
