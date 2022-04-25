@@ -156,7 +156,7 @@ class RepairOrder(models.Model):
         res = super(RepairOrder, self.with_context(context)).action_repair_done()
         for repair in self:
             picking = None
-            if repair.picking_ids == 0:
+            if len(repair.picking_ids) == 0:
                 picking = self.env['stock.picking'].create({
                     'name': f'Orden de reparación: {repair.name}',
                     'partner_id': repair.partner_id.id,
