@@ -353,7 +353,10 @@ class StockPicking(models.Model):
                         lot.rent_state = line.rent_state
                 else:
                     raise ValidationError("Debe colocar el estado de devolucion de la unidad.")
+        for ml in self.move_line_ids:
+            ml.state = 'done'
         self.state = 'done'
+        self.is_locked = True
         self.date_done = fields.Datetime.now()
 
     def request_access(self):
