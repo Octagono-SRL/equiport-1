@@ -1,6 +1,6 @@
 {
     'name': 'Report Account State',
-    'version': '14.0.0.1',
+    'version': '14.0.0.2',
     'summary': 'Report about the customer balance',
     'description': '',
     'category': 'Accounting',
@@ -10,6 +10,7 @@
     'depends': ['base', 'account', 'account_followup', 'l10n_do_accounting', 'sales_team'],
     'data': [
         'security/ir.model.access.csv',
+        'data/mail_template_data.xml',
         'views/res_partner_views.xml',
         'report/report_partner_account_views.xml',
         'report/report_partner_account_state.xml',

@@ -25,6 +25,51 @@ msgstr ""
 "\n"
 "            'Estado de cuenta - %s' % (object.partner_id.name)\n"
 "        "
+
+#. module: partner_account_state
+#: model:mail.template,body_html:partner_account_state.email_template_send_partner_account_state
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear ${object.name}s,\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        We're glad to share your actual account state.\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        Best Regards,\n"
+"                        <br/>\n"
+"                        % if object.env.user.signature:\n"
+"                        ${object.env.user.signature | safe}\n"
+"                        % endif\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Estimado ${object.name}s,\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        Estamos complacidos de compartir su estado de cuenta actual.\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        Saludos,\n"
+"                        <br/>\n"
+"                        % if object.env.user.signature:\n"
+"                        ${object.env.user.signature | safe}\n"
+"                        % endif\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: partner_account_state
+#: model:mail.template,subject:partner_account_state.email_template_send_partner_account_state
+msgid "Account State"
+msgstr "Estado de Cuenta"
+
 #. module: partner_account_state
 #: model_terms:ir.ui.view,arch_db:partner_account_state.res_partner_inherit_partner_account_state
 msgid "<span class=\"o_stat_text\">Account status</span>"
@@ -323,9 +368,19 @@ msgid "Payment Term"
 msgstr "Plazo de pago"
 
 #. module: partner_account_state
+#: model_terms:ir.ui.view,arch_db:partner_account_state.report_account_table
+msgid "Payment Term (Days)"
+msgstr "Plazo de pago (Dias)"
+
+#. module: partner_account_state
 #: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__invoice_payment_term_id
 msgid "Payment Terms"
 msgstr "Plazos de pago"
+
+#. module: partner_account_state
+#: model:ir.model.fields,field_description:partner_account_state.field_report_partner_account_line__invoice_payment_term_days
+msgid "Payment Terms (Days)"
+msgstr "Plazos de pago (Dias)"
 
 #. module: partner_account_state
 #: model_terms:ir.ui.view,arch_db:partner_account_state.report_partner_account_from_view

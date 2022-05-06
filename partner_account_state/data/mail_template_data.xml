@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_send_partner_account_state" model="mail.template">
+            <field name="name">Equiport: Enviar Estado de cuenta</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">${(object.env.user.email_formatted or user.email_formatted) |safe}</field>
+            <field name="partner_to">${object.id}</field>
+            <field name="subject">Account State</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear ${object.name}s,
+                        <br/>
+                        <br/>
+                        We're glad to share your actual account state.
+                        <br/>
+                        <br/>
+                        <br/>
+                        Best Regards,
+                        <br/>
+                        % if object.env.user.signature:
+                        ${object.env.user.signature | safe}
+                        % endif
+                    </p>
+                </div>
+            </field>
+
+            <field name="lang">${object.lang}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+
+    </data>
+</odoo>
