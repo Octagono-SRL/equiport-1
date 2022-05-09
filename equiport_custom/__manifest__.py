@@ -21,6 +21,7 @@
         'base',
         'contacts',
         'stock',
+        'stock_barcode',
         'stock_landed_costs',
         'purchase_requisition_stock',
         'hr',

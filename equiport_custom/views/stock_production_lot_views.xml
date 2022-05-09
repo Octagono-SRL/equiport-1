@@ -1,6 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!--        region HIDE ELEMENTS-->
+        <record id="stock_production_lot_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">stock.production.lot.form.hide.equiport.inherit</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_readonly_user" attrs="{'invisible':True}"/>
+                    <field name="x_css" nolabel="1" invisible="0"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="stock_production_lot_tree_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">stock.production.lot.tree.hide.equiport.inherit</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.inventory_account_user_lot_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+<!--                <xpath expr="//tree" position="inside">-->
+<!--                    <script>-->
+<!--                        function setHide(){-->
+<!--                            let action = document.querySelector(".o_cp_action_menus")?.lastChild-->
+<!--                            if(action){-->
+<!--                                action.style.display='none'-->
+<!--                            }-->
+<!--                        }-->
+
+<!--                        function load() {-->
+<!--                            let action = document.querySelector(".o_cp_action_menus")?.lastChild-->
+<!--                            if (action){-->
+<!--                                action.addEventListener("click", setHide, false)-->
+<!--                            }-->
+<!--                        }-->
+
+<!--                        setTimeout(()=>{-->
+<!--                            var inputs = document.querySelector(".custom-control-input")-->
+
+<!--                            inputs.?addEventListener("click", load, false);-->
+<!--                        }, 3000);-->
+
+
+<!--                    </script>-->
+<!--                </xpath>-->
+
+            </field>
+        </record>
+
+        <!--        endregion-->
+
 
         <record id="stock_production_lot_form_equiport_inherit" model="ir.ui.view">
             <field name="name">stock.production.lot.form.equiport.inherit</field>
@@ -8,7 +64,7 @@
             <field name="inherit_id" ref="stock.view_production_lot_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
-                    <header >
+                    <header>
                         <button name="change_state" type="object"
                                 attrs="{'invisible': ['|', ('rent_ok','=',False), ('is_tire_lot', '=', True)]}"
                                 class="btn btn-danger"
@@ -34,7 +90,7 @@
                             class="oe_stat_button"
                             attrs="{'invisible': [('active', '=', False)]}"
                             icon="fa-archive">
-                            <field name="active" widget="toggle_button" options='{"terminology": "archive"}'/>
+                        <field name="active" widget="toggle_button" options='{"terminology": "archive"}'/>
                     </button>
                     <button name="toggle_active"
                             type="object"
@@ -42,7 +98,7 @@
                             class="oe_stat_button"
                             attrs="{'invisible': [('active', '=', True)]}"
                             icon="fa-archive">
-                            <field name="active" widget="toggle_button" options='{"terminology": "archive"}'/>
+                        <field name="active" widget="toggle_button" options='{"terminology": "archive"}'/>
                     </button>
                 </div>
 

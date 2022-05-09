@@ -40,10 +40,12 @@ class RentalProcessing(models.TransientModel):
 
                     move_line_id.rent_state = 'rented'
                     move_line_id.lot_id.rent_state = 'rented'
+                    move_line_id.state = 'assigned'
                     move_line_id.picking_id = pick_output.id
                     pick_output.move_lines += move_line_id.move_id
             self.order_id.picking_ids += pick_output
             pick_output.state = 'assigned'
+            pick_output.is_locked = False
 
         elif self.status == 'return':
             lines = []
@@ -69,9 +71,11 @@ class RentalProcessing(models.TransientModel):
                 if move_line_ids:
                     move_line_id = move_line_ids.filtered(lambda ml: self.order_id.name in ml.reference.split(' '))
                     # if not move_line_id.picking_id:
+                    move_line_id.state = 'assigned'
                     move_line_id.picking_id = pick_input.id
                     pick_input.move_lines += move_line_id.move_id
             self.order_id.picking_ids += pick_input
             pick_input.state = 'assigned'
+            pick_input.is_locked = False
 
         return res

@@ -15,6 +15,30 @@ class ProductTemplate(models.Model):
     vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', string="Vehiculo")
     is_vehicle = fields.Boolean(string="Es vehiculo")
     is_tire_product = fields.Boolean(string="Es Neumatico", store=True, compute='_compute_is_tire')
+    is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
+    x_css = fields.Html(
+        string='CSS/JS',
+        sanitize=False,
+        compute='_compute_readonly_flag',
+        store=False,
+    )
+
+    def _compute_readonly_flag(self):
+        for rec in self:
+            rec.x_css = False
+            rec.is_readonly_user = False
+            if self.env.user.has_group('equiport_custom.inventory_account_user_product_readonly'):
+                rec.is_readonly_user = True
+                rec.x_css = '<style>.o_form_button_edit, .o_form_button_create, .o_statusbar_buttons {display: none !important;}</style>'
+                rec.x_css += """<script>
+                var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                if(action){
+                    action.style.display='none'
+                }
+                </script>"""
+            else:
+                rec.is_readonly_user = False
+                rec.x_css = False
 
     @api.depends('categ_id', 'company_id', 'company_id.tire_product_category', 'company_id.category_count')
     def _compute_is_tire(self):
