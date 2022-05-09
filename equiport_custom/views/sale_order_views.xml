@@ -2,49 +2,49 @@
 <odoo>
     <data>
         <!--        region HIDE ELEMENTS-->
-<!--        <record id="sale_order_form_hide_equiport_inherit" model="ir.ui.view">-->
-<!--            <field name="name">sale.order.form.hide.equiport.inherit</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="inherit_id" ref="sale.view_order_form"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//sheet" position="inside">-->
-<!--                    <field name="is_sale_readonly_user" invisible="1"/>-->
-<!--                    <field name="xs_css" nolabel="1" invisible="0"/>-->
-<!--                </xpath>-->
+        <record id="sale_order_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_sale_readonly_user" invisible="1"/>
+                    <field name="xs_css" nolabel="1" invisible="0"/>
+                </xpath>
 
-<!--            </field>-->
-<!--        </record>-->
-<!--        <record id="sale_order_tree_hide_equiport_inherit" model="ir.ui.view">-->
-<!--            <field name="name">sale.order.tree.hide.equiport.inherit</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>-->
-<!--            <field name="groups_id" eval="[(4, ref('equiport_custom.sales_account_user_readonly'))]"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//tree" position="attributes">-->
-<!--                    <attribute name="create">0</attribute>-->
-<!--                    <attribute name="delete">0</attribute>-->
-<!--                    <attribute name="edit">0</attribute>-->
-<!--                    <attribute name="multi_edit">0</attribute>-->
-<!--                </xpath>-->
+            </field>
+        </record>
+        <record id="sale_order_tree_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.order.tree.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.sales_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
 
-<!--            </field>-->
-<!--        </record>-->
+            </field>
+        </record>
 
-<!--        <record id="sale_order_kanban_hide_equiport_inherit" model="ir.ui.view">-->
-<!--            <field name="name">sale.order.kanban.hide.equiport.inherit</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="inherit_id" ref="sale.view_sale_order_kanban"/>-->
-<!--            <field name="groups_id" eval="[(4, ref('equiport_custom.rental_account_user_readonly'))]"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//kanban" position="attributes">-->
-<!--                    <attribute name="create">0</attribute>-->
-<!--                    <attribute name="delete">0</attribute>-->
-<!--                    <attribute name="edit">0</attribute>-->
-<!--                    <attribute name="multi_edit">0</attribute>-->
-<!--                </xpath>-->
+        <record id="sale_order_kanban_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.order.kanban.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.rental_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
 
-<!--            </field>-->
-<!--        </record>-->
+            </field>
+        </record>
 
         <!--        endregion-->
 
