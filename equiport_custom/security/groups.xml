@@ -8,6 +8,13 @@
         <record id="allowed_transfer" model="res.groups">
             <field name="name">Permitir transferencias y costes en destino.</field>
         </record>
+        <record id="allowed_scrap" model="res.groups">
+            <field name="name">Permitir realizar desechos.</field>
+        </record>
+
+        <record id="allowed_adjust_inventory" model="res.groups">
+            <field name="name">Permitir realizar Ajustes de inventario.</field>
+        </record>
         <record id="supervisor_stock_order_point" model="res.groups">
             <field name="name">Encargado de terminal (Valida y realiza las reposiciones de material).</field>
         </record>
@@ -52,20 +59,25 @@
             <field name="sequence">160</field>
             <field name="parent_id" eval="False"/>
         </record>
+        <record id="module_category_equiport_report" model="ir.module.category">
+            <field name="name">Permisos Reportes</field>
+            <field name="sequence">170</field>
+            <field name="parent_id" eval="False"/>
+        </record>
         <record id="module_category_equiport_config" model="ir.module.category">
             <field name="name">Permisos Configuraciones</field>
-            <field name="sequence">170</field>
+            <field name="sequence">180</field>
             <field name="parent_id" eval="False"/>
         </record>
         <record id="module_category_equiport_readonly" model="ir.module.category">
             <field name="name">Permisos Solo Lectura</field>
-            <field name="sequence">180</field>
+            <field name="sequence">190</field>
             <field name="parent_id" eval="False"/>
         </record>
         <!--        endregion-->
 
         <record id="subscription_account_user_generate_invoice" model="res.groups">
-            <field name="name">Puede generar factura.</field>
+            <field name="name">Puede generar factura en Suscripciones.</field>
         </record>
 
         <!--        region Readonly GROUPS-->
@@ -89,12 +101,6 @@
             <field name="category_id" ref="equiport_custom.module_category_equiport_readonly"/>
         </record>
 
-        <record id="inventory_account_user_report_readonly" model="res.groups">
-            <field name="name">Solo visualizar Inventario (Informes).</field>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-            <field name="category_id" ref="equiport_custom.module_category_equiport_readonly"/>
-        </record>
-
         <record id="inventory_account_user_quant_readonly" model="res.groups">
             <field name="name">Solo visualizar Inventario (Cantidad a mano).</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
@@ -114,13 +120,19 @@
         </record>
 
         <record id="rental_account_user_readonly" model="res.groups">
-            <field name="name">Solo visualizar alquileres.</field>
+            <field name="name">Solo visualizar alquileres</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
             <field name="category_id" ref="equiport_custom.module_category_equiport_readonly"/>
         </record>
 
         <record id="purchase_account_user_readonly" model="res.groups">
             <field name="name">Solo visualizar compras.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_readonly"/>
+        </record>
+
+        <record id="purchase_requisition_account_user_readonly" model="res.groups">
+            <field name="name">Solo visualizar compras (Requisiciones).</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
             <field name="category_id" ref="equiport_custom.module_category_equiport_readonly"/>
         </record>
@@ -247,6 +259,113 @@
             <field name="category_id" ref="equiport_custom.module_category_equiport_apps"/>
         </record>
 
+        <record id="employee_account_user" model="res.groups">
+            <field name="name">Puede visualizar aplicacion Empleados.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_apps"/>
+        </record>
+        <record id="leaving_account_user" model="res.groups">
+            <field name="name">Puede visualizar aplicacion Ausencias.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_apps"/>
+        </record>
+
+        <record id="payroll_account_user" model="res.groups">
+            <field name="name">Puede visualizar aplicacion Nomina.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_apps"/>
+        </record>
+
+        <!--        endregion-->
+
+        <!--        region REPORTS GROUPS-->
+
+        <record id="reports_purchase_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion compra.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_sale_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion ventas.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_sale_subscription_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion suscripciones.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_contacts_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion contactos.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_crm_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion crm.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_inventory_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion inventario.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_rental_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion alquiler.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_repair_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion reparaciones.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_rescue_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion rescates.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_fleet_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion flota.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_helpdesk_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion mesa de ayuda.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+        <record id="reports_project_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion proyecto.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+        <record id="reports_timesheet_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion partes de horas.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+
+        <record id="reports_emploeyee_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion empleados.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
+        <record id="reports_payroll_account_user" model="res.groups">
+            <field name="name">Puede visualizar reportes en aplicacion nomina.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="equiport_custom.module_category_equiport_report"/>
+        </record>
         <!--        endregion-->
 
         <!--        region SETTINGS GROUPS-->
@@ -443,48 +562,48 @@
         <!--        </record>-->
 
         <!--        region TEST RULES-->
-        <record id="rule_allowed_location" model="ir.rule">
-            <field name="name">Localidad no permitida</field>
-            <field ref="model_stock_location" name="model_id"/>
-            <field name="domain_force">['|', ('id', 'not in', user.allowed_stock_location_ids.ids),
-                                        ('usage', '!=', 'internal')]</field>
-            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-        </record>
+<!--        <record id="rule_allowed_location" model="ir.rule">-->
+<!--            <field name="name">Localidad no permitida</field>-->
+<!--            <field ref="model_stock_location" name="model_id"/>-->
+<!--            <field name="domain_force">['|', ('id', 'not in', user.allowed_stock_location_ids.ids),-->
+<!--                                        ('usage', '!=', 'internal')]</field>-->
+<!--            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--        </record>-->
 
-        <record id="rule_allowed_quant" model="ir.rule">
-            <field name="name">Cantidades de localidad no permitida</field>
-            <field ref="stock.model_stock_quant" name="model_id"/>
-            <field name="domain_force">['|', ('location_id', 'not in', user.allowed_stock_location_ids.ids),
-                                        ('location_id.usage', '!=', 'internal')]</field>
-            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-        </record>
+<!--        <record id="rule_allowed_quant" model="ir.rule">-->
+<!--            <field name="name">Cantidades de localidad no permitida</field>-->
+<!--            <field ref="stock.model_stock_quant" name="model_id"/>-->
+<!--            <field name="domain_force">['|', ('location_id', 'not in', user.allowed_stock_location_ids.ids),-->
+<!--                                        ('location_id.usage', '!=', 'internal')]</field>-->
+<!--            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--        </record>-->
 
-        <record id="rule_allowed_warehouse" model="ir.rule">
-            <field name="name">Almacenes no permitidos</field>
-            <field ref="model_stock_warehouse" name="model_id"/>
-            <field name="domain_force">[('id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>
-            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-        </record>
+<!--        <record id="rule_allowed_warehouse" model="ir.rule">-->
+<!--            <field name="name">Almacenes no permitidos</field>-->
+<!--            <field ref="model_stock_warehouse" name="model_id"/>-->
+<!--            <field name="domain_force">[('id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>-->
+<!--            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--        </record>-->
 
-        <record id="rule_allowed_picking_type" model="ir.rule">
-            <field name="name">Operaciones no permitidas</field>
-            <field ref="stock.model_stock_picking_type" name="model_id"/>
-            <field name="domain_force">[('warehouse_id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>
-            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-        </record>
+<!--        <record id="rule_allowed_picking_type" model="ir.rule">-->
+<!--            <field name="name">Operaciones no permitidas</field>-->
+<!--            <field ref="stock.model_stock_picking_type" name="model_id"/>-->
+<!--            <field name="domain_force">[('warehouse_id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>-->
+<!--            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--        </record>-->
 
-        <record id="rule_allowed_stock_picking" model="ir.rule">
-            <field name="name">Conduces no Permitidos</field>
-            <field ref="stock.model_stock_picking" name="model_id"/>
-            <field name="domain_force">[
-                ('picking_type_id.warehouse_id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>
-            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-        </record>
+<!--        <record id="rule_allowed_stock_picking" model="ir.rule">-->
+<!--            <field name="name">Conduces no Permitidos</field>-->
+<!--            <field ref="stock.model_stock_picking" name="model_id"/>-->
+<!--            <field name="domain_force">[-->
+<!--                ('picking_type_id.warehouse_id', 'not in', user.allowed_stock_warehouse_ids.ids)]</field>-->
+<!--            <field name="groups" eval="[(4, ref('group_inventory_user')), (4, ref('group_inventory_supervisor'))]"/>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--        </record>-->
         <!--        endregion-->
 
         <record id="equiport_custom_rule_hidden_vehicle_product" model="ir.rule">

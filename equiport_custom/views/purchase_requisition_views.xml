@@ -1,7 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Inherit Form View to Modify it -->
+
+        <!--        region HIDE ELEMENTS-->
+        <record id="purchase_requisition_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.hide.equiport.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_readonly_user" invisible="1"/>
+                    <field name="x_css" nolabel="1" invisible="0"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="purchase_requisition_tree_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.tree.hide.equiport.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_tree"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.purchase_requisition_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="purchase_requisition_kanban_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.kanban.hide.equiport.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_kanban"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.purchase_requisition_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!--        endregion-->
+
+
         <record id="purchase_requisition_form_equiport_inherit" model="ir.ui.view">
             <field name="name">purchase.requisition.form.equiport.inherit</field>
             <field name="model">purchase.requisition</field>

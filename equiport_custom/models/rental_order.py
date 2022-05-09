@@ -16,25 +16,31 @@ class RentalOrder(models.Model):
     rental_subscription_id = fields.Many2one(comodel_name='sale.subscription', string="Suscripción")
     rental_template_id = fields.Many2one(comodel_name='sale.subscription.template', string="Plantilla de suscripción")
     rental_sub_state = fields.Selection(related='rental_subscription_id.stage_id.category')
-    is_inventory_user = fields.Boolean(compute='_compute_inventory_flag', store=False)
-    x_css = fields.Html(
+    is_rental_readonly_user = fields.Boolean(compute='_compute_rental_readonly_flag', store=False)
+    xr_css = fields.Html(
         string='CSS',
         sanitize=False,
-        compute='_compute_inventory_flag',
+        compute='_compute_rental_readonly_flag',
         store=False,
     )
 
-    def _compute_inventory_flag(self):
+    def _compute_rental_readonly_flag(self):
         for rec in self:
-            rec.x_css = False
-            rec.is_inventory_user = False
+            rec.xr_css = False
+            rec.is_rental_readonly_user = False
             # TODO Habilitar la parte de abajo una vez se termine el proceso de prueba
-            # if self.env.user.has_group('equiport_custom.rental_stock_picking'):
-            #     rec.is_inventory_user = True
-            #     rec.x_css = '<style>.o_form_button_edit, .oe_subtotal_footer, .o_form_button_create, .btn-secondary, .o-discussion {display: none !important;}</style>'
-            # else:
-            #     rec.is_inventory_user = False
-            #     rec.x_css = False
+            if self.env.user.has_group('equiport_custom.rental_account_user_readonly'):
+                rec.is_rental_readonly_user = True
+                rec.xr_css = '<style>.o_form_button_edit, .o_form_button_create, .oe_subtotal_footer {display: none !important;}</style>'
+                rec.xr_css += """<script>
+                                    var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                                    if(action){
+                                        action.style.display='none'
+                                    }
+                                    </script>"""
+            else:
+                rec.is_rental_readonly_user = False
+                rec.xr_css = False
 
     def update_existing_rental_subscriptions(self):
         """
@@ -60,8 +66,8 @@ class RentalOrder(models.Model):
                             rent_line.name = desc_list[0]
 
                     new_qty = rent_line.product_uom_qty if (
-                                rent_line.qty_returned == 0 and rent_line.qty_delivered == 0) else (
-                                rent_line.qty_delivered - rent_line.qty_returned)
+                            rent_line.qty_returned == 0 and rent_line.qty_delivered == 0) else (
+                            rent_line.qty_delivered - rent_line.qty_returned)
 
                     recurring_lines.append((0, False, {
                         'rental_order_line_id': rent_line.id,
