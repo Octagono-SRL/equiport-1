@@ -2,7 +2,7 @@
 <odoo>
             <!-- TODO Luego de reparar las funciones y habilitar los campos seguir con esto-->
 
-     607
+<!--     607-->
 
     <record id="invoice_form_inherited" model="ir.ui.view">
         <field name="name">invoice.form.inherited</field>

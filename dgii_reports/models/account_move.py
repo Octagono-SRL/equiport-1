@@ -78,35 +78,35 @@ class AccountInvoice(models.Model):
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.tax_line_id.tax_group_id.name == 'ISC')
-                        .mapped('debit')))
+                        .mapped('price_total')))
 
                 # Monto Otros Impuestos/Tasas
                 inv.other_taxes = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.tax_line_id.tax_group_id.name ==
-                            "Otros Impuestos").mapped('debit')))
+                            "Otros Impuestos").mapped('price_total')))
 
                 # Monto Propina Legal
                 inv.legal_tip = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.tax_line_id.tax_group_id.name ==
-                            'Propina').mapped('debit')))
+                            'Propina').mapped('price_total')))
 
                 # ITBIS sujeto a proporcionalidad
                 inv.proportionality_tax = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.account_id.account_fiscal_type in
-                            ['A29', 'A30']).mapped('debit')))
+                            ['A29', 'A30']).mapped('price_total')))
 
                 # ITBIS llevado al Costo
                 inv.cost_itbis = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.account_id.account_fiscal_type ==
-                            'A51').mapped('debit')))
+                            'A51').mapped('price_total')))
 
                 if inv.move_type == 'out_invoice' and any([
                     inv.third_withheld_itbis,

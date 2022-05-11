@@ -9,6 +9,7 @@
                     <header>
                         <button name="action_document_print" string="Print Document" class="oe_highlight" type="object"/>
                         <button name="generate_xlsx_report" class="oe_highlight" type="object" string="Print XLSX Report"/>
+                        <button name="action_send_mail" class="oe_highlight" type="object" string="Sent By Email"/>
                     </header>
                     <sheet>
                         <group col="3">
@@ -47,6 +48,7 @@
                                         <field name="invoice_date"/>
                                         <field name="l10n_do_fiscal_number"/>
                                         <field name="invoice_payment_term_id"/>
+                                        <field name="invoice_payment_term_days"/>
                                         <field name="trans_days"/>
                                         <field name="amount_total"/>
                                         <field name="amount_residual"/>

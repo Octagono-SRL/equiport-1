@@ -117,6 +117,7 @@
                     <th name="th_invoice_date" class="text-center">Document Date</th>
                     <th name="th_l10n_do_fiscal_number" class="text-left">NCF</th>
                     <th name="th_invoice_payment_term_id" class="text-right">Payment Term</th>
+                    <th name="th_invoice_payment_term_days" class="text-right">Payment Term (Days)</th>
                     <th name="th_trans_days" class="text-right">Aging</th>
                     <th name="th_amount_total" class="text-right">Document Total</th>
                     <th name="th_amount_residual" class="text-right">Document Pending</th>
@@ -141,6 +142,9 @@
                         </td>
                         <td name="td_invoice_payment_term_id" class="text-right">
                             <span t-field="line.invoice_payment_term_id"/>
+                        </td>
+                        <td name="td_trans_days" class="text-right">
+                            <span t-field="line.invoice_payment_term_days"/>
                         </td>
                         <td name="td_trans_days" class="text-right">
                             <span t-field="line.trans_days"/>

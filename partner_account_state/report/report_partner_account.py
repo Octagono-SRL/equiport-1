@@ -49,6 +49,86 @@ class ReportPartnerAccount(models.TransientModel):
         else:
             raise UserError(_("There is not information to process the PDF"))
 
+    def generate_report_file(self, state):
+        report = self.env.ref('partner_account_state.report_action_partner_account_state', False)
+        pdf = report._render_qweb_pdf(state)[0]
+        pdf = base64.b64encode(pdf)
+        return pdf
+
+    def action_send_mail(self):
+        report_binary = self.generate_report_file(self.id)
+        attachment_name = "EC_" + self.name
+        attachments = self.env['ir.attachment']
+        attachment_pdf = self.env['ir.attachment'].create({
+            'name': attachment_name + '.pdf',
+            'type': 'binary',
+            'datas': report_binary,
+            'res_model': self.partner_id._name,
+            'res_id': self.partner_id.id,
+            'mimetype': 'application/pdf'
+        })
+        attachments += attachment_pdf
+        report_xls = self.generate_xlsx_report(get_file=True)
+        attachment_xlsx = self.env['ir.attachment'].create({
+            'name': report_xls['report_name'],
+            'type': 'binary',
+            'datas': report_xls['report'],
+            'res_model': self.partner_id._name,
+            'res_id': self.partner_id.id,
+            'mimetype': 'application/pdf'
+        })
+        attachments += attachment_xlsx
+
+
+
+        '''
+        This function opens a window to compose an email, with the edi purchase template message loaded by default
+        '''
+        self.ensure_one()
+        ir_model_data = self.env['ir.model.data']
+        try:
+            template_id = \
+                ir_model_data.get_object_reference('partner_account_state',
+                                                   'email_template_send_partner_account_state')[
+                    1]
+        except ValueError:
+            template_id = False
+        try:
+            compose_form_id = ir_model_data.get_object_reference('mail', 'email_compose_message_wizard_form')[1]
+        except ValueError:
+            compose_form_id = False
+        ctx = dict(self.env.context or {})
+
+        if template_id:
+            self.env['mail.template'].browse(template_id).update({
+                'attachment_ids': [(6, 0, attachments.ids)]
+            })
+        ctx.update({
+            'default_model': 'res.partner',
+            'active_model': 'res.partner',
+            'active_id': self.partner_id.id,
+            'default_res_id': self.partner_id.id,
+            'default_use_template': bool(template_id),
+            'default_template_id': template_id,
+            'default_composition_mode': 'comment',
+            'custom_layout': "mail.mail_notification_light",
+            'attachment_ids': attachments.ids,
+            'force_email': True,
+        })
+
+        ctx['model_description'] = 'Envio de Estado de Cuenta'
+
+        return {
+            'name': _('Compose Email'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(compose_form_id, 'form')],
+            'view_id': compose_form_id,
+            'target': 'new',
+            'context': ctx,
+        }
+
     @staticmethod
     def split_list(alist, wanted_parts=1):
         length = len(alist)
@@ -59,7 +139,7 @@ class ReportPartnerAccount(models.TransientModel):
         qty = math.ceil(length / fix_len)
         return self.split_list(alist, qty)
 
-    def generate_xlsx_report(self):
+    def generate_xlsx_report(self, get_file=False):
         this = self[0]
 
         mfl_date = "{0}{1}{2}".format(self.date_to.year, self.date_to.month, self.date_to.day)
@@ -73,7 +153,7 @@ class ReportPartnerAccount(models.TransientModel):
         money = workbook.add_format({'num_format': '$#,##0'})
 
         # Headers del Excel
-        file_header = ['Número de Documento', 'Fecha de Documento', 'NCF', 'Plazo de pago', 'Días Transc.', 'Total',
+        file_header = ['Número de Documento', 'Fecha de Documento', 'NCF', 'Plazo de pago', 'Plazo de pago (Dias)', 'Días Transc.', 'Total',
                        'Pendiente']
         bold = workbook.add_format({'font_size': 14,
                                     'bold': 1,
@@ -120,26 +200,34 @@ class ReportPartnerAccount(models.TransientModel):
             worksheet.write(i + 6, 2, str(line.invoice_date))
             worksheet.write(i + 6, 3, str(line.l10n_do_fiscal_number))
             worksheet.write(i + 6, 4, str(line.invoice_payment_term_id.name))
-            worksheet.write(i + 6, 5, str(line.trans_days))
-            worksheet.write(i + 6, 6, str(line.amount_total), money)
-            worksheet.write(i + 6, 7, str(line.amount_residual), money)
+            worksheet.write(i + 6, 5, str(line.invoice_payment_term_days))
+            worksheet.write(i + 6, 6, str(line.trans_days))
+            worksheet.write(i + 6, 7, str(line.amount_total), money)
+            worksheet.write(i + 6, 8, str(line.amount_residual), money)
 
         amount_total = sum(lines.mapped('amount_total'))
         amount_residual = sum(lines.mapped('amount_residual'))
 
         worksheet.write(pos + 6, 6, 'Total Adeudado', bold)
+        worksheet.write(pos + 6, 7, amount_total, money)
         worksheet.write(pos + 7, 6, 'Total Pendiente', bold)
-        worksheet.write(pos + 7, 7, amount_total, money)
-        worksheet.write(pos + 6, 7, sum(lines.mapped('amount_residual')), money)
+        worksheet.write(pos + 7, 8, sum(lines.mapped('amount_residual')), money)
         pos = 0
 
         workbook.close()
 
-        this.write({
-            'report_name': file_path.replace('{0}/'.format(root_path), ''),
-            'report': base64.b64encode(
-                open(file_path, 'rb').read())
-        })
+        if get_file:
+            return {
+                'report_name': file_path.replace('{0}/'.format(root_path), ''),
+                'report': base64.b64encode(
+                    open(file_path, 'rb').read())
+            }
+        else:
+            this.write({
+                'report_name': file_path.replace('{0}/'.format(root_path), ''),
+                'report': base64.b64encode(
+                    open(file_path, 'rb').read())
+            })
 
 
 class ReportPartnerAccountLine(models.TransientModel):
@@ -156,6 +244,8 @@ class ReportPartnerAccountLine(models.TransientModel):
     move_date = fields.Date(related='move_id.date')
     invoice_payment_term_id = fields.Many2one(comodel_name='account.payment.term', compute='compute_date_details',
                                               string=_('Payment Terms'))
+    invoice_payment_term_days = fields.Integer(compute='compute_date_details',
+                                               string=_('Payment Terms (Days)'))
     # invoice_payment_term_id = fields.Many2one(related='move_id.invoice_payment_term_id')
     trans_days = fields.Integer(compute="_compute_trans_days", string=_("Aging"), store=True)
     # l10n_do_fiscal_number = fields.Char(related='move_id.l10n_do_fiscal_number', string=_("NCF"))
@@ -211,11 +301,15 @@ class ReportPartnerAccountLine(models.TransientModel):
             if rec.move_id.is_invoice():
                 rec.invoice_date = rec.move_id.invoice_date
                 rec.invoice_payment_term_id = rec.move_id.invoice_payment_term_id
+                term_line = rec.move_id.invoice_payment_term_id.line_ids.filtered(lambda ptl: ptl.value == 'balance')
+                rec.invoice_payment_term_days = term_line[0].days if term_line else 0
             elif not rec.move_id.is_invoice() and rec.move_line_id:
                 check_date = rec.move_line_id.date_maturity if rec.move_line_id.date_maturity else rec.move_line_id.date
                 term = rec.move_id.invoice_payment_term_id if rec.move_id.invoice_payment_term_id else rec.partner_id.property_payment_term_id
+                term_line = term.line_ids.filtered(lambda ptl: ptl.value == 'balance')
                 rec.invoice_date = check_date
                 rec.invoice_payment_term_id = term
+                rec.invoice_payment_term_days = term_line[0].days if term_line else 0
 
     @api.depends('move_id', 'invoice_date', 'invoice_payment_term_id')
     def _compute_trans_days(self):
