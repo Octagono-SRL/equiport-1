@@ -652,4 +652,4 @@ class TireState(models.Model):
 
     name = fields.Char(string="Titulo", required=True)
     scrap_state = fields.Boolean(string="Estado de desecho")
-    active = fields.Boolean(string="Archivado", default=True)
+    active = fields.Boolean(string="Activo", default=True)

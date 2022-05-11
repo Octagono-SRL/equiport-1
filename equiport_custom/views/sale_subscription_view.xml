@@ -2,7 +2,54 @@
 <odoo>
     <data>
 
-        <!-- Inherit Form View to Modify it -->
+        <!--        region HIDE ELEMENTS-->
+        <record id="sale_subscription_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.subscription.form.hide.equiport.inherit</field>
+            <field name="model">sale.subscription</field>
+            <field name="inherit_id" ref="sale_subscription.sale_subscription_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_readonly_user" invisible="1"/>
+                    <field name="x_css" nolabel="1" invisible="0"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="sale_subscription_tree_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.subscription.tree.hide.equiport.inherit</field>
+            <field name="model">sale.subscription</field>
+            <field name="inherit_id" ref="sale_subscription.sale_subscription_view_list"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.subscription_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="sale_subscription_kanban_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.subscription.kanban.hide.equiport.inherit</field>
+            <field name="model">sale.subscription</field>
+            <field name="inherit_id" ref="sale_subscription.sale_subscription_view_kanban"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.subscription_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!--        endregion-->
+
+
         <record id="sale_subscription_form_view_equiport_inherit" model="ir.ui.view">
             <field name="name">sale.subscription.form.view.equiport.inherit</field>
             <field name="model">sale.subscription</field>
