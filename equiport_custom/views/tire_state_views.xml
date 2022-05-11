@@ -5,7 +5,7 @@
             <field name="name">tire.state.tree.view</field>
             <field name="model">tire.state</field>
             <field name="arch" type="xml">
-                <tree string="">
+                <tree editable="bottom">
                     <field name="name"/>
                     <field name="scrap_state"/>
                     <field name="active"/>

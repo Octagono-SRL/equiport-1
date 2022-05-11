@@ -292,8 +292,7 @@ class FleetVehicleLogTires(models.Model):
         'Estado', copy=False, default='draft', tracking=True,
         help="Cuando el registro es creado, el estado es 'Borrador'.\n"
              "Si el registro es confimado, el estado será 'En uso' y estara registrando los cambios en las lineas de neumaticos.\n"
-             "'Cerrado' Puede colocarse manualmente en cerrado siempre y cuando todos los neumaticos hayan sido retirados.\n"
-             "You can manually close an asset when the depreciation is over. If the last line of depreciation is posted, the asset automatically goes in that status.")
+             "'Cerrado' Puede colocarse manualmente en cerrado siempre y cuando todos los neumaticos hayan sido retirados.")
 
     @api.depends('vehicle_id', 'date')
     def _compute_vehicle_log_tire_name(self):
@@ -322,11 +321,21 @@ class FleetVehicleLogTires(models.Model):
         self.write({
             'state': 'open'
         })
+        for line in self.tires_set_ids:
+            line.product_lot_id.assigned_tire = True
 
     def write(self, values):
         # Add code here
         print(values)
         res = super(FleetVehicleLogTires, self).write(values)
+        error_message = []
+        for line in self.tires_set_ids:
+            if not line.product_id or not line.product_lot_id:
+                error_message.append("""
+                        Posicion %s
+                        """ % (line.sequence_number))
+        if error_message:
+            raise UserError("Faltan las referencias de las siguientes posiciones: \n%s" % ('\n'.join(error_message)))
         print(values)
         return res
 
@@ -392,7 +401,17 @@ class FleetTireSet(models.Model):
 
         res = super(FleetTireSet, self).write(vals)
 
-        self.product_lot_id.assigned_tire = True
+        if self.product_lot_id and self.vehicle_log_tires_id.state == 'open':
+            self.product_lot_id.assigned_tire = True
+
+        return res
+
+    def create(self, vals):
+
+        res = super(FleetTireSet, self).create(vals)
+
+        if res.product_lot_id and res.vehicle_log_tires_id.state == 'open':
+            res.product_lot_id.assigned_tire = True
 
         return res
 

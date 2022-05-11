@@ -562,6 +562,37 @@ class PurchaseOrder(models.Model):
     def button_cancel(self):
         if not self.allowed_cancel:
             raise ValidationError("""No es posible cancelar. Solicite aprobación de cancelación para orden.""")
+
+        body = """
+                    </br>
+                    <p>Debido a la cancelacion de la orden de la orden se ha reiniciado el proceso de autorizacion cancelacion de la orden.</p>
+                    </br>
+                    </br>
+                    </br>
+                    <h2><b>Información cancelacion previa:</b></h2>
+                    <ul>
+                        %s
+                        %s
+                        %s
+                    </ul>
+                    """ % (
+            ('<li><b>Fecha de aprobación:</b> {0}</li>'.format(
+                self.allowed_cancel_date_sign) if self.allowed_cancel_date_sign else ''),
+            ('<li><b>Razon de cancelacion:</b> {0}</li>'.format(
+                self.cancel_reason) if self.cancel_reason else ''),
+            ('<li><b>Aprobación firmada por:</b> {0}</li>'.format(
+                self.allowed_cancel_signed_by) if self.allowed_cancel_signed_by else ''),
+        )
+
+        self.message_post(
+            body=body,
+            message_type='notification'
+        )
+
+        self.write({
+            'requested_cancel': False,
+            'allowed_cancel': False
+        })
         res = super(PurchaseOrder, self).button_cancel()
         return res
 

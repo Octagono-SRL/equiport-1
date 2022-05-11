@@ -29,7 +29,7 @@
 
         <record id="scrap_tires" model="tire.state">
             <field name="name">Desecho</field>
-            <field name="scrap_state" eval="True"/>
+            <field name="scrap_state" eval="1"/>
             <field name="active" eval="1"/>
         </record>
     </data>
