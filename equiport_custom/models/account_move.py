@@ -22,9 +22,9 @@ class AccountMove(models.Model):
     # endregion
 
     # region Taxes detail
-    positive_amount_tax = fields.Monetary(string='Itbis Acum.', store=True, readonly=True,
+    positive_amount_tax = fields.Monetary(string='Itbis Acum.', store=True,
                                           compute='_compute_sign_amount_tax')
-    negative_amount_tax = fields.Monetary(string='Itbis Ret.', store=True, readonly=True,
+    negative_amount_tax = fields.Monetary(string='Itbis Ret.', store=True,
                                           compute='_compute_sign_amount_tax')
 
     @api.depends(
@@ -39,16 +39,20 @@ class AccountMove(models.Model):
         for rec in self:
             positive = 0
             negative = 0
-            tax_lines = rec.l10n_latam_tax_ids.filtered(lambda i: i.tax_line_id.tax_group_id.name == "ITBIS")
+            plus_tax_lines = rec.l10n_latam_tax_ids.filtered(
+                lambda i: i.tax_line_id.tax_group_id.name in ['ITBIS', 'ITBIS 18%'] and i.tax_line_id.amount > 0)
+            less_tax_lines = rec.l10n_latam_tax_ids.filtered(
+                lambda i: i.tax_line_id.tax_group_id.name in ['ITBIS', 'ITBIS 18%'] and i.tax_line_id.amount < 0)
             if rec.is_inbound(True):
-                for line in tax_lines:
-                    positive += rec.company_currency_id._convert(line.credit, rec.currency_id, rec.company_id, rec.date)
-                    negative += rec.company_currency_id._convert(line.debit, rec.currency_id, rec.company_id, rec.date)
+                for line in plus_tax_lines:
+                    positive += line.price_total
+                for line in less_tax_lines:
+                    negative += line.price_total
             elif rec.move_type == 'entry' or rec.is_outbound():
-                for line in tax_lines:
-                    positive += rec.company_currency_id._convert(line.debit, rec.currency_id, rec.company_id, rec.date)
-                    negative += rec.company_currency_id._convert(line.credit, rec.currency_id, rec.company_id, rec.date)
-
+                for line in plus_tax_lines:
+                    positive += line.price_total
+                for line in less_tax_lines:
+                    negative += line.price_total
             rec.negative_amount_tax = negative
             rec.positive_amount_tax = positive
 
