@@ -116,8 +116,54 @@ class RepairOrder(models.Model):
             res.lot_id.rent_state = 'to_check'
         return res
 
+    def check_repair_product_availability(self):
+        if self.product_id.is_vehicle:
+            return
+        if self.product_id.tracking in ['serial', 'lot']:
+            free_qty = self.env['stock.quant']._get_available_quantity(product_id=self.product_id,
+                                                                       location_id=self.location_id, lot_id=self.lot_id,
+                                                                       strict=True)
+        else:
+            free_qty = self.env['stock.quant']._get_available_quantity(product_id=self.product_id,
+                                                                       location_id=self.location_id, strict=True)
+        if self.product_qty > free_qty:
+            raise ValidationError(
+                _(" El producto: %s Número: %s no esta disponible en la Ubicación: %s", self.product_id.name, self.lot_id.name, self.location_id.display_name))
+
+    def check_lines_availability(self):
+
+        error_message_lines = []
+        for line in self.operations:
+            if line.product_id.tracking in ['serial', 'lot']:
+                free_qty = self.env['stock.quant']._get_available_quantity(product_id=line.product_id,
+                                                                           location_id=line.location_id,
+                                                                           lot_id=line.lot_id,
+                                                                           strict=True)
+            else:
+                free_qty = self.env['stock.quant']._get_available_quantity(product_id=line.product_id,
+                                                                           location_id=line.location_id, strict=True)
+
+            if line.product_uom_qty > free_qty:
+                if _(" - Producto: %s", line.product_id.name) not in error_message_lines:
+                    error_message_lines.append(
+                        _(" - Producto: %s", line.product_id.name))
+
+        if error_message_lines:
+            raise ValidationError(
+                _('No tiene cantidades disponibles.\nLos siguientes no estan disponibles:\n') + '\n'.join(
+                    error_message_lines))
+
+    def action_repair_cancel(self):
+        res = super(RepairOrder, self).action_repair_cancel()
+        if self.location_id == self.company_id.rental_loc_id:
+            self.lot_id.rent_state = 'rented'
+        else:
+            self.lot_id.rent_state = 'available'
+        return res
+
     def action_validate(self):
         self = self.with_user(self.env.ref('base.user_root'))
+        self.check_repair_product_availability()
         if self.product_id.unit_type and self.lot_id:
             self.lot_id.rent_state = 'to_repair'
 
@@ -151,6 +197,7 @@ class RepairOrder(models.Model):
 
         """
         self = self.with_user(self.env.ref('base.user_root'))
+        self.check_lines_availability()
         context = dict(self.env.context)
         context.pop('default_lot_id', None)
         res = super(RepairOrder, self.with_context(context)).action_repair_done()
