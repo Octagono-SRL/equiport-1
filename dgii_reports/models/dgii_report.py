@@ -520,7 +520,7 @@ class DgiiReport(models.Model):
                     show_payment_date else False,
                     'service_total_amount': inv.service_total_amount,
                     'good_total_amount': inv.good_total_amount,
-                    'invoiced_amount': inv.amount_untaxed_signed,
+                    'invoiced_amount': inv.amount_untaxed_signed * (-1 if inv.move_type in ['in_refund', 'in_invoice'] else 1),
                     'invoiced_itbis': inv.invoiced_itbis,
                     'proportionality_tax': inv.proportionality_tax,
                     'cost_itbis': inv.cost_itbis,
@@ -580,14 +580,10 @@ class DgiiReport(models.Model):
 
         if invoice_id.move_type == 'out_invoice':
             for payment in invoice_id._get_invoice_payment_widget():
-                print("payment", payment)
                 payment_id = Payment.browse(payment['account_payment_id'])
                 if payment_id:
-                    print("payment_id", payment_id)
                     key = payment_id.journal_id.l10n_do_payment_form
                     if key:
-                        print("Key", key)
-                        print('Selective', self.include_payment(invoice_id, payment_id))
                         if self.include_payment(invoice_id, payment_id):
                             payments_dict[key] += self._convert_to_user_currency(
                                 invoice_id.currency_id,
