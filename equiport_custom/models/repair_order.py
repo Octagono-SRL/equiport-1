@@ -45,14 +45,17 @@ class RepairOrder(models.Model):
 
     # region Flota
     vehicle_service_log_id = fields.Many2one(comodel_name='fleet.vehicle.log.services', string="Registro de servicio")
-    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', related='vehicle_service_log_id.vehicle_id', string="Unidad")
+    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', related='vehicle_service_log_id.vehicle_id',
+                                 string="Unidad")
     is_fleet_origin = fields.Boolean(string="Originado en flota")
     product_fleet_name = fields.Char(related='product_id.display_name', string="Nombre producto flota")
-    is_fuel_replenishment = fields.Boolean(string="Reposición de combustible", compute='compute_is_fuel_replenishment', store=True)
+    is_fuel_replenishment = fields.Boolean(string="Reposición de combustible", compute='compute_is_fuel_replenishment',
+                                           store=True)
 
     order_type = fields.Selection([('maintenance_fleet', 'Mantenimiento Flota'),
                                    ('repair_fleet', 'Reparación Flota'),
-                                   ('repair', 'Reparación')], string="Tipo de Servicio", compute="compute_category_order_type", store=True)
+                                   ('repair', 'Reparación')], string="Tipo de Servicio",
+                                  compute="compute_category_order_type", store=True)
 
     @api.depends('is_fleet_origin', 'operations')
     def compute_is_fuel_replenishment(self):
@@ -74,7 +77,7 @@ class RepairOrder(models.Model):
             else:
                 rec.order_type = 'repair'
 
-# endregion
+    # endregion
 
     # Gathering repair info
     inspection_date = fields.Date(string="Fecha inspección")
@@ -133,6 +136,43 @@ class RepairOrder(models.Model):
                                  default_group_id=picking_id.group_id.id)
         return action
 
+    def check_repair_product_availability(self):
+        if self.product_id.is_vehicle:
+            return
+        if self.product_id.tracking in ['serial', 'lot']:
+            free_qty = self.env['stock.quant']._get_available_quantity(product_id=self.product_id,
+                                                                       location_id=self.location_id, lot_id=self.lot_id,
+                                                                       strict=True)
+        else:
+            free_qty = self.env['stock.quant']._get_available_quantity(product_id=self.product_id,
+                                                                       location_id=self.location_id, strict=True)
+        if self.product_qty > free_qty:
+            raise ValidationError(
+                _(" El producto: %s Número: %s no esta disponible en la Ubicación: %s", self.product_id.name, self.lot_id.name, self.location_id.display_name))
+
+    def check_lines_availability(self):
+
+        error_message_lines = []
+        for line in self.operations:
+            if line.product_id.tracking in ['serial', 'lot']:
+                free_qty = self.env['stock.quant']._get_available_quantity(product_id=line.product_id,
+                                                                           location_id=line.location_id,
+                                                                           lot_id=line.lot_id,
+                                                                           strict=True)
+            else:
+                free_qty = self.env['stock.quant']._get_available_quantity(product_id=line.product_id,
+                                                                           location_id=line.location_id, strict=True)
+
+            if line.product_uom_qty > free_qty:
+                if _(" - Producto: %s", line.product_id.name) not in error_message_lines:
+                    error_message_lines.append(
+                        _(" - Producto: %s", line.product_id.name))
+
+        if error_message_lines:
+            raise ValidationError(
+                _('No tiene cantidades disponibles.\nLos siguientes no estan disponibles:\n') + '\n'.join(
+                    error_message_lines))
+
     @api.model
     def create(self, vals):
         res = super(RepairOrder, self).create(vals)
@@ -141,8 +181,17 @@ class RepairOrder(models.Model):
             res.lot_id.rent_state = 'to_check'
         return res
 
+    def action_repair_cancel(self):
+        res = super(RepairOrder, self).action_repair_cancel()
+        if self.location_id == self.company_id.rental_loc_id:
+            self.lot_id.rent_state = 'rented'
+        else:
+            self.lot_id.rent_state = 'available'
+        return res
+
     def action_validate(self):
         self = self.with_user(self.env.ref('base.user_root'))
+        self.check_repair_product_availability()
         if self.product_id.unit_type and self.lot_id:
             self.lot_id.rent_state = 'to_repair'
 
@@ -176,6 +225,7 @@ class RepairOrder(models.Model):
 
         """
         self = self.with_user(self.env.ref('base.user_root'))
+        self.check_lines_availability()
         context = dict(self.env.context)
         context.pop('default_lot_id', None)
         res = super(RepairOrder, self.with_context(context)).action_repair_done()

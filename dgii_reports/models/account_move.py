@@ -78,35 +78,35 @@ class AccountInvoice(models.Model):
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.tax_line_id.tax_group_id.name == 'ISC')
-                        .mapped('price_total')))
+                        .mapped('price_subtotal')))
 
                 # Monto Otros Impuestos/Tasas
                 inv.other_taxes = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.tax_line_id.tax_group_id.name ==
-                            "Otros Impuestos").mapped('price_total')))
+                            "Otros Impuestos").mapped('price_subtotal')))
 
                 # Monto Propina Legal
                 inv.legal_tip = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.tax_line_id.tax_group_id.name ==
-                            'Propina').mapped('price_total')))
+                            'Propina').mapped('price_subtotal')))
 
                 # ITBIS sujeto a proporcionalidad
                 inv.proportionality_tax = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.account_id.account_fiscal_type in
-                            ['A29', 'A30']).mapped('price_total')))
+                            ['A29', 'A30']).mapped('price_subtotal')))
 
                 # ITBIS llevado al Costo
                 inv.cost_itbis = inv._convert_to_local_currency(
                     sum(
                         tax_line_ids.filtered(
                             lambda tax: tax.account_id.account_fiscal_type ==
-                            'A51').mapped('price_total')))
+                            'A51').mapped('price_subtotal')))
 
                 if inv.move_type == 'out_invoice' and any([
                     inv.third_withheld_itbis,
@@ -245,14 +245,14 @@ class AccountInvoice(models.Model):
                 for tax in inv._get_tax_line_ids():
                     if tax.tax_line_id.tax_group_id.name in itbis_taxes and \
                             tax.tax_line_id.purchase_tax_type != 'ritbis':
-                        amount += abs(tax.balance)
+                        amount += abs(tax.price_subtotal)
 
                     # if inv.move_type in ['out_invoice', 'out_refund']:
                     #     amount += tax.credit
                     # elif inv.move_type in ['in_invoice', 'in_refund']:
                     #     amount += tax.debit
                     # inv.invoiced_itbis = inv._convert_to_local_currency(amount)
-                    inv.invoiced_itbis = amount
+                    inv.invoiced_itbis = inv._convert_to_local_currency(amount)
                 if len(inv._get_tax_line_ids()) == 0:
                     inv.invoiced_itbis = 0
                     # inv.invoiced_itbis = inv._convert_to_local_currency(amount)

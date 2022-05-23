@@ -520,7 +520,7 @@ class DgiiReport(models.Model):
                     show_payment_date else False,
                     'service_total_amount': inv.service_total_amount,
                     'good_total_amount': inv.good_total_amount,
-                    'invoiced_amount': inv.amount_untaxed_signed,
+                    'invoiced_amount': inv.amount_untaxed_signed * (-1 if inv.move_type in ['in_refund', 'in_invoice'] else 1),
                     'invoiced_itbis': inv.invoiced_itbis,
                     'proportionality_tax': inv.proportionality_tax,
                     'cost_itbis': inv.cost_itbis,
@@ -566,7 +566,7 @@ class DgiiReport(models.Model):
     def include_payment(invoice_id, payment_id):
         """ Returns True if payment date is on or before current period """
 
-        p_date = payment_id.payment_date
+        p_date = payment_id.date
         i_date = invoice_id.invoice_date
         if p_date and i_date:
             return True if (p_date.year <= i_date.year) and (
@@ -961,8 +961,12 @@ class DgiiReport(models.Model):
             CancelLine.search([('dgii_report_id', '=', rec.id)]).unlink()
 
             invoice_ids = self._get_invoices(['cancel'], [
-                'out_invoice', 'in_invoice', 'out_refund'
-            ]).filtered(lambda inv: (inv.l10n_latam_document_type_id.l10n_do_ncf_type != 'normal'))
+                'out_invoice', 'out_refund'
+            ])
+
+            # invoice_ids = self._get_invoices(['cancel'], [
+            #     'out_invoice', 'in_invoice', 'out_refund'
+            # ]).filtered(lambda inv: (inv.journal_id.purchase_type != 'normal'))
             line = 0
             report_data = ''
             for inv in invoice_ids:
@@ -1051,7 +1055,7 @@ class DgiiReport(models.Model):
                     'legal_name': inv.partner_id.name,
                     'tax_id_type':
                         1
-                        if inv.partner_id.company_type == 'individual' else 2,
+                        if inv.partner_id.company_type == 'person' else 2,
                     'tax_id': inv.partner_id.vat,
                     'country_code': self._get_country_number(inv.partner_id),
                     'purchased_service_type': int(inv.service_type),

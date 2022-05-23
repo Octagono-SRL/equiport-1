@@ -122,6 +122,56 @@ class StockPicking(models.Model):
                 self.vat_driver) != 11) or (self.is_rental and self.vat_driver and not self.vat_driver.isnumeric()):
             raise ValidationError("Verifique la longitud de la Cédula. Deben ser 11 digitos")
 
+    def check_move_line_availability(self, ml):
+        if ml.product_id.tracking in ['serial', 'lot']:
+            free_qty = self.env['stock.quant']._get_available_quantity(product_id=ml.product_id,
+                                                                       location_id=ml.location_id, lot_id=ml.lot_id,
+                                                                       strict=True)
+        else:
+            free_qty = self.env['stock.quant']._get_available_quantity(product_id=ml.product_id,
+                                                                       location_id=ml.location_id, strict=True)
+        return free_qty
+
+    def check_lines_availability(self):
+
+        error_message_lines = []
+        for ml in self.move_line_ids:
+            free_qty = self.check_move_line_availability(ml)
+
+            # free_qty = sum(ml.product_id.stock_quant_ids.filtered(
+            #     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+            #     'available_quantity'))
+            if ml.qty_done > free_qty and ml.qty_done != ml.product_uom_qty:
+                if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
+                    error_message_lines.append(
+                        _(" - Producto: %s", ml.product_id.name))
+
+        for ml in self.move_line_ids_without_package:
+            free_qty = self.check_move_line_availability(ml)
+            # free_qty = sum(ml.product_id.stock_quant_ids.filtered(
+            #     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+            #     'available_quantity'))
+            if ml.qty_done > free_qty and ml.qty_done != ml.product_uom_qty:
+                if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
+                    error_message_lines.append(
+                        _(" - Producto: %s", ml.product_id.name))
+
+        for ml in self.move_line_nosuggest_ids:
+
+            free_qty = self.check_move_line_availability(ml)
+            # free_qty = sum(ml.product_id.stock_quant_ids.filtered(
+            #     lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
+            #     'available_quantity'))
+            if ml.qty_done > free_qty and ml.qty_done != ml.product_uom_qty:
+                if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
+                    error_message_lines.append(
+                        _(" - Producto: %s", ml.product_id.name))
+
+        if error_message_lines:
+            raise ValidationError(
+                _('No tiene cantidades disponibles.\nLos siguientes no estan disponibles:\n') + '\n'.join(
+                    error_message_lines))
+
     def button_validate(self):
         sale_id = self.sale_id
         fsm_invoice_available = True
@@ -130,6 +180,7 @@ class StockPicking(models.Model):
                 fsm_invoice_available = False
 
         if self.picking_type_code == 'outgoing':
+            self.check_lines_availability()
             for ml in self.move_line_ids:
                 if sale_id:
                     sale_order_line_id = sale_id.order_line.filtered(
@@ -147,39 +198,9 @@ class StockPicking(models.Model):
                             raise ValidationError("No puede exceder la cantidad especificada en la orden")
 
         elif self.picking_type_code == 'internal':
+            self.check_lines_availability()
 
-            error_message_lines = []
-            for ml in self.move_line_ids:
-                free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'available_quantity'))
-                if ml.qty_done > free_qty and ml.qty_done != ml.product_uom_qty:
-                    if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
-                        error_message_lines.append(
-                            _(" - Producto: %s", ml.product_id.name))
-
-            for ml in self.move_line_ids_without_package:
-                free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'available_quantity'))
-                if ml.qty_done > free_qty and ml.qty_done != ml.product_uom_qty:
-                    if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
-                        error_message_lines.append(
-                            _(" - Producto: %s", ml.product_id.name))
-
-            for ml in self.move_line_nosuggest_ids:
-                free_qty = sum(ml.product_id.stock_quant_ids.filtered(
-                    lambda sq: sq.location_id == self.location_id and sq.lot_id == ml.lot_id).mapped(
-                    'available_quantity'))
-                if ml.qty_done > free_qty and ml.qty_done != ml.product_uom_qty:
-                    if _(" - Producto: %s", ml.product_id.name) not in error_message_lines:
-                        error_message_lines.append(
-                            _(" - Producto: %s", ml.product_id.name))
-
-            if error_message_lines:
-                raise ValidationError(
-                    _('No tiene cantidades disponibles.\nLos siguientes no estan disponibles:\n') + '\n'.join(
-                        error_message_lines))
+        # Hre was the code checking availability
 
         if not self.sale_id.partner_id.allowed_credit:
             if fsm_invoice_available and not sale_id.is_fsm:
@@ -489,13 +510,13 @@ class StockProductionLot(models.Model):
 
     rent_ok = fields.Boolean(related='product_id.rent_ok')
     is_tire_lot = fields.Boolean(related='product_id.is_tire_product')
-    tire_state_id = fields.Many2one(string="Estado de neúmatico", comodel_name='tire.state')
-    assigned_tire = fields.Boolean(string="esta asignado?")
-    positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True)
+    tire_state_id = fields.Many2one(string="Estado de neúmatico", comodel_name='tire.state', tracking=True)
+    assigned_tire = fields.Boolean(string="esta asignado?", tracking=True)
+    positive_qty = fields.Boolean(compute='_compute_positive_qty', store=True, tracking=True)
     unit_type = fields.Selection(related='product_id.unit_type')
-    unit_year = fields.Char(string="Año de unidad")
-    unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado')
-    active = fields.Boolean(string="Activo", default=True)
+    unit_year = fields.Char(string="Año de unidad", tracking=True)
+    unit_grade_id = fields.Many2one(comodel_name='product.grade', string='Grado', tracking=True)
+    active = fields.Boolean(string="Activo", default=True, tracking=True)
     in_scrap = fields.Boolean(string="En desecho", related='tire_state_id.scrap_state')
 
     is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
@@ -587,10 +608,10 @@ class StockProductionLot(models.Model):
     # Campos relacionados actividad Alquiler
     rent_state = fields.Selection(
         [('available', 'Disponible'), ('rented', 'Alquilado'), ('sold', 'Vendido'),
-         ('to_check', 'Pendiente inspección'),
+         ('asset', 'Activo Fijo'), ('to_check', 'Pendiente inspección'),
          ('to_repair', 'Pendiente mantenimiento'),
          ('to_wash', 'Pendiente lavado'), ('damaged', 'Averiado'), ('scrap', 'Desecho')],
-        string="Estado", default="available")
+        string="Estado", default="available", tracking=True)
 
     def change_state(self):
         states = list(map(lambda s: s[0], self._fields.get('rent_state').selection))
