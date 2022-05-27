@@ -14,7 +14,7 @@
     'website': "",
 
     'category': 'Customizations',
-    'version': '14.0.0.6',
+    'version': '14.0.0.7',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -104,7 +104,7 @@
         'report/report_purchase_order_comparison.xml',
         'report/report_deliveryslip.xml',
         'report/report_purchase_requisition_order_comparison.xml',
-        'report/rental_report_views.xml',
+        'report/custom_rental_report.xml',
         'report/report_invoice_document.xml',
         'report/report_project_task_user_fsm.xml',
         'report/repair_templates_repair_order.xml',

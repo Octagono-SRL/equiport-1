@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="custom_rental_report_tree_view" model="ir.ui.view">
+        <field name="name">custom.rental.report.tree</field>
+        <field name="model">custom.rental.report</field>
+        <field name="arch" type="xml">
+            <tree string="Análisis de Alquiler">
+                <field name="order_id" optional="hide"/>
+                <field name="rental_subscription_id" optional="hide"/>
+                <field name="partner_id"/>
+                <field name="recurring_interval" optional="show"/>
+                <field name="recurring_rule_type" optional="show"/>
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="product_tmpl_id" invisible="1"/>
+                <field name="categ_id" optional="hide"/>
+                <field name="product_uom" optional="hide"/>
+                <!--                <field name="pickup_date_text" optional="show"/>-->
+                <!--                <field name="return_date_text" optional="show"/>-->
+                <field name="pickup_date"/>
+                <field name="return_date"/>
+                <field name="warehouse_id" optional="show"/>
+                <field name="quantity" optional="hide"/>
+                <field name="qty_delivered" optional="hide"/>
+                <field name="qty_returned" optional="hide"/>
+                <field name="company_id" invisible="1"/>
+                <field name="price" optional="hide"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="currency_rate" optional="hide"/>
+                <field name="state" invisible="1"/>
+                <field name="rental_status" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="custom_rental_report_pivot_view" model="ir.ui.view">
+        <field name="name">custom.rental.report.pivot</field>
+        <field name="model">custom.rental.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de Alquiler" disable_linking="True" sample="1">
+                <field name="pickup_date" type="row" interval="day"/>
+                <field name="return_date" type="row" interval="day"/>
+                <field name="quantity" type="measure"/>
+                <field name="qty_delivered" type="measure"/>
+                <field name="qty_returned" type="measure"/>
+                <field name="price" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="custom_rental_report_graph_view" model="ir.ui.view">
+        <field name="name">custom.rental.report.graph</field>
+        <field name="model">custom.rental.report</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de Alquiler" type="line" sample="1" disable_linking="1">
+                <!--                   <field name="date" interval="day" type="row"/>-->
+                <field name="pickup_date" type="row"/>
+                <field name="return_date" type="row"/>
+                <field name="quantity" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="custom_rental_report_search_view" model="ir.ui.view">
+        <field name="name">custom.rental.report.search</field>
+        <field name="model">custom.rental.report</field>
+        <field name="arch" type="xml">
+            <search string="Análisis de Alquiler">
+                <field name="pickup_date" />
+                <field name="return_date" />
+                <filter string="Fecha de Entrega" name="pickup_month" invisible="1" date="pickup_date" default_period="this_year"/>
+                <filter string="Fecha de Retorno" name="return_month" invisible="1" date="return_date" default_period="this_year"/>
+                <filter name="Quotations" string="Cotizaciones" domain="[('state','in', ['draft', 'sent'])]"/>
+                <filter name="confirmed_orders" string="Ordenes confirmadas"
+                        domain="[('state', 'in', ['sale', 'done'])]"/>
+                <separator/>
+                <field name="product_id"/>
+                <field name="order_id"/>
+                <field name="lot_id"/>
+                <filter string="Serial Number" name="Lot" context="{'group_by': 'lot_id'}"/>
+                <field name="product_tmpl_id" groups="product.group_product_variant"/>
+                <field name="categ_id" filter_domain="[('categ_id', 'child_of', self)]"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <group expand="1" string="Agrupar por" name="report_group_by">
+                    <filter string="Vendedor" name="user" context="{'group_by':'user_id'}"/>
+                    <filter string="Cliente" name="customer" context="{'group_by':'partner_id'}"/>
+                    <filter string="Pedido" name="order" context="{'group_by':'order_id'}"/>
+                    <filter string="Producto" name="product" context="{'group_by':'product_id'}"/>
+                    <filter string="Categoria de producto" name="Category" context="{'group_by':'categ_id'}"/>
+                    <filter string="Estado" name="status" context="{'group_by':'state'}"/>
+                    <filter string="Compañia" name="company" groups="base.group_multi_company"
+                            context="{'group_by':'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_custom_rental_report" model="ir.actions.act_window">
+        <field name="name">Análisis de Alquiler</field>
+        <field name="res_model">custom.rental.report</field>
+        <field name="view_mode">tree,graph,pivot</field>
+        <field name="context">{
+            'search_default_confirmed_orders': 1,
+            'search_default_customer': 1,
+            'search_default_order': 1,
+            'search_default_product': 1,
+            'group_by_no_leaf': 0,
+            'group_by': []}</field>
+        <field name="search_view_id" ref="custom_rental_report_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Sin información para mostrar
+            </p>
+            <p>
+                Crea una nueva orden de Alquiler
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_custom_rental_reporting" name="Analisis de Alquiler" parent="sale_renting.menu_rental_reporting"
+              sequence="5" groups="sales_team.group_sale_manager" action="action_custom_rental_report"/>
+
+</odoo>
