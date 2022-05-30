@@ -47,7 +47,7 @@
 
         <record id="fuel_product" model="product.product">
             <field name="name">Combustible</field>
-            <field name="type">consu</field>
+            <field name="type">product</field>
             <field name="list_price">1</field>
             <field name="uom_id" ref="uom.product_uom_gal"/>
             <field name="uom_po_id" ref="uom.product_uom_gal"/>

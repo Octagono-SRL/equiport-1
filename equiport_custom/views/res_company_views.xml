@@ -85,6 +85,8 @@
                             </group>
 
                             <group string="Combustibles">
+                                <field name="fuel_product_fleet" string="Productos" widget="many2many_tags"
+                                       attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                                 <field name="fuel_services_fleet" string="Servicios" widget="many2many_tags"
                                        attrs="{'required':True}" options="{'no_create': True, 'no_open': True}"/>
                             </group>
