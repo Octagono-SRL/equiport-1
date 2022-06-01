@@ -14,20 +14,48 @@ class RepairOrder(models.Model):
 
     opportunity_id = fields.Many2one(comodel_name='crm.lead', string="Oportunidad")
 
+    is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
+    x_css = fields.Html(
+        string='CSS/JS',
+        sanitize=False,
+        compute='_compute_readonly_flag',
+        store=False,
+    )
+
+    def _compute_readonly_flag(self):
+        for rec in self:
+            rec.x_css = False
+            rec.is_readonly_user = False
+            if self.env.user.has_group('equiport_custom.repair_account_user_readonly'):
+                rec.is_readonly_user = True
+                rec.x_css = '<style>.o_form_button_edit, .o_form_button_create, .oe_subtotal_footer {display: none !important;}</style>'
+                rec.x_css += """<script>
+                            var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                            if(action){
+                                action.style.display='none'
+                            }
+                            </script>"""
+            else:
+                rec.is_readonly_user = False
+                rec.x_css = False
+
     # region Modifying existing fields
 
     # endregion
 
     # region Flota
     vehicle_service_log_id = fields.Many2one(comodel_name='fleet.vehicle.log.services', string="Registro de servicio")
-    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', related='vehicle_service_log_id.vehicle_id', string="Unidad")
+    vehicle_id = fields.Many2one(comodel_name='fleet.vehicle', related='vehicle_service_log_id.vehicle_id',
+                                 string="Unidad")
     is_fleet_origin = fields.Boolean(string="Originado en flota")
     product_fleet_name = fields.Char(related='product_id.display_name', string="Nombre producto flota")
-    is_fuel_replenishment = fields.Boolean(string="Reposición de combustible", compute='compute_is_fuel_replenishment', store=True)
+    is_fuel_replenishment = fields.Boolean(string="Reposición de combustible", compute='compute_is_fuel_replenishment',
+                                           store=True)
 
     order_type = fields.Selection([('maintenance_fleet', 'Mantenimiento Flota'),
                                    ('repair_fleet', 'Reparación Flota'),
-                                   ('repair', 'Reparación')], string="Tipo de Servicio", compute="compute_category_order_type", store=True)
+                                   ('repair', 'Reparación')], string="Tipo de Servicio",
+                                  compute="compute_category_order_type", store=True)
 
     @api.depends('is_fleet_origin', 'operations')
     def compute_is_fuel_replenishment(self):
@@ -49,7 +77,7 @@ class RepairOrder(models.Model):
             else:
                 rec.order_type = 'repair'
 
-# endregion
+    # endregion
 
     # Gathering repair info
     inspection_date = fields.Date(string="Fecha inspección")
@@ -108,14 +136,6 @@ class RepairOrder(models.Model):
                                  default_group_id=picking_id.group_id.id)
         return action
 
-    @api.model
-    def create(self, vals):
-        res = super(RepairOrder, self).create(vals)
-
-        if res.product_id.unit_type and res.lot_id:
-            res.lot_id.rent_state = 'to_check'
-        return res
-
     def check_repair_product_availability(self):
         if self.product_id.is_vehicle:
             return
@@ -152,6 +172,14 @@ class RepairOrder(models.Model):
             raise ValidationError(
                 _('No tiene cantidades disponibles.\nLos siguientes no estan disponibles:\n') + '\n'.join(
                     error_message_lines))
+
+    @api.model
+    def create(self, vals):
+        res = super(RepairOrder, self).create(vals)
+
+        if res.product_id.unit_type and res.lot_id:
+            res.lot_id.rent_state = 'to_check'
+        return res
 
     def action_repair_cancel(self):
         res = super(RepairOrder, self).action_repair_cancel()

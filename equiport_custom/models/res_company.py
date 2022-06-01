@@ -70,6 +70,8 @@ class ResCompany(models.Model):
 
     user_fleet_notify = fields.Many2many(comodel_name='res.users', relation='fleet_notify_users_rel')
     fuel_services_fleet = fields.Many2many(comodel_name='fleet.service.type', relation='fuel_services_fleet_rel')
+    fuel_product_fleet = fields.Many2many(comodel_name='product.product', relation='fuel_products_fleet_rel',
+                                          domain=[('type', '=', 'product')])
     tire_product_category = fields.Many2many(comodel_name='product.category', relation='tires_product_category_rel')
     category_count = fields.Integer(string="Numero de categorias", compute='_compute_category_count')
 

@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!--        region HIDE ELEMENTS-->
+        <record id="rental_order_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">rental.order.form.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_rental_readonly_user" invisible="1"/>
+                    <field name="xr_css" nolabel="1" invisible="0"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="rental_order_tree_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">rental.order.tree.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_view_tree"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.rental_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="rental_order_kanban_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">rental.order.kanban.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_view_kanban"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.rental_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!--        endregion-->
+
+
         <record id="rental_order_form_equiport_inherit" model="ir.ui.view">
             <field name="name">rental.order.form.equiport.inherit</field>
             <field name="model">sale.order</field>
@@ -12,8 +60,6 @@
                     <field name="access_requested" invisible="1"/>
                     <field name="deposit_status" invisible="1"/>
                     <field name="rental_sub_state" invisible="1"/>
-                    <field name="is_inventory_user" invisible="1"/>
-                    <field name="x_css" nolabel="1" invisible="0"/>
                 </field>
 
                 <field name="validity_date" position="attributes">
@@ -32,6 +78,7 @@
                        position="before">
                     <field name="new_rental_addition" invisible="1"/>
                     <field name="start_rent_price"
+                           groups="equiport_custom.group_account_user,equiport_custom.group_commercial_user"
                            attrs="{'invisible':[('new_rental_addition', '=', False)],'column_invisible':[('parent.is_rental_order', '=',False)], 'required':[('new_rental_addition', '=', True)]}"/>
                 </xpath>
 
@@ -43,7 +90,7 @@
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"
                             groups="equiport_custom.group_account_user"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), '|', ('state', 'not in', ['sent', 'sale']), ('is_inventory_user', '=', True)]}"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"
                             groups="equiport_custom.group_commercial_user"/>
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
@@ -52,7 +99,7 @@
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
                             groups="equiport_custom.group_commercial_user"
                             string="Actualizar subscripción"
-                            attrs="{'invisible':['|', ('is_rental_order', '=', False), '|', ('rental_sub_state', 'in', ['closed', False]), ('is_inventory_user', '=', True)]}"
+                            attrs="{'invisible':['|', ('is_rental_order', '=', False), ('rental_sub_state', 'in', ['closed', False])]}"
                             confirm="¿Está seguro de continuar? esta acción actualizara todas las lineas de la subscripción existente."/>
                 </header>
 
@@ -68,7 +115,7 @@
 
                 <div class="oe_button_box" name="button_box" position="inside">
                     <button name="action_view_deposits" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
-                            attrs="{'invisible': ['|', ('deposit_status', 'not in', ['added', 'returned']), ('is_inventory_user', '=', True)]}"
+                            attrs="{'invisible': [('deposit_status', 'not in', ['added', 'returned'])]}"
                             groups="equiport_custom.group_account_user">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_text">Depositos</span>

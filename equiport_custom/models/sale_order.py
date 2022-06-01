@@ -13,6 +13,31 @@ class SaleOrder(models.Model):
     is_fsm = fields.Boolean(string="Es rescate", compute='compute_fsm_invoice_available')
     section_gate_service_seq = fields.Integer(string="Sectión Gate Service")
 
+    is_sale_readonly_user = fields.Boolean(compute='_compute_sale_readonly_flag', store=False)
+    xs_css = fields.Html(
+        string='CSS/JS',
+        sanitize=False,
+        compute='_compute_sale_readonly_flag',
+        store=False,
+    )
+
+    def _compute_sale_readonly_flag(self):
+        for rec in self:
+            rec.xs_css = False
+            rec.is_sale_readonly_user = False
+            if self.env.user.has_group('equiport_custom.sales_account_user_readonly') and not rec.is_rental_order:
+                rec.is_sale_readonly_user = True
+                rec.xs_css = '<style>.o_form_button_edit, .o_form_button_create, .oe_subtotal_footer {display: none !important;}</style>'
+                rec.xs_css += """<script>
+                    var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                    if(action){
+                        action.style.display='none'
+                    }
+                    </script>"""
+            else:
+                rec.is_sale_readonly_user = False
+                rec.xs_css = False
+
     @api.depends('tasks_ids')
     def compute_fsm_invoice_available(self):
         for rec in self:

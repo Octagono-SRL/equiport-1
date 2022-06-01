@@ -39,10 +39,8 @@ class AccountMove(models.Model):
         for rec in self:
             positive = 0
             negative = 0
-            plus_tax_lines = rec.l10n_latam_tax_ids.filtered(
-                lambda i: i.tax_line_id.tax_group_id.name in ['ITBIS', 'ITBIS 18%'] and i.tax_line_id.amount > 0)
-            less_tax_lines = rec.l10n_latam_tax_ids.filtered(
-                lambda i: i.tax_line_id.tax_group_id.name in ['ITBIS', 'ITBIS 18%'] and i.tax_line_id.amount < 0)
+            plus_tax_lines = rec.l10n_latam_tax_ids.filtered(lambda i: i.tax_line_id.tax_group_id.name in ['ITBIS', 'ITBIS 18%'] and i.tax_line_id.amount > 0)
+            less_tax_lines = rec.l10n_latam_tax_ids.filtered(lambda i: i.tax_line_id.tax_group_id.name in ['ITBIS', 'ITBIS 18%'] and i.tax_line_id.amount < 0)
             if rec.is_inbound(True):
                 for line in plus_tax_lines:
                     positive += line.price_total

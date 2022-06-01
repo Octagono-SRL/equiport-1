@@ -28,10 +28,36 @@ class PurchaseRequisition(models.Model):
     allowed_confirm_date_sign = fields.Datetime(string="Fecha de aprobacion")
     is_confirm_group = fields.Boolean(string="Grupo de aprobacion", compute="_check_confirm_group")
 
+    is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
+    x_css = fields.Html(
+        string='CSS',
+        sanitize=False,
+        compute='_compute_readonly_flag',
+        store=False,
+    )
+
+    def _compute_readonly_flag(self):
+        for rec in self:
+            rec.x_css = False
+            rec.is_readonly_user = False
+            if self.env.user.has_group('equiport_custom.purchase_requisition_account_user_readonly'):
+                rec.is_readonly_user = True
+                rec.x_css = '<style>.o_form_button_edit, .o_form_button_create, .oe_subtotal_footer {display: none !important;}</style>'
+                rec.x_css += """<script>
+                                            var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                                            if(action){
+                                                action.style.display='none'
+                                            }
+                                            </script>"""
+            else:
+                rec.is_readonly_user = False
+                rec.x_css = False
+
+
     @api.depends('state')
     def _check_confirm_group(self):
         for rec in self:
-            if self.env.user in self.env.company.user_pro_allow_confirm or self.env.user.user_has_groups('equiport_custom.group_inventory_manager'):
+            if self.env.user in self.env.company.user_pro_allow_confirm or self.env.user.user_has_groups('equiport_custom.group_operations_supervisor'):
                 rec.is_confirm_group = True
             else:
                 rec.is_confirm_group = False

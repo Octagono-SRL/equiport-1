@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--        region HIDE ELEMENTS-->
+        <record id="product_product_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">product.product.form.hide.equiport.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_readonly_user" attrs="{'invisible':True}"/>
+                    <field name="x_css" nolabel="1" invisible="0"/>
+                </xpath>
+
+            </field>
+        </record>
+        <!--        endregion-->
+    </data>
+</odoo>

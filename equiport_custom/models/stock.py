@@ -519,6 +519,31 @@ class StockProductionLot(models.Model):
     active = fields.Boolean(string="Activo", default=True, tracking=True)
     in_scrap = fields.Boolean(string="En desecho", related='tire_state_id.scrap_state')
 
+    is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
+    x_css = fields.Html(
+        string='CSS/JS',
+        sanitize=False,
+        compute='_compute_readonly_flag',
+        store=False,
+    )
+
+    def _compute_readonly_flag(self):
+        for rec in self:
+            rec.x_css = False
+            rec.is_readonly_user = False
+            if self.env.user.has_group('equiport_custom.inventory_account_user_lot_readonly'):
+                rec.is_readonly_user = True
+                rec.x_css = '<style>.o_form_button_edit, .o_form_button_create, .o_statusbar_buttons {display: none !important;}</style>'
+                rec.x_css += """<script>
+                    var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                    if(action){
+                        action.style.display='none'
+                    }
+                    </script>"""
+            else:
+                rec.is_readonly_user = False
+                rec.x_css = False
+
     @api.depends('product_qty', 'product_id')
     def _compute_positive_qty(self):
         for rec in self:

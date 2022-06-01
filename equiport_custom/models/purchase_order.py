@@ -9,6 +9,34 @@ from odoo.exceptions import ValidationError, UserError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
+    x_css = fields.Html(
+        string='CSS',
+        sanitize=False,
+        compute='_compute_readonly_flag',
+        store=False,
+    )
+
+    def _compute_readonly_flag(self):
+        for rec in self:
+            rec.x_css = False
+            rec.is_readonly_user = False
+            if self.env.user.has_group('equiport_custom.purchase_account_user_readonly'):
+                rec.is_readonly_user = True
+                rec.x_css = '<style>.o_form_button_edit, .o_form_button_create, .oe_subtotal_footer {display: none !important;}</style>'
+                rec.x_css += """<script>
+                                        var action = document.querySelector(".o_cp_action_menus")?.lastChild
+                                        if(action){
+                                            action.style.display='none'
+                                        }
+                                        </script>"""
+            else:
+                rec.is_readonly_user = False
+                rec.x_css = False
+
+
+
+
     # region Service Picking
     receivable_service = fields.Boolean(string="Recibir servicios", compute='_compute_receivable_service')
     service_picking_ids = fields.One2many(comodel_name='stock.service.picking', inverse_name='purchase_order_id',

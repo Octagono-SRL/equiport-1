@@ -4,62 +4,332 @@
         <!--        permiso de acceso a modulo de firmar-->
         <record model="ir.ui.menu" id="sign.menu_document">
             <field name="groups_id" eval="[(6,0, [
-            ref('equiport_custom.group_admin_manager'),
-            ref('equiport_custom.group_account_manager'),
-            ref('equiport_custom.eq_group_purchase_manager'),
-            ref('equiport_custom.group_operations_manager'),
-            ref('equiport_custom.group_inventory_manager'),
-            ref('equiport_custom.group_commercial_manager'),
+            ref('equiport_custom.sign_account_user'), ref('base.group_system')
+                        ])]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sign.menu_sign_configuration">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.settings_account_admin_user'), ref('base.group_system')
                         ])]"/>
         </record>
         <!--permiso de acceso a modulo documentos-->
         <record model="ir.ui.menu" id="documents.menu_root">
             <field name="groups_id" eval="[(6,0, [
-            ref('equiport_custom.group_admin_manager'),
-            ref('equiport_custom.group_account_manager'),
-            ref('equiport_custom.eq_group_purchase_manager'),
-            ref('equiport_custom.group_operations_manager'),
-            ref('equiport_custom.group_inventory_manager'),
-            ref('equiport_custom.group_commercial_manager'),
+            ref('equiport_custom.document_account_user'), ref('base.group_system')
+                        ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="documents.Config">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.settings_account_admin_user'), ref('base.group_system')
                         ])]"/>
         </record>
         <!--permiso de acceso a modulo contabilidad-->
         <record model="ir.ui.menu" id="account_accountant.menu_accounting">
-            <field name="groups_id" eval="[(6,0, [ref('equiport_custom.group_account_user')])]"/>
+            <field name="groups_id" eval="[(6,0, [ref('equiport_custom.group_account_user'), ref('base.group_system')])]"/>
+        </record>
+        <record model="ir.ui.menu" id="account.menu_finance_configuration">
+            <field name="groups_id" eval="[(6,0, [ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]"/>
         </record>
         <!--permiso de acceso a modulo subscription-->
         <record model="ir.ui.menu" id="sale_subscription.menu_sale_subscription_root">
             <field name="groups_id"
-                   eval="[(6,0, [ref('equiport_custom.group_account_user'), ref('equiport_custom.group_commercial_user')])]"/>
+                   eval="[(6,0, [ref('equiport_custom.sale_subscription_account_user'), ref('base.group_system')])]"/>
+        </record>
+        <record model="ir.ui.menu" id="sale_subscription.menu_sale_subscription_report">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_sale_subscription_account_user'), ref('base.group_system')])]"/>
+        </record>
+        <record model="ir.ui.menu" id="sale_subscription.menu_sale_subscription_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]"/>
         </record>
 
-<!--        permiso de acceso a modulo de aprobacion-->
-          <record model="ir.ui.menu" id="approvals.approvals_menu_root">
+        <!--        permiso de acceso a modulo de aprobacion-->
+        <record model="ir.ui.menu" id="approvals.approvals_menu_root">
             <field name="groups_id" eval="[(6,0, [
-            ref('equiport_custom.group_admin_manager'),
-            ref('equiport_custom.group_account_manager'),
-            ref('equiport_custom.eq_group_purchase_manager'),
-            ref('equiport_custom.group_operations_manager'),
-            ref('equiport_custom.group_inventory_manager'),
-            ref('equiport_custom.group_commercial_manager'),
-                        ])]"/>
-          </record>
+                    ref('equiport_custom.approval_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
 
-<!--        permiso de acceso a modulo de tablero-->
-         <record model="ir.ui.menu" id="base.menu_board_root">
+        <record model="ir.ui.menu" id="approvals.approvals_menu_config">
             <field name="groups_id" eval="[(6,0, [
-            ref('equiport_custom.group_admin_manager'),
-            ref('equiport_custom.group_account_manager'),
-            ref('equiport_custom.eq_group_purchase_manager'),
-            ref('equiport_custom.group_operations_manager'),
-            ref('equiport_custom.group_inventory_manager'),
-            ref('equiport_custom.group_commercial_manager'),
-                        ])]"/>
-         </record>
+                    ref('equiport_custom.settings_account_admin_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
 
+        <!--        permiso de acceso a modulo de proyecto-->
+        <record model="ir.ui.menu" id="project.menu_main_pm">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.project_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="project.menu_project_report">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.reports_project_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="project.menu_project_config">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.settings_account_admin_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+        <!--        permiso de acceso a modulo de partes de horas-->
+        <record model="ir.ui.menu" id="hr_timesheet.timesheet_menu_root">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.timesheet_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="hr_timesheet.menu_timesheets_reports">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.reports_timesheet_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="hr_timesheet.hr_timesheet_menu_configuration">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.settings_account_admin_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <!--        permiso de acceso a modulo de Ausencias-->
+        <record model="ir.ui.menu" id="hr_holidays.menu_hr_holidays_root">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.leaving_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="hr_holidays.menu_hr_holidays_configuration">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.settings_account_admin_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <!--        permiso de acceso a modulo de Empleados-->
+        <record model="ir.ui.menu" id="hr.menu_hr_root">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.employee_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="hr.hr_menu_hr_reports">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.reports_emploeyee_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="hr.menu_human_resources_configuration">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.settings_account_admin_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <!--        permiso de acceso a modulo de Nomina-->
+        <record model="ir.ui.menu" id="hr_work_entry_contract.menu_hr_payroll_root">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.payroll_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="hr_payroll.menu_hr_payroll_report">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.reports_payroll_account_user'), ref('base.group_system'),
+                                ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="hr_work_entry_contract.menu_hr_payroll_configuration">
+            <field name="groups_id" eval="[(6,0, [
+                    ref('equiport_custom.settings_account_admin_user'),ref('equiport_custom.settings_account_cont_user'),  ref('base.group_system'),
+                                ])]"/>
+        </record>
+
+        <!--        permiso de acceso a modulo de tablero-->
+        <record model="ir.ui.menu" id="base.menu_board_root">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.dashboard_account_user'), ref('base.group_system'),
+                        ])]"/>
+        </record>
+        <record model="ir.ui.menu" id="base.menu_reporting_config">
+            <field name="groups_id" eval="[(6,0, [
+            ref('equiport_custom.dashboard_account_user'), ref('base.group_system'),
+                        ])]"/>
+        </record>
+
+        <!--        permiso de acceso a modulo de mesa de Ayuda-->
         <record model="ir.ui.menu" id="helpdesk.menu_helpdesk_root">
             <field name="groups_id"
-                   eval="[(6,0, [ref('equiport_custom.group_commercial_user')])]">
+                   eval="[(6,0, [ref('equiport_custom.helpdesk_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="helpdesk.helpdesk_ticket_report_menu_main">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_helpdesk_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="helpdesk.helpdesk_menu_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de inventario-->
+        <record model="ir.ui.menu" id="stock.menu_stock_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.inventory_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="stock.menu_warehouse_report">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_inventory_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="stock.menu_stock_config_settings">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_in_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de reparaciones-->
+        <record model="ir.ui.menu" id="repair.menu_repair_order">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.repair_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="repair.repair_menu_reporting">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_repair_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="repair.repair_menu_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_op_user'), ref('equiport_custom.settings_account_comm_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de Alquiler-->
+        <record model="ir.ui.menu" id="sale_renting.rental_menu_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.rental_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="sale_renting.menu_rental_reporting">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_rental_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="sale_renting.menu_rental_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user') , ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de ventas-->
+        <record model="ir.ui.menu" id="sale.sale_menu_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.sale_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="sale.menu_sale_report">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_sale_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="sale.menu_sale_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de contacts-->
+        <record model="ir.ui.menu" id="contacts.menu_contacts">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.contacts_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="contacts.res_partner_menu_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de compras-->
+
+        <record model="ir.ui.menu" id="purchase.menu_purchase_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.purchase_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <menuitem id="purchase_report_menu" name="Informes" parent="purchase.menu_purchase_root" sequence="99" groups="equiport_custom.reports_purchase_account_user"/>
+        <menuitem id="purchase.purchase_report" name="Generales" parent="purchase_report_menu" sequence="99" groups="purchase.group_purchase_manager" action="purchase.action_purchase_order_report_all"/>
+
+
+        <record model="ir.ui.menu" id="purchase.menu_purchase_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_pur_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de rescates-->
+        <record model="ir.ui.menu" id="industry_fsm.fsm_menu_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.rescue_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="industry_fsm.fsm_menu_reporting">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_rescue_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="industry_fsm.fsm_menu_settings">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_op_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de flota-->
+        <record model="ir.ui.menu" id="fleet.menu_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.fleet_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="fleet.menu_fleet_reporting">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.reports_fleet_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="fleet.fleet_configuration">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_op_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo de crm-->
+        <record model="ir.ui.menu" id="crm.crm_menu_root">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.crm_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <record model="ir.ui.menu" id="crm.crm_menu_report">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.crm_account_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+        <record model="ir.ui.menu" id="crm.crm_menu_config">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('base.group_system')])]">
+            </field>
+        </record>
+
+        <!--        permiso de acceso a modulo codigo de barras-->
+        <record model="ir.ui.menu" id="stock_barcode.stock_barcode_menu">
+            <field name="groups_id"
+                   eval="[(6,0, [ref('equiport_custom.barcode_account_user'), ref('base.group_system')])]">
             </field>
         </record>
 

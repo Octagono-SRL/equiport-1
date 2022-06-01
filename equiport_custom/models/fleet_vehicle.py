@@ -76,7 +76,7 @@ class FleetVehicle(models.Model):
         elif self.unit_type == 'vehicle':
             self.env['fleet.vehicle.odometer'].create(data)
 
-    @api.depends('odometer', 'hourmeter')
+    @api.depends('odometer', 'hourmeter', 'log_services')
     def compute_use_cost(self):
         FleetVehicleHourometer = self.env['fleet.unit.hourmeter']
         FleetVehicleOdometer = self.env['fleet.vehicle.odometer']
@@ -87,10 +87,10 @@ class FleetVehicle(models.Model):
                 rec.odometer_km_cost = 0
         for record in self:
             cost = 0
-            services = record.log_services.filtered(lambda s: s.service_type_id.id in fuel_company_services.ids)
+            services = record.log_services.filtered(lambda s: s.service_type_id in fuel_company_services)
             if services:
                 cost = sum(services.mapped('amount'))
-            if record.unit_type == 'gen_set' and cost > 0:
+            if record.unit_type in ['gen_set', 'utility'] and cost > 0:
                 first_hourmeter = FleetVehicleHourometer.search([('vehicle_id', '=', record.id)], limit=1,
                                                                 order='create_date asc')
                 fuel_hourmeter = record.hourmeter - first_hourmeter.value
@@ -446,13 +446,64 @@ class FleetVehicleLogServices(models.Model):
     ], 'Medida horómetro', default='hours', help='Medida de horometro ', required=True)
 
     is_fuel_replenishment = fields.Boolean("Reposicion de combustible", compute='_compute_fuel_replenishment')
-    fuel_product_qty = fields.Boolean("Cantidad de combustible", compute='_compute_fuel_product_data', store=True)
-    fuel_product_unit = fields.Boolean("Unidad de medida de combustible", compute='_compute_fuel_product_data', store=True)
+    fuel_product_qty = fields.Float("Cantidad de combustible", compute='_compute_fuel_product_data',
+                                    inverse='_inverse_fuel_product_data', store=True)
+    fuel_product_unit = fields.Many2one(comodel_name='uom.uom',
+                                        string="Unidad de medida de combustible",
+                                        compute='_compute_fuel_product_data', store=True)
+    fuel_unit_category = fields.Many2many(comodel_name='uom.category', compute='_compute_fuel_unit_category')
+    performance = fields.Float(compute='_compute_vehicle_performance', store=True, string='Rendimiento',
+                               help='Rendimiento en base a consumo y uso')
+
+    @api.depends('fuel_product_qty', 'state', 'odometer', 'hourmeter', 'vehicle_id')
+    def _compute_vehicle_performance(self):
+        for rec in self:
+            if not rec.vehicle_id:
+                rec.performance = 0
+                continue
+            if rec.vehicle_id.unit_type == 'vehicle':
+                previous_vehicle_odometer = self.env['fleet.vehicle.odometer'].search(
+                    [('vehicle_id', '=', rec.vehicle_id.id), ('value', '<', rec.odometer)], limit=1,
+                    order='value desc')
+                if len(previous_vehicle_odometer) == 1:
+                    km_travelled = abs(rec.odometer - previous_vehicle_odometer.value)
+                    if rec.fuel_product_qty > 0 and km_travelled >= 0:
+                        actual_performance = km_travelled / rec.fuel_product_qty
+                        if actual_performance > 0:
+                            rec.performance = actual_performance
+                        else:
+                            rec.performance = 0
+                    else:
+                        rec.performance = 0
+                else:
+                    rec.performance = 0
+            elif rec.vehicle_id.unit_type in ['utility', 'gen_set']:
+                previous_vehicle_hourmeter = self.env['fleet.unit.hourmeter'].search(
+                    [('vehicle_id', '=', rec.vehicle_id.id), ('value', '<', rec.hourmeter)],
+                    limit=1, order='value desc')
+                if len(previous_vehicle_hourmeter) == 1:
+                    hour_used = abs(rec.hourmeter - previous_vehicle_hourmeter.value)
+                    if rec.fuel_product_qty > 0 and hour_used >= 0:
+                        actual_performance = hour_used / rec.fuel_product_qty
+                        if actual_performance > 0:
+                            rec.performance = actual_performance
+                        else:
+                            rec.performance = 0
+                    else:
+                        rec.performance = 0
+            else:
+                rec.performance = 0
+
+    @api.depends('service_type_id', 'state')
+    def _compute_fuel_unit_category(self):
+        for rec in self:
+            rec.fuel_unit_category = [(6, 0, self.env.company.fuel_product_fleet.mapped('uom_id.category_id').ids)]
 
     @api.depends('service_type_id', 'repair_id', 'state')
     def _compute_fuel_replenishment(self):
         for rec in self:
-            if rec.service_type_id in [self.env.ref('equiport_custom.fuel_maintenance'), self.env.ref('equiport_custom.fuel_service')]:
+            if rec.service_type_id in [self.env.ref('equiport_custom.fuel_maintenance'),
+                                       self.env.ref('equiport_custom.fuel_service')]:
                 rec.is_fuel_replenishment = True
             else:
                 rec.is_fuel_replenishment = False
@@ -460,10 +511,32 @@ class FleetVehicleLogServices(models.Model):
     @api.depends('is_fuel_replenishment', 'service_type_id', 'repair_id')
     def _compute_fuel_product_data(self):
         for rec in self:
-            rec.fuel_product_qty = False
-            rec.fuel_product_unit = False
-            # if rec.repair_id and rec.service_type_id == self.env.ref('equiport_custom.fuel_maintenance'):
-            #     pass
+            fuel_products = self.env.company.fuel_product_fleet or []
+            fuel_qty = 0
+            fuel_uom = None
+            if rec.repair_id and rec.service_type_id == self.env.ref('equiport_custom.fuel_maintenance'):
+                fuel_lines = rec.repair_id.operations.filtered(lambda rl: rl.product_id in fuel_products)
+                fuel_qty = sum(fuel_lines.mapped('product_uom_qty'))
+                uom = list(set(fuel_lines.mapped('product_uom')))
+                if len(uom) == 1:
+                    fuel_uom = uom[0]
+
+            rec.write({
+                'fuel_product_qty': fuel_qty,
+                'fuel_product_unit': fuel_uom.id if fuel_uom is not None else False
+            })
+
+    def _inverse_fuel_product_data(self):
+        for rec in self:
+            if rec.fuel_product_qty > 0:
+                rec.fuel_product_qty = rec.fuel_product_qty
+            else:
+                rec.fuel_product_qty = 0
+
+            if rec.fuel_product_unit:
+                rec.fuel_product_unit = rec.fuel_product_unit
+            else:
+                rec.fuel_product_unit = False
 
     # region Alerts
     km_waited = fields.Float(string="Kilometros próximo cambio", compute='_next_odometer_service', default=0.0,

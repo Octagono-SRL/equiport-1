@@ -19,12 +19,14 @@
                         <field name="currency_id" invisible="1"/>
                         <div class="oe_button_box" name="button_box">
                             <button name="open_assignation_logs" type="object" class="oe_stat_button" icon="fa-history"
-                                    attrs="{'invisible':[('unit_type', '!=', 'vehicle')]}" groups="equiport_custom.group_operations_user">
+                                    attrs="{'invisible':[('unit_type', '!=', 'vehicle')]}"
+                                    groups="equiport_custom.group_operations_user">
                                 <field name="history_count" widget="statinfo" string="Drivers History"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-book"
                                     context="{'xml_id':'fleet_vehicle_log_contract_action'}"
-                                    help="show the contract for this vehicle" groups="equiport_custom.group_operations_user">
+                                    help="show the contract for this vehicle"
+                                    groups="equiport_custom.group_operations_user">
                                 <field name="contract_count" widget="statinfo" string="Contracts"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-wrench"
@@ -43,14 +45,16 @@
                                     icon="fa-tachometer"
                                     context="{'xml_id':'fleet_unit_hourmeter_action', 'xml_origin': 'hourmeter'}"
                                     help="Muestra los registros de Horometro de la unidad"
-                                    attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}" groups="equiport_custom.group_operations_user">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"
+                                    groups="equiport_custom.group_operations_user">
                                 <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button"
                                     icon="fa-circle"
                                     context="{'xml_id':'fleet_vehicle_log_tires_action', 'xml_origin': 'tires'}"
                                     help="Historial de asignacion de neumaticos"
-                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis'])]}" groups="equiport_custom.group_operations_user">
+                                    attrs="{'invisible': [('unit_type', 'not in', ['chassis'])]}"
+                                    groups="equiport_custom.group_operations_user">
                                 <field name="tires_count" widget="statinfo" string="Neumaticos"/>
                             </button>
                         </div>
@@ -346,6 +350,14 @@
                            options="{'no_create': 1, 'no_edit': 1, 'no_open': 1}"/>
                     <field name="repair_id"
                            attrs="{'readonly': True, 'invisible': [('category', 'not in', ['repair', 'maintenance'])]}"/>
+                    <field name="fuel_unit_category" invisible="1"/>
+                    <label for="fuel_product_qty"/>
+                    <div class="o_row">
+                        <field name="fuel_product_qty"
+                               attrs="{'readonly': [('repair_id', '!=', False)], 'invisible': [('category', 'not in', ['repair', 'maintenance', 'service'])]}"/>
+                        <field name="fuel_product_unit" domain="[('category_id', 'in', fuel_unit_category)]"
+                               attrs="{'readonly': [('repair_id', '!=', False)], 'invisible': [('category', 'not in', ['repair', 'maintenance', 'service'])]}"/>
+                    </div>
                 </xpath>
 
                 <!--                <xpath expr="//field[@name='service_type_id']" position="attributes">-->
@@ -369,6 +381,14 @@
                         <field name="hourmeter"/>
                         <field name="hourmeter_unit"/>
                     </div>
+                    <label for="performance" attrs="{'invisible': [('fuel_product_qty', '&lt;=', 0)]}"/>
+                    <div class="o_row" name="performance" attrs="{'invisible': [('fuel_product_qty', '&lt;=', 0)]}">
+                        <field name="performance"/><span
+                            attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                        km/g</span><span
+                            attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                        g/Hr</span>
+                    </div>
                 </xpath>
             </field>
         </record>
@@ -387,8 +407,9 @@
                     <field name="km_waited" optional="hide"/>
                     <field name="odometer" optional="hide"/>
                     <field name="is_fuel_replenishment" invisible="1"/>
-                    <field name="fuel_product_unit" optional="hide"/>
+                    <field name="performance" optional="hide"/>
                     <field name="fuel_product_qty" optional="hide"/>
+                    <field name="fuel_product_unit" optional="hide"/>
                     <field name="hourmeter" optional="hide"/>
                     <field name="check_done" optional="hide"/>
                     <field name="check_notify" invisible="1"/>

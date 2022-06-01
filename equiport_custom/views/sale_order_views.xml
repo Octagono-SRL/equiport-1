@@ -1,7 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Inherit Form View to Modify it -->
+        <!--        region HIDE ELEMENTS-->
+        <record id="sale_order_form_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_sale_readonly_user" invisible="1"/>
+                    <field name="xs_css" nolabel="1" invisible="0"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="sale_order_tree_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.order.tree.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.sales_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="sale_order_kanban_hide_equiport_inherit" model="ir.ui.view">
+            <field name="name">sale.order.kanban.hide.equiport.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+            <field name="groups_id" eval="[(4, ref('equiport_custom.rental_account_user_readonly'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="delete">0</attribute>
+                    <attribute name="edit">0</attribute>
+                    <attribute name="multi_edit">0</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!--        endregion-->
+
+
+
+
         <record id="sale_order_form_equiport_inherit" model="ir.ui.view">
             <field name="name">sale.order.form.equiport.inherit</field>
             <field name="model">sale.order</field>
@@ -10,8 +59,8 @@
 
                 <button name="%(sale.action_view_sale_advance_payment_inv)d" type="action" class="btn-primary"
                         attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'to invoice'), '|',
-                        ('fsm_invoice_available', '=', False), ('is_inventory_user', '=', True)]}
+                    <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'to invoice'),
+                        ('fsm_invoice_available', '=', False)]}
                     </attribute>
                     <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
@@ -21,8 +70,8 @@
                         attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"
                         position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'no'), '|',
-                        ('fsm_invoice_available', '=', False), '|',
-                        ('state', '!=', 'sale'), ('is_inventory_user', '=', True)]}
+                        ('fsm_invoice_available', '=', False),
+                        ('state', '!=', 'sale'),]}
                     </attribute>
                     <attribute name="groups">equiport_custom.group_account_user</attribute>
                 </button>
@@ -30,7 +79,7 @@
                 <button name="action_cancel" type="object" position="attributes">
                     <attribute name="groups">equiport_custom.group_commercial_user</attribute>
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']),
-                        '|',('id', '=', False), ('is_inventory_user', '=', True)]}
+                        ('id', '=', False)]}
                     </attribute>
                 </button>
 
@@ -58,20 +107,10 @@
                 </button>
 
 
-                <!--                <button name="action_confirm" type="object" position="attributes">-->
-                <!--                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>-->
-                <!--                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']), '|',('id', '=', False), ('is_inventory_user', '=', True)]}</attribute>-->
-                <!--                </button>-->
-
-                <!--                <button name="action_quotation_send" type="object" position="attributes">-->
-                <!--                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>-->
-                <!--                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']), '|',('id', '=', False), ('is_inventory_user', '=', True)]}</attribute>-->
-                <!--                </button>-->
 
                 <field name="partner_id" position="after">
                     <field name="is_gate_service" invisible="1"/>
                     <field name="fsm_invoice_available" invisible="1"/>
-                    <field name="is_inventory_user" invisible="1"/>
                 </field>
 
                 <field name="currency_id" position="attributes">
@@ -98,9 +137,20 @@
                 </xpath>
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="attributes">
-                    <attribute name="attrs">{'column_invisible': [('parent.is_inventory_user', '=', True)],
-                        'required': True, 'readonly': [('qty_invoiced', '&gt;', 0)]}
-                    </attribute>
+                    <attribute name="attrs">{'required': True, 'readonly': [('qty_invoiced', '&gt;', 0)]}</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='discount']"
+                       position="attributes">
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_subtotal']"
+                       position="attributes">
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='tax_id']"
+                       position="attributes">
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user</attribute>
                 </xpath>
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_invoice']"
                        position="attributes">
