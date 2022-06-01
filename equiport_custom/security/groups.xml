@@ -502,7 +502,7 @@
             <field name="name">Gerente Contabilidad</field>
             <field name="category_id" ref="module_category_accounting_equiport"/>
             <field name="implied_ids"
-                   eval="[(4, ref('group_account_user')), (4, ref('set_security_group_for_costumer_invoices')), (4, ref('allowed_adm_credit'))]"/>
+                   eval="[(4, ref('group_account_user')), (4, ref('allowed_adm_credit'))]"/>
         </record>
 
         <!--        ADMINISTRACION-->
