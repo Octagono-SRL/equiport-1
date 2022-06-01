@@ -220,7 +220,7 @@
 
         <record model="ir.ui.menu" id="sale_renting.menu_rental_config">
             <field name="groups_id"
-                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_comm_user') , ref('base.group_system')])]">
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user') , ref('base.group_system')])]">
             </field>
         </record>
 
@@ -237,7 +237,7 @@
         </record>
         <record model="ir.ui.menu" id="sale.menu_sale_config">
             <field name="groups_id"
-                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_comm_user'), ref('base.group_system')])]">
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]">
             </field>
         </record>
 
@@ -249,7 +249,7 @@
         </record>
         <record model="ir.ui.menu" id="contacts.res_partner_menu_config">
             <field name="groups_id"
-                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_comm_user'), ref('base.group_system')])]">
+                   eval="[(6,0, [ref('equiport_custom.settings_account_comm_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]">
             </field>
         </record>
 
@@ -267,7 +267,7 @@
 
         <record model="ir.ui.menu" id="purchase.menu_purchase_config">
             <field name="groups_id"
-                   eval="[(6,0, [ref('equiport_custom.settings_account_pur_user'), ref('equiport_custom.settings_account_comm_user'), ref('base.group_system')])]">
+                   eval="[(6,0, [ref('equiport_custom.settings_account_pur_user'), ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]">
             </field>
         </record>
 

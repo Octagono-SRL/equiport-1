@@ -457,6 +457,7 @@
                    eval="[
                        (4, ref('equiport_custom.contacts_account_user')),
                        (4, ref('equiport_custom.rental_account_user')),
+                       (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
                        (4, ref('equiport_custom.sale_account_user')),
                        (4, ref('equiport_custom.sale_subscription_account_user')),
                        (4, ref('equiport_custom.crm_account_user')),
@@ -467,6 +468,7 @@
                        (4, ref('equiport_custom.reports_crm_account_user')),
                        (4, ref('equiport_custom.reports_helpdesk_account_user')),
                        (4, ref('equiport_custom.reports_sale_account_user')),
+                       (4, ref('equiport_custom.reports_rental_account_user')),
                        (4, ref('equiport_custom.reports_sale_subscription_account_user')),
                    ]"/>
         </record>
@@ -475,7 +477,7 @@
             <field name="name">Gerente Comercial</field>
             <field name="category_id" ref="module_category_commercial_equiport"/>
             <field name="implied_ids"
-                   eval="[(4, ref('group_commercial_user')), (4, ref('equiport_custom.settings_account_comm_user')), (4, ref('allowed_adm_credit')), (4, ref('allowed_to_delete_leads')), (4, ref('subscription_account_user_generate_invoice'))]"/>
+                   eval="[(4, ref('group_commercial_user')), (4, ref('equiport_custom.settings_account_comm_user')), (4, ref('allowed_adm_credit')), (4, ref('allowed_to_delete_leads')), (4, ref(''))]"/>
         </record>
 
 
@@ -487,10 +489,12 @@
             <field name="implied_ids" eval="[
 
                 (4, ref('equiport_custom.rental_account_deposit')),
+                (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
                 (4, ref('equiport_custom.reports_rental_account_user')),
                 (4, ref('equiport_custom.contacts_account_user')),
                 (4, ref('equiport_custom.reports_sale_subscription_account_user')),
                 (4, ref('equiport_custom.rental_account_user')),
+                (4, ref('equiport_custom.reports_rental_account_user')),
                 (4, ref('equiport_custom.sale_account_user')),
                 (4, ref('equiport_custom.reports_sale_account_user')),
                 (4, ref('equiport_custom.sale_subscription_account_user')),
@@ -502,7 +506,13 @@
             <field name="name">Gerente Contabilidad</field>
             <field name="category_id" ref="module_category_accounting_equiport"/>
             <field name="implied_ids"
-                   eval="[(4, ref('group_account_user')), (4, ref('allowed_adm_credit'))]"/>
+                   eval="[
+                    (4, ref('equiport_custom.group_account_user')),
+                    (4, ref('equiport_custom.allowed_adm_credit')),
+                    (4, ref('equiport_custom.settings_account_cont_user')),
+                    (4, ref('equiport_custom.set_security_group_for_costumer_invoices')),
+                    (4, ref('equiport_custom.subscription_account_user_generate_invoice'))
+                      ]"/>
         </record>
 
         <!--        ADMINISTRACION-->
@@ -536,13 +546,13 @@
         <record id="group_admin_manager" model="res.groups">
             <field name="name">Gerente Admnistrativo</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('group_admin_user'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_admin_user')), (4, ref('equiport_custom.settings_account_pur_user')), (4, ref('equiport_custom.settings_account_in_user')),]"/>
         </record>
 
         <record id="group_general_manager" model="res.groups">
             <field name="name">Gerente General</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('group_admin_manager'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_admin_manager')), (4, ref('equiport_custom.settings_account_op_user'))]"/>
         </record>
 
         <!--        COMPRAS-->
@@ -644,14 +654,12 @@
 
             ]"/>
         </record>
-
         <record id="group_operations_supervisor" model="res.groups">
             <field name="name">Supervisor Operaciones</field>
             <field name="category_id" ref="module_category_operations_equiport"/>
             <field name="implied_ids"
                    eval="[(4, ref('group_operations_c_user'))]"/>
         </record>
-
         <record id="group_operations_manager" model="res.groups">
             <field name="name">Encargado Operaciones</field>
             <field name="category_id" ref="module_category_operations_equiport"/>
