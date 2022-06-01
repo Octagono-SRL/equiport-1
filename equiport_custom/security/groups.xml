@@ -477,7 +477,7 @@
             <field name="name">Gerente Comercial</field>
             <field name="category_id" ref="module_category_commercial_equiport"/>
             <field name="implied_ids"
-                   eval="[(4, ref('group_commercial_user')), (4, ref('equiport_custom.settings_account_comm_user')), (4, ref('allowed_adm_credit')), (4, ref('allowed_to_delete_leads')), (4, ref(''))]"/>
+                   eval="[(4, ref('group_commercial_user')), (4, ref('equiport_custom.settings_account_comm_user')), (4, ref('allowed_adm_credit')), (4, ref('allowed_to_delete_leads'))]"/>
         </record>
 
 
