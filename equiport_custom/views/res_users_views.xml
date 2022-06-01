@@ -9,6 +9,10 @@
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
 
+                <xpath expr="//header" position="inside">
+                    <button name="clear_user_groups" type="object" string="Limpiar permisos"/>
+                </xpath>
+
                 <xpath expr="//notebook/page[@name='references']" position="inside">
                     <group string="Restrinciones" name="restriction">
                         <field name="allowed_stock_warehouse_ids" widget="many2many_tags"/>
