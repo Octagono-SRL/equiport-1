@@ -15,6 +15,6 @@ class ResUsers(models.Model):
             raise ValidationError("No puede realizar esta accion en usuarios admin")
         else:
             self.update({
-                'groups_id': False
+                'groups_id': [(6, 0, [self.env.ref('base.group_user').id])]
             })
 
