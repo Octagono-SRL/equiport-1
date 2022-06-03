@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <data>
+    <data noupdate="0">
 
         <!--        region Extra groups-->
         <!--        COMPRA E INVENTARIO-->
@@ -522,22 +522,12 @@
             <field name="category_id" ref="module_category_admin_equiport"/>
             <field name="implied_ids" eval="[
 
-                (4, ref('stock.group_stock_user')),
-                (4, ref('purchase.group_purchase_user')),
 
                 (4, ref('equiport_custom.eq_group_purchase_user')),
-                (4, ref('equiport_custom.inventory_account_user')),
-
-                (4, ref('equiport_custom.purchase_account_user')),
-
-                (4, ref('equiport_custom.reports_purchase_account_user')),
-
                 (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_product_readonly')),
                 (4, ref('equiport_custom.contact_account_user_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
-
-                (4, ref('equiport_custom.request_cancel_purchase_order')),
 
 
             ]"/>
@@ -546,7 +536,7 @@
         <record id="group_admin_manager" model="res.groups">
             <field name="name">Gerente Admnistrativo</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('group_admin_user')), (4, ref('equiport_custom.settings_account_pur_user')), (4, ref('equiport_custom.settings_account_in_user')),]"/>
+            <field name="implied_ids" eval="[(4, ref('eq_group_purchase_user')), (4, ref('equiport_custom.settings_account_pur_user')), (4, ref('equiport_custom.settings_account_in_user'))]"/>
         </record>
 
         <record id="group_general_manager" model="res.groups">
@@ -560,7 +550,14 @@
         <record id="eq_group_purchase_user" model="res.groups">
             <field name="name">Usuario Compras</field>
             <field name="category_id" ref="module_category_purchase_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('request_cancel_purchase_order'))]"/>
+            <field name="implied_ids" eval="[
+                (4, ref('stock.group_stock_user')),
+                (4, ref('purchase.group_purchase_user')),
+                (4, ref('equiport_custom.inventory_account_user')),
+                (4, ref('equiport_custom.purchase_account_user')),
+                (4, ref('equiport_custom.request_cancel_purchase_order')),
+                (4, ref('equiport_custom.reports_purchase_account_user')),
+            ]"/>
         </record>
 
         <!--        <record id="eq_group_purchase_manager" model="res.groups">-->
@@ -732,18 +729,19 @@
             <field name="implied_ids" eval="[
 
                 (4, ref('group_inventory_supervisor')),
-                (4, ref('sale_subscription.group_sale_subscription_view')),
-                (4, ref('sales_team.group_sale_salesman_all_leads')),
-                (4, ref('sign.group_sign_employee')),
-                (4, ref('industry_fsm.group_fsm_user')),
-                (4, ref('project.group_project_user')),
-                (4, ref('hr_timesheet.group_hr_timesheet_user')),
                 (4, ref('stock.group_stock_manager')),
                 (4, ref('purchase.group_purchase_user')),
                 (4, ref('fleet.fleet_group_manager')),
                 (4, ref('documents.group_documents_user')),
 
-                (4, ref('equiport_custom.group_operations_user')),
+                (3, ref('equiport_custom.group_operations_user')),
+
+                (4, ref('sale_subscription.group_sale_subscription_view')),
+                (4, ref('sales_team.group_sale_salesman_all_leads')),
+                (4, ref('sign.group_sign_employee')),
+                (4, ref('industry_fsm.group_fsm_manager')),
+                (4, ref('project.group_project_user')),
+                (4, ref('hr_timesheet.group_hr_timesheet_user')),
 
                 (4, ref('equiport_custom.rental_account_user')),
                 (4, ref('equiport_custom.purchase_account_user')),
@@ -772,6 +770,7 @@
                 (4, ref('equiport_custom.allowed_adjust_inventory')),
                 (4, ref('equiport_custom.allowed_transfer')),
                 (4, ref('equiport_custom.allowed_scrap')),
+                (4, ref('equiport_custom.rental_stock_picking')),
 
             ]"/>
         </record>
