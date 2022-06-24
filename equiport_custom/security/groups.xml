@@ -612,10 +612,10 @@
                 (4, ref('stock.group_stock_user')),
                 (4, ref('fleet.fleet_group_manager')),
 
-                (3, ref('equiport_custom.contact_account_user_readonly')),
+                (4, ref('equiport_custom.contact_account_user_readonly')),
                 (3, ref('equiport_custom.sales_account_user_readonly')),
-                (3, ref('equiport_custom.inventory_account_user_product_readonly')),
-                (3, ref('equiport_custom.inventory_account_user_quant_readonly')),
+                (4, ref('equiport_custom.inventory_account_user_product_readonly')),
+                (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
 
                 (4, ref('equiport_custom.fleet_account_user')),
                 (4, ref('equiport_custom.inventory_account_user')),
@@ -633,12 +633,7 @@
                 (4, ref('equiport_custom.allowed_transfer'))
 
             ]"/>
-<!-- se cambio de 4 a 3 para permitir editar cotizaciones a operaciones
-                (4, ref('equiport_custom.contact_account_user_readonly')),
-                (4, ref('equiport_custom.sales_account_user_readonly')),
-                (4, ref('equiport_custom.inventory_account_user_product_readonly')),
-                (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
--->
+<!-- se cambio de 4 a 3 para permitir editar cotizaciones a operaciones-->
         </record>
         <record id="group_operations_h_user" model="res.groups">
             <field name="name">Usuario Operaciones / Taller</field>
@@ -652,12 +647,9 @@
             <field name="category_id" ref="module_category_operations_equiport"/>
             <field name="implied_ids" eval="[
                 (4, ref('equiport_custom.group_operations_h_user')),
-                (3, ref('equiport_custom.inventory_account_user_lot_readonly')),
-
-
+                (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
             ]"/>
 
-<!--                            (4, ref('equiport_custom.inventory_account_user_lot_readonly')),-->
         </record>
         <record id="group_operations_supervisor" model="res.groups">
             <field name="name">Supervisor Operaciones</field>
