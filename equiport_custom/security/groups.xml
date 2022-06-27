@@ -621,6 +621,7 @@
                 (4, ref('equiport_custom.inventory_account_user')),
                 (4, ref('equiport_custom.rescue_account_user')),
                 (4, ref('equiport_custom.repair_account_user')),
+                (4, ref('equiport_custom.rental_account_user')),
                 (4, ref('equiport_custom.sale_account_user')),
 
                 (4, ref('equiport_custom.reports_sale_account_user')),
