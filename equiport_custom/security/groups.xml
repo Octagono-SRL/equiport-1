@@ -611,12 +611,23 @@
                 (4, ref('hr_timesheet.group_hr_timesheet_user')),
                 (4, ref('stock.group_stock_user')),
                 (4, ref('fleet.fleet_group_manager')),
+                (4, ref('group_commercial_user')),
+
+
+                       (3, ref('equiport_custom.sale_subscription_account_user')),
+                       (3, ref('equiport_custom.crm_account_user')),
+                       (3, ref('equiport_custom.helpdesk_account_user')),
+                       (3, ref('equiport_custom.reports_crm_account_user')),
+                       (3, ref('equiport_custom.reports_helpdesk_account_user')),
+                       (3, ref('equiport_custom.reports_sale_subscription_account_user')),
+
 
                 (4, ref('equiport_custom.contact_account_user_readonly')),
                 (3, ref('equiport_custom.sales_account_user_readonly')),
-                (4, ref('equiport_custom.inventory_account_user_product_readonly')),
-                (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
+                (3, ref('equiport_custom.inventory_account_user_product_readonly')),
+                (3, ref('equiport_custom.inventory_account_user_quant_readonly')),
 
+                (4, ref('equiport_custom.sale_subscription_account_user')),
                 (4, ref('equiport_custom.fleet_account_user')),
                 (4, ref('equiport_custom.inventory_account_user')),
                 (4, ref('equiport_custom.rescue_account_user')),
@@ -624,6 +635,7 @@
                 (4, ref('equiport_custom.rental_account_user')),
                 (4, ref('equiport_custom.sale_account_user')),
 
+                (4, ref('equiport_custom.reports_rental_account_user')),
                 (4, ref('equiport_custom.reports_sale_account_user')),
                 (4, ref('equiport_custom.reports_fleet_account_user')),
                 (4, ref('equiport_custom.reports_repair_account_user')),
@@ -631,7 +643,7 @@
                 (4, ref('equiport_custom.reports_rescue_account_user')),
 
                 (4, ref('equiport_custom.rental_stock_picking')),
-                (4, ref('equiport_custom.allowed_transfer'))
+                (4, ref('equiport_custom.allowed_transfer')),
 
             ]"/>
 <!-- se cambio de 4 a 3 para permitir editar cotizaciones a operaciones-->
