@@ -94,7 +94,7 @@
                 </button>
                 <button name="action_draft" states="cancel" type="object"
                           position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user</attribute>
                 </button>
 
                 <button name="action_quotation_send" type="object" states="draft"

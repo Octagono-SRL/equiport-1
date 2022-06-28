@@ -71,7 +71,7 @@
                         groups="account.group_account_invoice"
                         attrs="{'invisible': ['|', ('state', '!=', '2binvoiced'), ('invoice_id', '!=', False)]}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_operations_user</attribute>
                 </button>
 
                  <button name="action_validate" states="draft" type="object"  class="oe_highlight"
