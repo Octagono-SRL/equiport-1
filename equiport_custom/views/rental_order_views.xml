@@ -91,13 +91,14 @@
                             groups="equiport_custom.group_account_user"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"
-                            groups="equiport_custom.group_commercial_user"/>
+                            groups="equiport_custom.group_commercial_user,equiport_custom.group_operations_user"/>
+
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
                             groups="equiport_custom.group_commercial_manager,equiport_custom.group_general_manager"/>
 
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
-                            groups="equiport_custom.group_commercial_user"
+                            groups="equiport_custom.group_commercial_user,equiport_custom.group_operations_user"
                             string="Actualizar subscripción"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), ('rental_sub_state', 'in', ['closed', False])]}"
                             confirm="¿Está seguro de continuar? esta acción actualizara todas las lineas de la subscripción existente."/>
@@ -139,7 +140,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='open_return']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
+                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_operations_user</attribute>
                 </xpath>
 
                 <xpath expr="//button[@name='open_pickup']" position="attributes">

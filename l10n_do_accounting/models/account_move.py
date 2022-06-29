@@ -108,6 +108,7 @@ class AccountMove(models.Model):
     l10n_do_fiscal_number = fields.Char(
         "Fiscal Number",
         index=True,
+        tracking=True,
         copy=False,
         help="Stored field equivalent of l10n_latam_document number",
     )
@@ -115,6 +116,7 @@ class AccountMove(models.Model):
     l10n_do_ecf_edi_file_name = fields.Char(
         "ECF XML File Name", copy=False, readonly=True
     )
+    l10n_latam_manual_document_number = fields.Boolean(store=True)
 
     def init(self):
 
@@ -244,14 +246,21 @@ class AccountMove(models.Model):
                     invoice.invoice_date or fields.Date.today()
                 ).strftime("%d-%m-%Y")
             qr_string += "MontoTotal=%s&" % (
-                "%f" % abs(invoice.amount_total_signed)
+                "%f" % sum(invoice.line_ids.mapped("credit"))
             ).rstrip("0").rstrip(".")
             if not is_rfc:
                 qr_string += "FechaFirma=%s&" % invoice.l10n_do_ecf_sign_date.strftime(
                     "%d-%m-%Y%%20%H:%M:%S"
                 )
 
-            qr_string += "CodigoSeguridad=%s" % invoice.l10n_do_ecf_security_code or ""
+            special_chars = " !#$&'()*+,/:;=?@[]\"-.<>\\^_`"
+            security_code = "".join(
+                c.replace(c, "%" + c.encode("utf-8").hex()).upper()
+                if c in special_chars
+                else c
+                for c in invoice.l10n_do_ecf_security_code or ""
+            )
+            qr_string += "CodigoSeguridad=%s" % security_code
 
             invoice.l10n_do_electronic_stamp = urls.url_quote_plus(qr_string)
 
@@ -404,27 +413,20 @@ class AccountMove(models.Model):
         for rec in l10n_do_invoices:
             has_vat = bool(rec.partner_id.vat and bool(rec.partner_id.vat.strip()))
             l10n_latam_document_type = rec.l10n_latam_document_type_id
-            if not has_vat and l10n_latam_document_type.is_vat_required:
+            if not has_vat and (
+                rec.amount_untaxed_signed >= 250000
+                or (
+                    l10n_latam_document_type.is_vat_required
+                    and rec.commercial_partner_id.l10n_do_dgii_tax_payer_type
+                    != "non_payer"
+                )
+            ):
                 raise ValidationError(
                     _(
                         "A VAT is mandatory for this type of NCF. "
                         "Please set the current VAT of this client"
                     )
                 )
-
-            elif rec.move_type in ("out_invoice", "out_refund"):
-                if (
-                    rec.amount_untaxed_signed >= 250000
-                    and l10n_latam_document_type.l10n_do_ncf_type[-7:] != "special"
-                    and not has_vat
-                ):
-                    raise UserError(
-                        _(
-                            "If the invoice amount is greater than RD$250,000.00 "
-                            "the customer should have a VAT to validate the invoice"
-                        )
-                    )
-
         super(AccountMove, self - l10n_do_invoices)._check_invoice_type_document_type()
 
     @api.onchange("partner_id")
@@ -493,6 +495,9 @@ class AccountMove(models.Model):
 
     def _is_l10n_do_manual_document_number(self):
         self.ensure_one()
+
+        if self.reversed_entry_id:
+            return self.reversed_entry_id.l10n_latam_manual_document_number
 
         return self.move_type in (
             "in_invoice",
@@ -637,9 +642,18 @@ class AccountMove(models.Model):
             where_string = where_string.replace("journal_id = %(journal_id)s AND", "")
             where_string += (
                 " AND l10n_latam_document_type_id = %(l10n_latam_document_type_id)s AND"
-                " move_type = %(move_type)s AND company_id = %(company_id)s"
+                " company_id = %(company_id)s AND l10n_do_sequence_prefix != ''"
+                " AND l10n_do_sequence_prefix IS NOT NULL"
             )
-            param["move_type"] = self.move_type
+            if (
+                not self.l10n_latam_manual_document_number
+                and self.move_type != "in_refund"
+            ):
+                where_string += " AND move_type = %(move_type)s"
+                param["move_type"] = self.move_type
+            else:
+                where_string += " AND l10n_latam_manual_document_number = 'f'"
+
             param["company_id"] = self.company_id.id or False
             param["l10n_latam_document_type_id"] = (
                 self.l10n_latam_document_type_id.id or 0
@@ -754,7 +768,7 @@ class AccountMove(models.Model):
             format_values["seq"] = 0
         format_values["seq"] = format_values["seq"] + 1
 
-        if self.state != "draft":
+        if self.state != "draft" and not self[self._l10n_do_sequence_field]:
             self[
                 self._l10n_do_sequence_field
             ] = self.l10n_latam_document_type_id._format_document_number(
