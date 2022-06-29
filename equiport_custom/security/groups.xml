@@ -603,7 +603,6 @@
             <field name="name">Usuario Operaciones</field>
             <field name="category_id" ref="module_category_operations_equiport"/>
             <field name="implied_ids" eval="[
-
             (4, ref('sale_subscription.group_sale_subscription_view')),
             (4, ref('sales_team.group_sale_salesman_all_leads')),
             (4, ref('sign.group_sign_employee')),
@@ -695,6 +694,7 @@
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids" eval="[
                 (4, ref('equiport_custom.group_inventory_supervisor')),
+
                 (4, ref('documents.group_documents_user')),
                 (4, ref('sale_subscription.group_sale_subscription_view')),
                 (4, ref('sales_team.group_sale_salesman_all_leads')),
@@ -730,6 +730,7 @@
 
                 (4, ref('equiport_custom.allowed_transfer')),
                 (4, ref('equiport_custom.supervisor_stock_order_point')),
+
             ]"/>
 
         </record>

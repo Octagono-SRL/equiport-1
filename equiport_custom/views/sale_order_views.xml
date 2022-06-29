@@ -106,8 +106,6 @@
                     <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user</attribute>
                 </button>
 
-
-
                 <field name="partner_id" position="after">
                     <field name="is_gate_service" invisible="1"/>
                     <field name="fsm_invoice_available" invisible="1"/>
