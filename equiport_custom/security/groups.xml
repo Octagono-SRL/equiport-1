@@ -613,7 +613,7 @@
             (4, ref('fleet.fleet_group_manager')),
 
             (4, ref('equiport_custom.group_inventory_user')),
-            (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
+            (3, ref('equiport_custom.inventory_account_user_lot_readonly')),
 
                 (3, ref('equiport_custom.helpdesk_account_user')),
                 (3, ref('equiport_custom.reports_helpdesk_account_user')),
@@ -658,7 +658,7 @@
             <field name="category_id" ref="module_category_operations_equiport"/>
             <field name="implied_ids" eval="[
                 (4, ref('equiport_custom.group_operations_h_user')),
-                (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
+                (3, ref('equiport_custom.inventory_account_user_lot_readonly')),
             ]"/>
 
         </record>
