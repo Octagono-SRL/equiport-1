@@ -81,11 +81,11 @@
 
                  <button name="action_send_mail" states="draft"  type="object"
                           position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user</attribute>
                 </button>
                    <button name="print_repair_order" states="draft" type="object"
                             position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user</attribute>
                 </button>
 
                 <button name="action_repair_end" states="under_repair" type="object"  class="oe_highlight"
