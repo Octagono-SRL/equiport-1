@@ -677,7 +677,7 @@ class AccountMove(models.Model):
     def _get_last_sequence(self, relaxed=False, lock=False):
 
         if not self._context.get("is_l10n_do_seq", False):
-            return super(AccountMove, self)._get_last_sequence(relaxed=relaxed. lock=lock)
+            return super(AccountMove, self)._get_last_sequence(relaxed=relaxed, lock=lock)
 
         self.ensure_one()
         if (
