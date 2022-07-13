@@ -78,27 +78,27 @@
                        position="before">
                     <field name="new_rental_addition" invisible="1"/>
                     <field name="start_rent_price"
-                           groups="equiport_custom.group_account_user,equiport_custom.group_commercial_user"
+                           groups="equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager"
                            attrs="{'invisible':[('new_rental_addition', '=', False)],'column_invisible':[('parent.is_rental_order', '=',False)], 'required':[('new_rental_addition', '=', True)]}"/>
                 </xpath>
 
                 <header position="inside">
                     <button name="add_deposit" type="object" string="Agregar deposito" class="oe_highlight"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']),('deposit_status','in',['added', 'returned'])]}"
-                            groups="equiport_custom.group_account_user"/>
+                            groups="equiport_custom.group_account_user,equiport_custom.group_general_manager"/>
                     <button name="remove_deposit" type="object" string="Devolver deposito" class="oe_highlight"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"
-                            groups="equiport_custom.group_account_user"/>
+                            groups="equiport_custom.group_account_user,equiport_custom.group_general_manager"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"
-                            groups="equiport_custom.group_commercial_user,equiport_custom.group_operations_user"/>
+                            groups="equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager"/>
 
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
                             groups="equiport_custom.group_commercial_manager,equiport_custom.group_general_manager"/>
 
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
-                            groups="equiport_custom.group_commercial_user,equiport_custom.group_operations_user"
+                            groups="equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager"
                             string="Actualizar subscripción"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), ('rental_sub_state', 'in', ['closed', False])]}"
                             confirm="¿Está seguro de continuar? esta acción actualizara todas las lineas de la subscripción existente."/>
@@ -110,7 +110,7 @@
                     <attribute name="string">
                         Seleccionar unidades
                     </attribute>
-                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
+                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
 
@@ -126,7 +126,7 @@
                 </div>
 
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='preview_sale_order']" position="attributes">
-                   <attribute name="groups">equiport_custom.group_account_user</attribute>
+                   <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_general_manager</attribute>
                </xpath>
 
             </field>
@@ -140,11 +140,11 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='open_return']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_operations_user</attribute>
+                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
 
                 <xpath expr="//button[@name='open_pickup']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_inventory_user</attribute>
+                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
 
 
