@@ -511,7 +511,8 @@
                     (4, ref('equiport_custom.allowed_adm_credit')),
                     (4, ref('equiport_custom.settings_account_cont_user')),
                     (4, ref('equiport_custom.set_security_group_for_costumer_invoices')),
-                    (4, ref('equiport_custom.subscription_account_user_generate_invoice'))
+                    (4, ref('equiport_custom.subscription_account_user_generate_invoice')),
+                    (4, ref('equiport_custom.settings_account_admin_user')),
                       ]"/>
         </record>
 
@@ -528,21 +529,88 @@
                 (4, ref('equiport_custom.inventory_account_user_product_readonly')),
                 (4, ref('equiport_custom.contact_account_user_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
-
-
             ]"/>
         </record>
 
         <record id="group_admin_manager" model="res.groups">
             <field name="name">Gerente Admnistrativo</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('eq_group_purchase_user')), (4, ref('equiport_custom.settings_account_pur_user')), (4, ref('equiport_custom.settings_account_in_user'))]"/>
+            <field name="implied_ids" eval="[
+            (3, ref('equiport_custom.contact_account_user_readonly')),
+            (4, ref('sale_subscription.group_sale_subscription_view')),
+            (4, ref('sales_team.group_sale_salesman_all_leads')),
+            (4, ref('sign.group_sign_employee')),
+            (4, ref('industry_fsm.group_fsm_manager')),
+            (4, ref('project.group_project_user')),
+            (4, ref('hr_timesheet.group_hr_timesheet_user')),
+            (4, ref('allowed_to_delete_leads')),
+            (4, ref('stock.group_stock_user')),
+            (4, ref('fleet.fleet_group_manager')),
+            (4, ref('documents.group_documents_user')),
+            (4, ref('equiport_custom.settings_account_cont_user')),
+            (4, ref('equiport_custom.set_security_group_for_costumer_invoices')),
+            (4, ref('equiport_custom.subscription_account_user_generate_invoice')),
+            (4, ref('equiport_custom.helpdesk_account_user')),
+            (4, ref('equiport_custom.reports_helpdesk_account_user')),
+            (4, ref('equiport_custom.contact_account_user_readonly')),
+            (4, ref('equiport_custom.sale_subscription_account_user')),
+            (4, ref('equiport_custom.inventory_account_user')),
+            (4, ref('equiport_custom.sale_account_user')),
+            (4, ref('equiport_custom.fleet_account_user')),
+            (4, ref('equiport_custom.inventory_account_user')),
+            (4, ref('equiport_custom.rescue_account_user')),
+            (4, ref('equiport_custom.repair_account_user')),
+            (4, ref('equiport_custom.rental_account_user')),
+            (4, ref('equiport_custom.rental_account_deposit')),
+            (4, ref('equiport_custom.rental_stock_picking')),
+            (4, ref('equiport_custom.sale_account_user')),
+            (4, ref('equiport_custom.reports_purchase_account_user')),
+            (4, ref('equiport_custom.reports_rental_account_user')),
+            (4, ref('equiport_custom.reports_sale_account_user')),
+            (4, ref('equiport_custom.reports_fleet_account_user')),
+            (4, ref('equiport_custom.reports_repair_account_user')),
+            (4, ref('equiport_custom.reports_inventory_account_user')),
+            (4, ref('equiport_custom.reports_rescue_account_user')),
+            (4, ref('equiport_custom.reports_crm_account_user')),
+            (4, ref('equiport_custom.reports_timesheet_account_user')),
+            (4, ref('equiport_custom.reports_sale_subscription_account_user')),
+            (4, ref('equiport_custom.request_cancel_purchase_order')),
+            (4, ref('equiport_custom.allowed_transfer')),
+            (4, ref('equiport_custom.allowed_adm_credit')),
+            (4, ref('equiport_custom.allowed_adjust_inventory')),
+            (4, ref('equiport_custom.allowed_scrap')),
+            (4, ref('equiport_custom.contacts_account_user')),
+            (4, ref('equiport_custom.crm_account_user')),
+            (3, ref('equiport_custom.eq_group_purchase_user')),
+            (4, ref('equiport_custom.purchase_account_user')),
+            (4, ref('equiport_custom.settings_account_pur_user')),
+            (4, ref('equiport_custom.grand_picking_access')),
+            (4, ref('equiport_custom.supervisor_stock_order_point')),
+            (4, ref('equiport_custom.create_customer_invoices')),
+            (4, ref('equiport_custom.settings_account_comm_user')),
+            (4, ref('equiport_custom.project_account_user')),
+            (4, ref('equiport_custom.reports_project_account_user')),
+            (4, ref('equiport_custom.payroll_account_user')),
+            (4, ref('equiport_custom.reports_payroll_account_user')),
+            (4, ref('equiport_custom.employee_account_user')),
+            (4, ref('equiport_custom.reports_emploeyee_account_user')),
+            (4, ref('equiport_custom.leaving_account_user')),
+            (4, ref('equiport_custom.sign_account_user')),
+            (4, ref('equiport_custom.approval_account_user')),
+            (4, ref('equiport_custom.barcode_account_user')),
+            (4, ref('equiport_custom.dashboard_account_user')),
+            (4, ref('equiport_custom.reports_contacts_account_user')),
+            (4, ref('equiport_custom.contacts_account_user')),
+            ]"/>
         </record>
 
         <record id="group_general_manager" model="res.groups">
             <field name="name">Gerente General</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('group_admin_manager')), (4, ref('equiport_custom.settings_account_op_user'))]"/>
+            <field name="implied_ids" eval="[
+            (4, ref('group_admin_manager')),
+
+            ]"/>
         </record>
 
         <!--        COMPRAS-->
@@ -743,8 +811,6 @@
                 (4, ref('purchase.group_purchase_user')),
                 (4, ref('fleet.fleet_group_manager')),
                 (4, ref('documents.group_documents_user')),
-
-                (3, ref('equiport_custom.group_operations_user')),
 
                 (4, ref('sale_subscription.group_sale_subscription_view')),
                 (4, ref('sales_team.group_sale_salesman_all_leads')),
