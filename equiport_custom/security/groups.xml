@@ -537,6 +537,7 @@
             <field name="category_id" ref="module_category_admin_equiport"/>
             <field name="implied_ids" eval="[
             (3, ref('equiport_custom.contact_account_user_readonly')),
+            (3, ref('equiport_custom.group_admin_user')),
             (4, ref('sale_subscription.group_sale_subscription_view')),
             (4, ref('sales_team.group_sale_salesman_all_leads')),
             (4, ref('sign.group_sign_employee')),
