@@ -109,7 +109,7 @@
             <field name="arch" type="xml">
                 <form string="Historial de Neúmatico">
                     <header>
-                        <button name="button_validate" class="btn-primary" type="object" string="Validar" groups="equiport_custom.group_operations_supervisor" states="draft"/>
+                        <button name="button_validate" class="btn-primary" type="object" string="Validar" groups="equiport_custom.group_operations_supervisor,equiport_custom.group_general_manager" states="draft"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,open,close"/>
                     </header>
                     <sheet>
