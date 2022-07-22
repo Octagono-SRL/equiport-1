@@ -538,6 +538,7 @@
             <field name="implied_ids" eval="[
             (3, ref('equiport_custom.contact_account_user_readonly')),
             (3, ref('equiport_custom.group_admin_user')),
+            (4, ref('equiport_custom.settings_account_op_user')),
             (4, ref('sale_subscription.group_sale_subscription_view')),
             (4, ref('sales_team.group_sale_salesman_all_leads')),
             (4, ref('sign.group_sign_employee')),
@@ -602,6 +603,7 @@
             (4, ref('equiport_custom.dashboard_account_user')),
             (4, ref('equiport_custom.reports_contacts_account_user')),
             (4, ref('equiport_custom.contacts_account_user')),
+            (4, ref('equiport_custom.settings_account_in_user')),
             ]"/>
         </record>
 
@@ -747,14 +749,61 @@
         <record id="group_inventory_user" model="res.groups">
             <field name="name">Usuario Inventario</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
-            <field name="implied_ids" eval="[(4, ref('rental_stock_picking'))]"/>
+            <field name="implied_ids" eval="[(4, ref('rental_stock_picking')),
+            (4, ref('equiport_custom.allowed_adjust_inventory')),
+                (4, ref('equiport_custom.sales_account_user_readonly')),
+                (4, ref('equiport_custom.rescue_account_user_readonly')),
+                (4, ref('equiport_custom.rental_account_user_readonly')),
+                (4, ref('equiport_custom.purchase_account_user_readonly')),
+            ]"/>
         </record>
 
         <record id="group_inventory_supervisor" model="res.groups">
             <field name="name">Supervisor Inventario</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids"
-                   eval="[(4, ref('group_inventory_user')), (4, ref('supervisor_stock_order_point'))]"/>
+                   eval="[(4, ref('group_inventory_user')),
+                   (4, ref('supervisor_stock_order_point')),
+
+                    (4, ref('equiport_custom.settings_account_in_user')),
+                    (4, ref('documents.group_documents_user')),
+                    (4, ref('sale_subscription.group_sale_subscription_view')),
+                    (4, ref('sales_team.group_sale_salesman_all_leads')),
+                    (4, ref('sign.group_sign_employee')),
+                    (4, ref('industry_fsm.group_fsm_user')),
+                    (4, ref('project.group_project_user')),
+                    (4, ref('hr_timesheet.group_hr_timesheet_user')),
+                    (4, ref('stock.group_stock_manager')),
+                    (4, ref('purchase.group_purchase_user')),
+                    (4, ref('fleet.fleet_group_manager')),
+                    (4, ref('equiport_custom.purchase_account_user')),
+                    (4, ref('equiport_custom.fleet_account_user')),
+                    (4, ref('equiport_custom.inventory_account_user')),
+                    (4, ref('equiport_custom.rescue_account_user')),
+                    (4, ref('equiport_custom.repair_account_user')),
+                    (4, ref('equiport_custom.sale_account_user')),
+                    (4, ref('equiport_custom.contacts_account_user')),
+                    (4, ref('equiport_custom.reports_fleet_account_user')),
+                    (4, ref('equiport_custom.reports_repair_account_user')),
+                    (4, ref('equiport_custom.reports_inventory_account_user')),
+                    (4, ref('equiport_custom.reports_rescue_account_user')),
+                    (4, ref('equiport_custom.settings_account_op_user')),
+                    (4, ref('stock.group_stock_user')),
+                    (4, ref('fleet.fleet_group_manager')),
+                    (4, ref('equiport_custom.fleet_account_user')),
+                    (4, ref('equiport_custom.reports_fleet_account_user')),
+                    (4, ref('documents.group_documents_user')),
+                    (4, ref('equiport_custom.grand_picking_access')),
+                    (4, ref('equiport_custom.supervisor_stock_order_point')),
+                    (4, ref('equiport_custom.allowed_transfer')),
+                    (4, ref('equiport_custom.allowed_adm_credit')),
+                    (4, ref('equiport_custom.allowed_adjust_inventory')),
+                    (4, ref('equiport_custom.allowed_scrap')),
+                    (4, ref('equiport_custom.allowed_transfer')),
+                    (4, ref('equiport_custom.allowed_adm_credit')),
+                    (4, ref('equiport_custom.allowed_adjust_inventory')),
+                    (4, ref('equiport_custom.allowed_scrap')),
+                   ]"/>
         </record>
 
         <record id="group_inventory_stock_manager" model="res.groups">
