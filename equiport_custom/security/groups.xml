@@ -751,10 +751,14 @@
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids" eval="[(4, ref('rental_stock_picking')),
             (4, ref('equiport_custom.allowed_adjust_inventory')),
-                (4, ref('equiport_custom.sales_account_user_readonly')),
-                (4, ref('equiport_custom.rescue_account_user_readonly')),
-                (4, ref('equiport_custom.rental_account_user_readonly')),
-                (4, ref('equiport_custom.purchase_account_user_readonly')),
+            (4, ref('equiport_custom.rental_account_user')),
+            (4, ref('equiport_custom.reports_rental_account_user')),
+            (4, ref('equiport_custom.rental_stock_picking')),
+            (4, ref('equiport_custom.rental_account_deposit')),
+            (4, ref('equiport_custom.sales_account_user_readonly')),
+            (4, ref('equiport_custom.rescue_account_user_readonly')),
+            (4, ref('equiport_custom.rental_account_user_readonly')),
+            (4, ref('equiport_custom.purchase_account_user_readonly')),
             ]"/>
         </record>
 
