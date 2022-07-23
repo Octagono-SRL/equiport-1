@@ -683,18 +683,20 @@
             (4, ref('stock.group_stock_user')),
             (4, ref('fleet.fleet_group_manager')),
 
-                (3, ref('equiport_custom.inventory_account_user_lot_readonly')),
-                (3, ref('equiport_custom.helpdesk_account_user')),
-                (3, ref('equiport_custom.reports_helpdesk_account_user')),
-                (3, ref('equiport_custom.rescue_account_user_readonly')),
-                (3, ref('equiport_custom.sales_account_user_readonly')),
-                (3, ref('equiport_custom.inventory_account_user_product_readonly')),
-                (3, ref('equiport_custom.inventory_account_user_quant_readonly')),
+            (3, ref('equiport_custom.inventory_account_user_lot_readonly')),
+            (3, ref('equiport_custom.helpdesk_account_user')),
+            (3, ref('equiport_custom.reports_helpdesk_account_user')),
+            (3, ref('equiport_custom.rescue_account_user_readonly')),
+            (3, ref('equiport_custom.sales_account_user_readonly')),
+            (3, ref('equiport_custom.inventory_account_user_product_readonly')),
+            (3, ref('equiport_custom.inventory_account_user_quant_readonly')),
 
-            (4, ref('equiport_custom.sale_account_user')),
-            (4, ref('equiport_custom.sale_subscription_account_user')),
-            (4, ref('equiport_custom.fleet_account_user')),
             (4, ref('equiport_custom.inventory_account_user')),
+            (4, ref('equiport_custom.reports_inventory_account_user')),
+            (4, ref('equiport_custom.group_inventory_supervisor')),
+            (4, ref('equiport_custom.sale_subscription_account_user')),
+            (4, ref('equiport_custom.sale_account_user')),
+            (4, ref('equiport_custom.fleet_account_user')),
             (4, ref('equiport_custom.rescue_account_user')),
             (4, ref('equiport_custom.repair_account_user')),
             (4, ref('equiport_custom.rental_account_user')),
@@ -704,7 +706,6 @@
             (4, ref('equiport_custom.reports_sale_subscription_account_user')),
             (4, ref('equiport_custom.reports_fleet_account_user')),
             (4, ref('equiport_custom.reports_repair_account_user')),
-            (4, ref('equiport_custom.reports_inventory_account_user')),
             (4, ref('equiport_custom.reports_rescue_account_user')),
             (4, ref('equiport_custom.reports_crm_account_user')),
             (4, ref('equiport_custom.rental_stock_picking')),
@@ -712,7 +713,6 @@
             (4, ref('equiport_custom.contacts_account_user')),
             (4, ref('equiport_custom.contact_account_user_readonly')),
             (4, ref('equiport_custom.crm_account_user')),
-            (4, ref('equiport_custom.group_inventory_supervisor')),
             ]"/>
 <!-- se cambio de 4 a 3 para permitir editar cotizaciones a operaciones-->
         </record>
@@ -751,10 +751,15 @@
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids" eval="[(4, ref('rental_stock_picking')),
             (4, ref('equiport_custom.allowed_adjust_inventory')),
-                (4, ref('equiport_custom.sales_account_user_readonly')),
-                (4, ref('equiport_custom.rescue_account_user_readonly')),
-                (4, ref('equiport_custom.rental_account_user_readonly')),
-                (4, ref('equiport_custom.purchase_account_user_readonly')),
+            (4, ref('equiport_custom.rental_account_user')),
+            (4, ref('equiport_custom.reports_rental_account_user')),
+            (4, ref('equiport_custom.rental_stock_picking')),
+            (4, ref('equiport_custom.rental_account_deposit')),
+            (4, ref('equiport_custom.sales_account_user_readonly')),
+            (4, ref('equiport_custom.rescue_account_user_readonly')),
+            (4, ref('equiport_custom.rental_account_user_readonly')),
+
+            (3, ref('equiport_custom.purchase_account_user_readonly')),
             ]"/>
         </record>
 
@@ -765,6 +770,9 @@
                    eval="[(4, ref('group_inventory_user')),
                    (4, ref('supervisor_stock_order_point')),
 
+                    (3, ref('purchase.group_purchase_user')),
+                    (3, ref('equiport_custom.purchase_account_user')),
+
                     (4, ref('equiport_custom.settings_account_in_user')),
                     (4, ref('documents.group_documents_user')),
                     (4, ref('sale_subscription.group_sale_subscription_view')),
@@ -774,9 +782,7 @@
                     (4, ref('project.group_project_user')),
                     (4, ref('hr_timesheet.group_hr_timesheet_user')),
                     (4, ref('stock.group_stock_manager')),
-                    (4, ref('purchase.group_purchase_user')),
                     (4, ref('fleet.fleet_group_manager')),
-                    (4, ref('equiport_custom.purchase_account_user')),
                     (4, ref('equiport_custom.fleet_account_user')),
                     (4, ref('equiport_custom.inventory_account_user')),
                     (4, ref('equiport_custom.rescue_account_user')),
