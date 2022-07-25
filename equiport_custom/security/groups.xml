@@ -682,7 +682,7 @@
             (4, ref('hr_timesheet.group_hr_timesheet_user')),
             (4, ref('stock.group_stock_user')),
             (4, ref('fleet.fleet_group_manager')),
-
+            (4, ref('equiport_custom.settings_account_op_user')),
 
             (3, ref('equiport_custom.group_inventory_supervisor')),
             (3, ref('equiport_custom.inventory_account_user_lot_readonly')),
