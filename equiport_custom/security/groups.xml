@@ -692,6 +692,7 @@
             (3, ref('equiport_custom.sales_account_user_readonly')),
             (3, ref('equiport_custom.inventory_account_user_product_readonly')),
             (3, ref('equiport_custom.inventory_account_user_quant_readonly')),
+            (3, ref('group_inventory_user')),
 
             (4, ref('equiport_custom.reports_inventory_account_user')),
             (4, ref('equiport_custom.sale_subscription_account_user')),
