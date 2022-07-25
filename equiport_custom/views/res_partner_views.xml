@@ -110,11 +110,18 @@
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']/group[@name='sale']"
                        position="inside">
                     <field name="credit_limit"
-                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
+                           attrs="{'required':[('allowed_credit', '=', True)]}"/>
                     <field name="credit_warning"
-                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>
-                    <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>
-                    <field name="date_last_credit" force_save="1" attrs="{'invisible':[('allowed_credit', '=', False)], 'readonly':[('allowed_credit', '=', True)]}"/>
+                           attrs="{'required':[('allowed_credit', '=', True)]}"/>
+                    <field name="over_credit"/>
+                    <field name="date_last_credit" force_save="1" attrs="{'readonly':[('allowed_credit', '=', True)]}"/>
+<!--                    Como estaba por defecto-->
+<!--                    <field name="credit_limit"-->
+<!--                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>-->
+<!--                    <field name="credit_warning"-->
+<!--                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>-->
+<!--                    <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>-->
+<!--                    <field name="date_last_credit" force_save="1" attrs="{'invisible':[('allowed_credit', '=', False)], 'readonly':[('allowed_credit', '=', True)]}"/>-->
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']" position="inside">
