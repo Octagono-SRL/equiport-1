@@ -136,38 +136,38 @@
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="attributes">
                     <attribute name="attrs">{'required': True, 'readonly': [('qty_invoiced', '&gt;', 0)]}</attribute>
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
-                                <!--taller equiport_custom.group_operations_user-->
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
+                                <!--taller -->
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='discount']"
                        position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
-                                <!--taller equiport_custom.group_operations_user-->
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
+                                <!--taller -->
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_subtotal']"
                        position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
-                               <!--taller equiport_custom.group_operations_user-->
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
+                               <!--taller -->
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='tax_id']"
                        position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
-                                <!--taller equiport_custom.group_operations_user-->
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
+                                <!--taller -->
                 </xpath>
 
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_invoice']"
                        position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_general_manager</attribute>
-              <!--taller equiport_custom.group_operations_user-->
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_general_manager</attribute>
+              <!--taller -->
                 </xpath>
 
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='preview_sale_order']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user,equiport_custom.group_general_manager
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_commercial_user,equiport_custom.group_account_user,equiport_custom.group_general_manager
                     </attribute>
-              <!--taller equiport_custom.group_operations_user-->
+              <!--taller -->
                 </xpath>
 
 
@@ -181,8 +181,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='open_return']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
-               <!--taller equiport_custom.group_operations_user-->
+                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
+               <!--taller -->
                 </xpath>
 
             </field>
