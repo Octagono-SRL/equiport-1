@@ -527,7 +527,7 @@
                 (4, ref('equiport_custom.eq_group_purchase_user')),
                 (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_product_readonly')),
-                (4, ref('equiport_custom.contact_account_user_readonly')),
+                (3, ref('equiport_custom.contact_account_user_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
             ]"/>
         </record>
@@ -554,7 +554,7 @@
             (4, ref('equiport_custom.subscription_account_user_generate_invoice')),
             (4, ref('equiport_custom.helpdesk_account_user')),
             (4, ref('equiport_custom.reports_helpdesk_account_user')),
-            (4, ref('equiport_custom.contact_account_user_readonly')),
+            (3, ref('equiport_custom.contact_account_user_readonly')),
             (4, ref('equiport_custom.sale_subscription_account_user')),
             (4, ref('equiport_custom.inventory_account_user')),
             (4, ref('equiport_custom.sale_account_user')),
@@ -816,7 +816,7 @@
             <field name="name">Encargado Almacen</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids" eval="[
-                (4, ref('equiport_custom.group_inventory_supervisor')),
+                (3, ref('equiport_custom.group_inventory_supervisor')),
 
                 (4, ref('documents.group_documents_user')),
                 (4, ref('sale_subscription.group_sale_subscription_view')),
