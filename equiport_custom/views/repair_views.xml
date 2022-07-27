@@ -58,39 +58,39 @@
                 <button name="action_repair_cancel" type="object"
                         attrs="{'invisible':['|', ('state', '=', 'cancel'), ('invoice_state', '!=', 'draft')]}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_repair_cancel" type="object"
                         attrs="{'invisible': ['|', ('state','=', 'cancel',), ('invoice_state', '=', 'draft')]}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_supervisor,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_repair_invoice_create" type="object"  class="oe_highlight"
                         groups="account.group_account_invoice"
                         attrs="{'invisible': ['|', ('state', '!=', '2binvoiced'), ('invoice_id', '!=', False)]}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_account_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                  <button name="action_validate" states="draft" type="object"  class="oe_highlight"
                           position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                  <button name="action_send_mail" states="draft"  type="object"
                           position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
                    <button name="print_repair_order" states="draft" type="object"
                             position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_repair_end" states="under_repair" type="object"  class="oe_highlight"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
 
