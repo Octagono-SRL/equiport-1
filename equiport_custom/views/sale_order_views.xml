@@ -62,8 +62,9 @@
                     <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'to invoice'),
                         ('fsm_invoice_available', '=', False)]}
                     </attribute>
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_account_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_general_manager</attribute>
                 </button>
+<!--                crear factura-->
 
                 <button name="%(sale.action_view_sale_advance_payment_inv)d" type="action"
                         context="{'default_advance_payment_method': 'percentage'}"
@@ -73,11 +74,11 @@
                         ('fsm_invoice_available', '=', False),
                         ('state', '!=', 'sale'),]}
                     </attribute>
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_account_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_operations_h_user</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_general_manager,equiport_custom.group_operations_h_user</attribute>
                 </button>
 
                 <button name="action_cancel" type="object" position="attributes">
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_operations_h_user</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']),
                         ('id', '=', False)]}
                     </attribute>
@@ -85,25 +86,25 @@
 
                 <button name="action_confirm" id="action_confirm" class="btn-primary" type="object"
                         attrs="{'invisible': [('state', 'not in', ['sent'])]}">
-                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_confirm" type="object" attrs="{'invisible': [('state', 'not in', ['draft'])]}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                 </button>
                 <button name="action_draft" states="cancel" type="object"
                           position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_quotation_send" type="object" states="draft"
                         class="btn-primary" position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_quotation_send" type="object" states="sent,sale" position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <field name="partner_id" position="after">
@@ -181,7 +182,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='open_return']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                <!--taller -->
                 </xpath>
 
@@ -196,7 +197,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='action_confirm']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
             </field>
         </record>
@@ -211,7 +212,7 @@
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_open_subscriptions']"
                        position="attributes">
                     <!-- Add your fields or attributes here -->
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_account_user,equiport_custom.group_general_manager
+                    <attribute name="groups">equiport_custom.group_commercial_user,equiport_custom.group_account_user,equiport_custom.group_general_manager
                     </attribute>
                 </xpath>
 
