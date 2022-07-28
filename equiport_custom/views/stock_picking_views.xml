@@ -90,7 +90,7 @@
                     <header attrs="{'invisible': ['|', ('access_granted', '=', True), '|',('picking_type_code', 'not in', ['outgoing', 'internal']),'|', ('is_rental','=', True), '|',('is_fsm','=', True), ('is_gate_service','=', True)]}">
                         <button name="request_access" string="Solicitar autorización" type="object"
                                 class="oe_highlight"
-                                groups="equiport_custom.group_inventory_stock_manager,equiport_custom.group_inventory_user,equiport_custom.group_general_manager"
+                                groups="equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_inventory_stock_manager,equiport_custom.group_inventory_user,equiport_custom.group_general_manager"
                                 attrs="{'invisible': [('access_requested', '=', True)]}"/>
 
                         <button name="grant_access" string="Conceder autorización" type="object"

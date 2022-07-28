@@ -85,20 +85,20 @@
                 <header position="inside">
                     <button name="add_deposit" type="object" string="Agregar deposito" class="oe_highlight"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']),('deposit_status','in',['added', 'returned'])]}"
-                            groups="equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_account_user,equiport_custom.group_general_manager"/>
+                            groups="equiport_custom.group_account_user,equiport_custom.group_general_manager"/>
                     <button name="remove_deposit" type="object" string="Devolver deposito" class="oe_highlight"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), '|',('state', 'not in', ['sale']), ('deposit_status','in',['returned', False])]}"
-                            groups="equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_account_user,equiport_custom.group_general_manager"/>
+                            groups="equiport_custom.group_account_user,equiport_custom.group_general_manager"/>
                     <button name="request_access" type="object" string="Solicitar Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', True), '|', ('access_granted', '=', True), ('state', 'not in', ['sent', 'sale'])]}"
-                            groups="equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager"/>
+                            groups="equiport_custom.group_commercial_user,equiport_custom.group_general_manager"/>
 
                     <button name="grant_access" type="object" string="Conceder Aprobación"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False),'|', ('access_requested', '=', False), ('access_granted', '=', True)]}"
                             groups="equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_commercial_manager,equiport_custom.group_general_manager"/>
 
                     <button name="update_existing_rental_subscriptions" class="btn btn-danger" type="object"
-                            groups="equiport_custom.group_operations_h_user,equiport_custom.group_commercial_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager"
+                            groups="equiport_custom.group_commercial_user,equiport_custom.group_general_manager"
                             string="Actualizar subscripción"
                             attrs="{'invisible':['|', ('is_rental_order', '=', False), ('rental_sub_state', 'in', ['closed', False])]}"
                             confirm="¿Está seguro de continuar? esta acción actualizara todas las lineas de la subscripción existente."/>
@@ -110,7 +110,7 @@
                     <attribute name="string">
                         Seleccionar unidades
                     </attribute>
-                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_manager,equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
 
