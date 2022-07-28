@@ -148,7 +148,7 @@
 
                 <xpath expr="//notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='price_subtotal']"
                        position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_account_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_account_user,equiport_custom.group_commercial_user,equiport_custom.group_general_manager</attribute>
                                <!--taller -->
                 </xpath>
 
