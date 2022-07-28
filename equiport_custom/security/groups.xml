@@ -592,7 +592,6 @@
                     (3, ref('equiport_custom.fleet_account_user')),
                     (3, ref('equiport_custom.contact_account_user_readonly')),
                     (3, ref('group_inventory_user')),
-                    (3, ref('equiport_custom.inventory_account_user')),
                     (3, ref('equiport_custom.group_inventory_supervisor')),
                       ]"/>
         </record>
@@ -991,7 +990,7 @@
             (4, ref('equiport_custom.reports_rescue_account_user')),
             (4, ref('equiport_custom.reports_crm_account_user')),
             (3, ref('equiport_custom.rental_stock_picking')),
-            (4, ref('equiport_custom.allowed_transfer')),
+            (3, ref('equiport_custom.allowed_transfer')),
             (4, ref('equiport_custom.contacts_account_user')),
             (4, ref('equiport_custom.contact_account_user_readonly')),
             (4, ref('equiport_custom.crm_account_user')),
