@@ -988,6 +988,11 @@
             (4, ref('equiport_custom.reports_purchase_account_user')),
             (4, ref('equiport_custom.purchase_account_user')),
             (4, ref('equiport_custom.purchase_account_user_readonly')),
+            (3, ref('equiport_custom.purchase_requisition_account_user_readonly')),
+        (4, ref('equiport_custom.fleet_account_user_readonly')),
+(4, ref('equiport_custom.repair_account_user_readonly')),
+(4, ref('equiport_custom.rescue_account_user_readonly')),
+
             (4, ref('equiport_custom.sale_subscription_account_user')),
             (4, ref('equiport_custom.sale_account_user')),
             (4, ref('equiport_custom.sales_account_user_readonly')),
