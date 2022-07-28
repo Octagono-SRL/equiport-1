@@ -535,7 +535,6 @@
                     (3, ref('equiport_custom.fleet_account_user')),
                     (3, ref('equiport_custom.contact_account_user_readonly')),
                     (3, ref('group_inventory_user')),
-                    (3, ref('equiport_custom.inventory_account_user')),
                     (3, ref('equiport_custom.group_inventory_supervisor')),
 
            ]"/>
