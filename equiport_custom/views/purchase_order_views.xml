@@ -109,7 +109,7 @@
                     <!--   TODO SUPUESTO A CAMBIAR EL GROUP USER-->
                     <button name="%(wizard_service_picking_act_window)d" type="action"
                             context="{'default_purchase_order_id': active_id}"
-                            groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_operations_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager,equiport_custom.group_general_manager"
+                            groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager,equiport_custom.group_general_manager"
                             attrs="{'invisible': ['|', ('state', '!=', 'purchase'), ('receivable_service', '=', False)]}"
                             string="Conduce de Servicio" class="oe_highlight"
                             help="Crear un conduce para recibir servicios"/>
