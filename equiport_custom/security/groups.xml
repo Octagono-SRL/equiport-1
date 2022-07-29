@@ -928,8 +928,10 @@
             <field name="implied_ids"
                    eval="[(4, ref('group_inventory_user')),
                    (4, ref('supervisor_stock_order_point')),
-                    (3, ref('purchase.group_purchase_user')),
-                    (3, ref('equiport_custom.purchase_account_user')),
+                    (4, ref('purchase.group_purchase_user')),
+                    (4, ref('equiport_custom.purchase_account_user')),
+                    (4, ref('equiport_custom.purchase_account_user_readonly')),
+                    (4, ref('equiport_custom.reports_purchase_account_user')),
                     (4, ref('equiport_custom.crm_account_user')),
                     (4, ref('equiport_custom.settings_account_in_user')),
                     (4, ref('documents.group_documents_user')),
