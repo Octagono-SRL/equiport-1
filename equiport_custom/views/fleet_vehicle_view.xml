@@ -20,19 +20,19 @@
                         <div class="oe_button_box" name="button_box">
                             <button name="open_assignation_logs" type="object" class="oe_stat_button" icon="fa-history"
                                     attrs="{'invisible':[('unit_type', '!=', 'vehicle')]}"
-                                    groups="equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
+                                    groups="equiport_custom.group_operations_manager,equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
                                 <field name="history_count" widget="statinfo" string="Drivers History"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-book"
                                     context="{'xml_id':'fleet_vehicle_log_contract_action'}"
                                     help="show the contract for this vehicle"
-                                    groups="equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
+                                    groups="equiport_custom.group_operations_manager,equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
                                 <field name="contract_count" widget="statinfo" string="Contracts"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-wrench"
                                     context="{'xml_id':'fleet_vehicle_log_services_action'}"
                                     help="show the services logs for this vehicle"
-                                    groups="equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
+                                    groups="equiport_custom.group_operations_manager,equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
                                 <field name="service_count" widget="statinfo" string="Services"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button"
@@ -46,7 +46,7 @@
                                     context="{'xml_id':'fleet_unit_hourmeter_action', 'xml_origin': 'hourmeter'}"
                                     help="Muestra los registros de Horometro de la unidad"
                                     attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}"
-                                    groups="equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
+                                    groups="equiport_custom.group_operations_manager,equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
                                 <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
                             </button>
                             <button name="return_action_to_open" type="object" class="oe_stat_button"
@@ -54,7 +54,7 @@
                                     context="{'xml_id':'fleet_vehicle_log_tires_action', 'xml_origin': 'tires'}"
                                     help="Historial de asignacion de neumaticos"
                                     attrs="{'invisible': [('unit_type', 'not in', ['chassis'])]}"
-                                    groups="equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
+                                    groups="equiport_custom.group_operations_manager,equiport_custom.group_inventory_stock_manager,equiport_custom.group_operations_h_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager,equiport_custom.group_inventory_user">
                                 <field name="tires_count" widget="statinfo" string="Neumaticos"/>
                             </button>
                         </div>
