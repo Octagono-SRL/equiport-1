@@ -59,17 +59,17 @@
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_subscription_invoice']"
                        position="attributes">
                     <!-- Add your fields or attributes here -->
-                    <attribute name="groups">equiport_custom.group_account_user</attribute>
+                    <attribute name="groups">equiport_custom.group_account_manager,equiport_custom.group_account_user</attribute>
                 </xpath>
 
                 <button name="generate_recurring_invoice" class="oe_link" icon="fa-long-arrow-right" type="object" groups="base.group_no_one" attrs="{'invisible': [('payment_mode', '=', 'manual')]}" position="attributes">
-                    <attribute name="groups">equiport_custom.subscription_account_user_generate_invoice</attribute>
+                    <attribute name="groups">equiport_custom.group_account_manager,equiport_custom.subscription_account_user_generate_invoice</attribute>
                 </button>
 
                  <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_open_sales']"
                        position="attributes">
                     <!-- Add your fields or attributes here -->
-                    <attribute name="groups">equiport_custom.group_commercial_user</attribute>
+                    <attribute name="groups">equiport_custom.group_account_manager,equiport_custom.group_commercial_user</attribute>
                 </xpath>
 
             </field>

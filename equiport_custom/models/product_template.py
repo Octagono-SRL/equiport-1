@@ -98,7 +98,7 @@ class ProductTemplate(models.Model):
 
     def action_update_quantity_on_hand(self):
         advanced_option_groups = [
-            'equiport_custom.group_inventory_manager',
+            'equiport_custom.group_inventory_manager', 'equiport_custom.group_inventory_supervisor',
         ]
         if (self.env.user.user_has_groups(','.join(advanced_option_groups))):
             return super(ProductTemplate, self).action_update_quantity_on_hand()
