@@ -57,7 +57,7 @@ class PurchaseRequisition(models.Model):
     @api.depends('state')
     def _check_confirm_group(self):
         for rec in self:
-            if self.env.user in self.env.company.user_pro_allow_confirm or self.env.user.user_has_groups('equiport_custom.group_operations_supervisor'):
+            if self.env.user in self.env.company.user_pro_allow_confirm or self.env.user.user_has_groups('equiport_custom.group_operations_manager'):
                 rec.is_confirm_group = True
             else:
                 rec.is_confirm_group = False

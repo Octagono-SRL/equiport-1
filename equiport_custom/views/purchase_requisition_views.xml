@@ -58,7 +58,8 @@
             <field name="arch" type="xml">
 
                 <header position="inside">
-                    <button name="allow_requisition" type="object" attrs="{'invisible':['|',('allowed_confirm', '=', True), ('is_confirm_group', '=', False)]}" class="btn-primary" string="Aprobar Reposicion" groups="equiport_custom.eq_group_purchase_manager,equiport_custom.group_operations_supervisor,equiport_custom.group_general_manager"/>
+                    <button name="allow_requisition" type="object" attrs="{'invisible':['|',('allowed_confirm', '=', True), ('is_confirm_group', '=', False)]}" class="btn-primary" string="Aprobar Reposicion"
+                            groups="equiport_custom.group_operations_manager,equiport_custom.eq_group_purchase_manager,equiport_custom.group_operations_supervisor,equiport_custom.group_general_manager"/>
                 </header>
 
                 <div class="oe_button_box" name="button_box" position="inside">
