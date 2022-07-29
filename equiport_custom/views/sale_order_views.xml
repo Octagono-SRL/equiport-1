@@ -74,7 +74,7 @@
                         ('fsm_invoice_available', '=', False),
                         ('state', '!=', 'sale'),]}
                     </attribute>
-                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_general_manager,equiport_custom.group_operations_h_user</attribute>
+                    <attribute name="groups">equiport_custom.group_account_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_cancel" type="object" position="attributes">
