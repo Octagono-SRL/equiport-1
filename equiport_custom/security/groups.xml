@@ -973,13 +973,13 @@
             <field name="name">Encargado Almacen</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids" eval="[
-            (3, ref('sale_subscription.group_sale_subscription_view')),
+            (4, ref('sale_subscription.group_sale_subscription_view')),
             (3, ref('sales_team.group_sale_salesman_all_leads')),
-            (3, ref('sign.group_sign_employee')),
-            (3, ref('industry_fsm.group_fsm_manager')),
-            (3, ref('project.group_project_user')),
-            (3, ref('hr_timesheet.group_hr_timesheet_user')),
-            (3, ref('stock.group_stock_user')),
+            (4, ref('sign.group_sign_employee')),
+            (4, ref('industry_fsm.group_fsm_manager')),
+            (4, ref('project.group_project_user')),
+            (4, ref('hr_timesheet.group_hr_timesheet_user')),
+            (4, ref('stock.group_stock_user')),
             (3, ref('fleet.fleet_group_manager')),
             (4, ref('equiport_custom.subscription_account_user_readonly')),
             (4, ref('equiport_custom.settings_account_op_user')),
@@ -992,7 +992,7 @@
             (4, ref('equiport_custom.purchase_account_user')),
             (4, ref('equiport_custom.purchase_account_user_readonly')),
             (3, ref('equiport_custom.purchase_requisition_account_user_readonly')),
-            (4, ref('equiport_custom.repair_account_user_readonly')),
+            (3, ref('equiport_custom.repair_account_user_readonly')),
             (4, ref('equiport_custom.sale_subscription_account_user')),
             (4, ref('equiport_custom.sale_account_user')),
             (4, ref('equiport_custom.sales_account_user_readonly')),
