@@ -140,11 +140,11 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='open_return']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_operations_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_manager,equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
 
                 <xpath expr="//button[@name='open_pickup']" position="attributes">
-                    <attribute name="groups">equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_operations_manager,equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
 
 

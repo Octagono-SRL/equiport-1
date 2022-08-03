@@ -26,7 +26,7 @@
         </record>
         <!--permiso de acceso a modulo contabilidad-->
         <record model="ir.ui.menu" id="account_accountant.menu_accounting">
-            <field name="groups_id" eval="[(6,0, [ref('equiport_custom.group_account_user'), ref('equiport_custom.group_account_manager'), ref('equiport_custom.group_admin_manager'), ref('base.group_system')])]"/>
+            <field name="groups_id" eval="[(6,0, [ref('equiport_custom.group_account_user'), ref('equiport_custom.group_account_manager'),ref('equiport_custom.group_inventory_supervisor'), ref('equiport_custom.group_admin_manager'), ref('base.group_system')])]"/>
         </record>
         <record model="ir.ui.menu" id="account.menu_finance_configuration">
             <field name="groups_id" eval="[(6,0, [ref('equiport_custom.settings_account_cont_user'), ref('base.group_system')])]"/>
