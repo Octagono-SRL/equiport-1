@@ -922,7 +922,7 @@
             ]"/>
         </record>
 
-        <record id="group_inventory_supervisor" model="res.groups">
+            <record id="group_inventory_supervisor" model="res.groups">
             <field name="name">Supervisor Inventario</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids"
@@ -938,7 +938,7 @@
                     (4, ref('sale_subscription.group_sale_subscription_view')),
                     (4, ref('sales_team.group_sale_salesman_all_leads')),
                     (4, ref('sign.group_sign_employee')),
-                    (4, ref('industry_fsm.group_fsm_user')),
+                    (4, ref('industry_fsm.group_fsm_manager')),
                     (4, ref('project.group_project_user')),
                     (4, ref('hr_timesheet.group_hr_timesheet_user')),
                     (4, ref('stock.group_stock_manager')),
