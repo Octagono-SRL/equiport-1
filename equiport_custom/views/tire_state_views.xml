@@ -22,7 +22,7 @@
         <menuitem id="tire_state_menuitem"
                   action="action_tire_state"
                   parent="stock.menu_product_in_config_stock"
-                  groups="stock.group_stock_manager"
+                  groups="stock.group_stock_manager,equiport_custom.group_admin_manager,equiport_custom.group_general_manager"
                   sequence="101"/>
     </data>
 </odoo>

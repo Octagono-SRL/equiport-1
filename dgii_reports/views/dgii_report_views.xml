@@ -229,7 +229,7 @@
     <menuitem id="marcos_account_dgii_menu" name="DGII"
               parent="account.menu_finance_reports"
               sequence="5"
-              groups="account.group_account_user"/>
+              groups="account.group_account_user,account.group_account_manager"/>
 
     <menuitem id="dgii_report_parent_menu" name="Data Sending"
               parent="marcos_account_dgii_menu"

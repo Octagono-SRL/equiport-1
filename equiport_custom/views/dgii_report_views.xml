@@ -10,11 +10,11 @@
 
                 <button name="state_sent" type="object"
                         class="oe_highlight" attrs="{'invisible': [('state', '!=', 'generated')]}" position="attributes">
-                    <attribute name="groups">equiport_custom.group_account_manager</attribute>
+                    <attribute name="groups">equiport_custom.group_admin_manager,equiport_custom.group_account_manager</attribute>
                 </button>
 
                 <button name="state_sent" position="before">
-                    <button name="change_state" attrs="{'invisible': [('state', '!=', 'sent')]}" groups="equiport_custom.group_account_manager" type="object" string="DESBLOQUEAR"/>
+                    <button name="change_state" attrs="{'invisible': [('state', '!=', 'sent')]}" groups="equiport_custom.group_admin_manager,equiport_custom.group_account_manager" type="object" string="DESBLOQUEAR"/>
                 </button>
 
             </field>
