@@ -66,13 +66,17 @@
         <field name="model">custom.rental.report</field>
         <field name="arch" type="xml">
             <search string="Análisis de Alquiler">
-                <field name="pickup_date" />
-                <field name="return_date" />
-                <filter string="Fecha de Entrega" name="pickup_month" invisible="1" date="pickup_date" default_period="this_year"/>
-                <filter string="Fecha de Retorno" name="return_month" invisible="1" date="return_date" default_period="this_year"/>
+                <field name="pickup_date"/>
+                <field name="return_date"/>
+                <filter string="Fecha de Entrega" name="pickup_month" invisible="1" date="pickup_date"
+                        default_period="this_year"/>
+                <filter string="Fecha de Retorno" name="return_month" invisible="1" date="return_date"
+                        default_period="this_year"/>
                 <filter name="Quotations" string="Cotizaciones" domain="[('state','in', ['draft', 'sent'])]"/>
                 <filter name="confirmed_orders" string="Ordenes confirmadas"
                         domain="[('state', 'in', ['sale', 'done'])]"/>
+                <filter name="rental_status" string="Estado de renta"
+                        domain="[('rental_status', 'in', ['draft', 'sent', 'pickup'])]"/>
                 <separator/>
                 <field name="product_id"/>
                 <field name="order_id"/>
@@ -90,6 +94,7 @@
                     <filter string="Serial Number" name="serial_lot_id" context="{'group_by': 'lot_id'}"/>
                     <filter string="Categoria de producto" name="Category" context="{'group_by':'categ_id'}"/>
                     <filter string="Estado" name="status" context="{'group_by':'state'}"/>
+<!--                    <filter string="Estado de renta" name="rental_status" context="{'group_by':'rental_status'}"/>-->
                     <filter string="Compañia" name="company" groups="base.group_multi_company"
                             context="{'group_by':'company_id'}"/>
                 </group>
@@ -102,10 +107,11 @@
         <field name="res_model">custom.rental.report</field>
         <field name="view_mode">tree,graph,pivot</field>
         <field name="context">{
-            'search_default_confirmed_orders': 1,
+            'search_default_confirmed_orders': 0,
+            'search_default_rental_status': 1,
             'search_default_customer': 1,
-            'search_default_order': 1,
-            'search_default_product': 1,
+            'search_default_order': 0,
+            'search_default_product': 0,
             'search_default_serial_lot_id': 1,
             'group_by_no_leaf': 0,
             'group_by': []}</field>
