@@ -278,7 +278,7 @@ class DgiiReport(models.Model):
     csmr_card = fields.Monetary('Credit Card / Debit Card', copy=False)
     csmr_credit = fields.Monetary('Credit', copy=False)
     csmr_bond = fields.Monetary('Gift certificates or vouchers', copy=False)
-    csmr_swap = fields.Monetary('Swap', copy=False)
+    csmr_swap = fields.Monetary('Swaps', copy=False)
     csmr_others = fields.Monetary('Other Sale Forms', copy=False)
 
     def _get_country_number(self, partner_id):
