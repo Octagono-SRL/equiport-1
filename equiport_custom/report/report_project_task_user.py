@@ -28,7 +28,7 @@ class ReportProjectTaskUser(models.Model):
     chassis = fields.Char(string="Chasis")
     gen_set = fields.Char(string="Gen set")
     damage_type_ids = fields.Many2many(related='task_id.damage_type_ids',
-                                       string="Tipos de averia ids")
+                                       string="Tipos de averias ids")
     value_damage_type = fields.Char(string="Tipo de averia")
     product_line_value = fields.Char(string="Materiales")
     diet_value = fields.Float(string="Dieta")
