@@ -762,23 +762,22 @@
             <field name="name">Encargado Compras</field>
             <field name="category_id" ref="module_category_purchase_equiport"/>
             <field name="implied_ids" eval="[
-
                 (4, ref('sign.group_sign_employee')),
                 (4, ref('project.group_project_user')),
                 (4, ref('stock.group_stock_user')),
                 (4, ref('purchase.group_purchase_manager')),
                 (4, ref('documents.group_documents_user')),
-                (4, ref('equiport_custom.eq_group_purchase_user')),
+                (4, ref('equiport_custom.reports_contacts_account_user')),
+                (3, ref('equiport_custom.eq_group_purchase_user')),
                 (4, ref('equiport_custom.purchase_account_user')),
                 (4, ref('equiport_custom.reports_purchase_account_user')),
                 (4, ref('equiport_custom.settings_account_pur_user')),
-                (4, ref('equiport_custom.contact_account_user_readonly')),
+                (4, ref('equiport_custom.contacts_account_user')),
+                (3, ref('equiport_custom.contact_account_user_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_product_readonly')),
                 (4, ref('equiport_custom.inventory_account_user_quant_readonly')),
                 (4, ref('equiport_custom.request_cancel_purchase_order')),
-
-
             ]"/>
         </record>
 
