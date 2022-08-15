@@ -63,7 +63,7 @@
                 </header>
 
                 <div class="oe_button_box" name="button_box" position="inside">
-                    <button name="generate_order_comparison" type="object" class="oe_stat_button" icon="fa-list-alt" attrs="{'invisible': [('order_count', '&lt;', 2)]}" string="PO/Comparación" groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager"/>
+                    <button name="generate_order_comparison" type="object" class="oe_stat_button" icon="fa-list-alt" attrs="{'invisible': [('order_count', '&lt;', 2)]}" string="PO/Comparación" groups="equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager"/>
                 </div>
 
                 <field name="picking_type_id" position="after">

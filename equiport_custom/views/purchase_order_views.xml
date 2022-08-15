@@ -104,7 +104,7 @@
                     <button name="request_confirm" type="object"
                             attrs="{'invisible':['|', ('request_approval', '=', True), '|', ('approval_needed', '=', False), ('state', 'in', ['cancel', 'done', 'purchase'])]}"
                             string="Solicitar Aprobacion" class="oe_highlight"
-                            groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager"
+                            groups="equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager"
                             help="Realizar solicitud de autorización para realizar esta compra"/>
                     <!--   TODO SUPUESTO A CAMBIAR EL GROUP USER-->
                     <button name="%(wizard_service_picking_act_window)d" type="action"
