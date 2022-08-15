@@ -99,7 +99,7 @@
                             help="Autorizar cancelar esta orden"/>
                     <button name="request_cancel" type="object"
                             attrs="{'invisible':['|', ('requested_cancel', '=', True), ('state', '=', 'cancel')]}"
-                            groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager" string="Solicitar cancelación"
+                            groups="equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager" string="Solicitar cancelación"
                             class="oe_highlight" help="Realizar solicitud de autorización para cancelar esta orden"/>
                     <button name="request_confirm" type="object"
                             attrs="{'invisible':['|', ('request_approval', '=', True), '|', ('approval_needed', '=', False), ('state', 'in', ['cancel', 'done', 'purchase'])]}"
@@ -109,7 +109,7 @@
                     <!--   TODO SUPUESTO A CAMBIAR EL GROUP USER-->
                     <button name="%(wizard_service_picking_act_window)d" type="action"
                             context="{'default_purchase_order_id': active_id}"
-                            groups="equiport_custom.eq_group_purchase_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager,equiport_custom.group_general_manager"
+                            groups="equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_operations_supervisor,equiport_custom.group_operations_manager,equiport_custom.group_general_manager"
                             attrs="{'invisible': ['|', ('state', '!=', 'purchase'), ('receivable_service', '=', False)]}"
                             string="Conduce de Servicio" class="oe_highlight"
                             help="Crear un conduce para recibir servicios"/>
@@ -239,7 +239,7 @@
 
                 <button name="action_rfq_send" states="sent" type="object" context="{'send_rfq':True}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
                 <!--                <button name="action_rfq_send" states="sent" string="Re-Send by Email" type="object" context="{'send_rfq':True}"/>-->
                 <!--                <button name="action_rfq_send" states="purchase"  type="object" context="{'send_rfq':False}" position="attributes">-->
@@ -248,16 +248,16 @@
                 <button name="action_rfq_send" states="draft" type="object" context="{'send_rfq':True}"
                         class="oe_highlight"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <button name="action_rfq_send" states="purchase" type="object" context="{'send_rfq':False}"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
                 <button name="button_cancel" states="draft,to approve,sent,purchase" type="object"
                         position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
                 <button name="button_done" type="object" states="purchase" position="attributes">
                     <attribute name="groups">
@@ -267,7 +267,7 @@
 
                 <button name="print_quotation" type="object" states="draft" class="oe_highlight"
                         groups="base.group_user" position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                 <!--                <button name="button_confirm" type="object" states="sent"  class="oe_highlight" id="bid_confirm" position="attributes">-->
@@ -275,24 +275,23 @@
                 <!--                </button>-->
 
                 <button name="button_confirm" type="object" states="draft" id="draft_confirm" position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
-
 
                     <button name="button_confirm" type="object" states="sent"
                             class="oe_highlight" id="bid_confirm"
                             position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
                     <button name="button_confirm" type="object" states="draft"
                             id="draft_confirm"
                             position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
                 <button name="button_draft" states="cancel"  type="object"
                          position="attributes">
-                    <attribute name="groups">equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
+                    <attribute name="groups">equiport_custom.eq_group_purchase_manager,equiport_custom.eq_group_purchase_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
 
