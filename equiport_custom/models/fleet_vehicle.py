@@ -512,7 +512,6 @@ class FleetVehicleLogServices(models.Model):
     def _compute_fuel_product_data(self):
         for rec in self:
             fuel_products = self.env.company.fuel_product_fleet or []
-            fuel_qty = 0
             fuel_uom = None
             if rec.repair_id and rec.service_type_id == self.env.ref('equiport_custom.fuel_maintenance'):
                 fuel_lines = rec.repair_id.operations.filtered(lambda rl: rl.product_id in fuel_products)
@@ -521,10 +520,10 @@ class FleetVehicleLogServices(models.Model):
                 if len(uom) == 1:
                     fuel_uom = uom[0]
 
-            rec.write({
-                'fuel_product_qty': fuel_qty,
-                'fuel_product_unit': fuel_uom.id if fuel_uom is not None else False
-            })
+                rec.write({
+                    'fuel_product_qty': fuel_qty,
+                    'fuel_product_unit': fuel_uom.id if fuel_uom is not None else False
+                })
 
     def _inverse_fuel_product_data(self):
         for rec in self:
