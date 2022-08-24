@@ -98,9 +98,9 @@ class ProductTemplate(models.Model):
 
     def action_update_quantity_on_hand(self):
         advanced_option_groups = [
-            'equiport_custom.group_inventory_manager', 'equiport_custom.group_inventory_supervisor',
+            'equiport_custom.group_inventory_manager', 'equiport_custom.group_inventory_supervisor', 'equiport_custom.group_general_manager',
         ]
         if (self.env.user.user_has_groups(','.join(advanced_option_groups))):
             return super(ProductTemplate, self).action_update_quantity_on_hand()
         else:
-            raise ValidationError("Solo el encargado de almacen tiene acceso a esta parte.")
+            raise ValidationError("Solo tienen acceso a esta parte: encargado de almacen, supervisor de almacen y gerente general.")
