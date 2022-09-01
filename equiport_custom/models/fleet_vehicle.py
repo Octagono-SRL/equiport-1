@@ -306,6 +306,46 @@ class FleetVehicleLogTires(models.Model):
 
     def button_validate(self):
         self._action_validate()
+        self._get_picking_type_id()
+        self.action_stock_move()
+
+    def _get_picking_type_id(self):
+        picking_type_id = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing')
+        ], limit=1, order='id')
+
+        return picking_type_id or False
+
+    def action_stock_move(self):
+        picking_type_id = self._get_picking_type_id()
+        if not picking_type_id:
+            raise ValidationError("No se ha encontrado un tipo de conduce para realizar esta operación.")
+        if not picking_type_id.default_location_dest_id:
+            raise ValidationError(
+                "El tipo de operación ({}) no tiene configurada la ubicación destino por defecto.".format(
+                    picking_type_id.name))
+
+        for tires in self.tires_set_ids:
+            if not tires.log_service_product_ids:
+                raise ValidationError('Debe agregar por lo menos un neumatico!')
+            if not tires.picking_id:
+                picking_vals = {
+                    'picking_type_id': picking_type_id.id,
+                    'vehicle_id': self.vehicle_id,
+                    'product_id': tires.product_id,
+                    'product_lot_id': tires.product_lot_id,
+                    'location_id': picking_type_id.default_location_src_id.id,
+                    'location_dest_id': picking_type_id.default_location_dest_id.tires_equiport_stock_location,
+                    'move_type': 'direct',
+                    'company_id': tires.company_id.id
+                }
+
+                picking_id = self.env['stock.picking'].create(picking_vals)
+                tires.picking_id = picking_id.id
+                tires.service_picking_count = len(picking_id)
+                moves = tires.log_service_product_ids._create_stock_moves(picking_id)
+                move_ids = moves._action_confirm()
+                move_ids._action_assign()
 
     def _action_validate(self):
         # Validate no empty line

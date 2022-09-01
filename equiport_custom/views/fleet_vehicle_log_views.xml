@@ -44,11 +44,16 @@
                                 <div>
                                     <strong>
                                         <field name="vehicle_id" widget="res_partner_many2one"/>
-                                        <span class="float-right"><field name="date"/></span>
+                                        <span class="float-right">
+                                            <field name="date"/>
+                                        </span>
                                     </strong>
                                 </div>
                                 <div>
-                                    <span class="float-right"><field name="value"/> Km</span>
+                                    <span class="float-right">
+                                        <field name="value"/>
+                                        Km
+                                    </span>
                                 </div>
                             </div>
                         </t>
@@ -109,12 +114,16 @@
             <field name="arch" type="xml">
                 <form string="Historial de Neúmatico">
                     <header>
-                        <button name="button_validate" class="btn-primary" type="object" string="Validar" groups="equiport_custom.group_operations_supervisor,equiport_custom.group_general_manager,equiport_custom.group_inventory_user" states="draft"/>
+
+                        <button name="button_validate" class="btn-primary" type="object" string="Validar"
+                                groups="equiport_custom.group_operations_supervisor,equiport_custom.group_general_manager,equiport_custom.group_inventory_user"
+                                states="draft"/>
+
                         <field name="state" widget="statusbar" statusbar_visible="draft,open,close"/>
                     </header>
                     <sheet>
                         <group>
-<!--                            <label for="name"/>-->
+                            <!--                            <label for="name"/>-->
                             <h1>
                                 <field name="name" readonly="1" force_save="1"/>
                             </h1>
@@ -136,7 +145,8 @@
                                     <tree delete="0" create="0" editable="bottom">
                                         <field name="sequence" widget="handle"/>
                                         <field name="sequence_number" readonly="1" force_save="1"/>
-                                        <field name="product_id" domain="[('is_tire_product', '=', True)]" placeholder="Producto neumatico" style="height: 1.7rem !important;"/>
+                                        <field name="product_id" domain="[('is_tire_product', '=', True)]"
+                                               placeholder="Producto neumatico" style="height: 1.7rem !important;"/>
                                         <field name="product_lot_id" placeholder="Numero de referencia"/>
                                     </tree>
                                 </field>
@@ -198,7 +208,8 @@
             </field>
         </record>
 
-        <menuitem action="fleet_vehicle_log_tires_action" parent="fleet.fleet_vehicles" id="fleet_vehicle_log_tires_menu"
+        <menuitem action="fleet_vehicle_log_tires_action" parent="fleet.fleet_vehicles"
+                  id="fleet_vehicle_log_tires_menu"
                   groups="fleet.fleet_group_user" sequence="12"/>
         <!--        endregion-->
 
