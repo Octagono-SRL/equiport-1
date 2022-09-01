@@ -325,10 +325,15 @@ class FleetVehicleLogTires(models.Model):
                 "El tipo de operación ({}) no tiene configurada la ubicación destino por defecto.".format(
                     picking_type_id.name))
 
+        # Una lista para almacenar los stock_move
+        # move_lines = []
         for tires in self.tires_set_ids:
             if not tires.log_service_product_ids:
                 raise ValidationError('Debe agregar por lo menos un neumatico!')
+            # if not tire_line.stock_move_line_id:
             if not tires.picking_id:
+                # Aqui debes colocar lo necesario para crear un objecto de stock.move
+                # stock_move_vals en vez de picking_vals
                 picking_vals = {
                     'picking_type_id': picking_type_id.id,
                     'vehicle_id': self.vehicle_id,
@@ -339,13 +344,29 @@ class FleetVehicleLogTires(models.Model):
                     'move_type': 'direct',
                     'company_id': tires.company_id.id
                 }
-
+                # move_id = self.env['stock.move'].create(stock_move_vals)
                 picking_id = self.env['stock.picking'].create(picking_vals)
-                tires.picking_id = picking_id.id
-                tires.service_picking_count = len(picking_id)
-                moves = tires.log_service_product_ids._create_stock_moves(picking_id)
-                move_ids = moves._action_confirm()
-                move_ids._action_assign()
+
+                # move_lines.append(move_id)
+
+                # TODO Evaluar mejor las variables que tienes creadas
+                # tires.picking_id = picking_id.id
+                # tires.service_picking_count = len(picking_id)
+                # moves = tires.log_service_product_ids._create_stock_moves(picking_id)
+                # move_ids = moves._action_confirm()
+                # move_ids._action_assign()
+        # DEberia de estar aqui la creacion del picking
+        # picking_vals = {
+        #     'picking_type_id': picking_type_id.id,
+        #     'vehicle_id': self.vehicle_id,
+        #     'product_id': tires.product_id,
+        #     'product_lot_id': tires.product_lot_id,
+        #     'move_lines': move_lines,
+        #     'location_id': picking_type_id.default_location_src_id.id,
+        #     'location_dest_id': picking_type_id.default_location_dest_id.tires_equiport_stock_location,
+        #     'move_type': 'direct',
+        #     'company_id': tires.company_id.id
+        # }
 
     def _action_validate(self):
         # Validate no empty line
