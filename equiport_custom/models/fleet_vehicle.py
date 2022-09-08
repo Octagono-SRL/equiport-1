@@ -9,26 +9,18 @@ class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
 
     # region Campos modificados
-
     model_id = fields.Many2one('fleet.vehicle.model', 'Model',
                                tracking=True, required=False, help='Model of the vehicle')
-
     # endregion
-
     # region Nuevos Campos
-
     performance = fields.Float(string='Rendimiento',
                                tracking=True, help='Rendimiento en base a consumo y uso')
-
     # endregion
-
     # region Nuevos campos para unidades
-
     custom_type = fields.Char(string="Tipo")
     vehicle_token = fields.Char(string="Ficha")
-
     product_unit_id = fields.Many2one(comodel_name='product.product', string="Unidad",
-                                      domain="[('unit_type', '=', unit_type)]")
+                                      domain="['|',('unit_type', '=', unit_type),('is_vehicle', '=', True)]")
     unit_type = fields.Selection(
         [('vehicle', 'Vehiculo'), ('container', 'Contenedor'), ('gen_set', 'Gen Set'), ('chassis', 'Chasis'),
          ('utility', 'Utilitario')],
@@ -37,32 +29,23 @@ class FleetVehicle(models.Model):
                                     string="Marca de unidad")
     unit_model_id = fields.Many2one(comodel_name='unit.model', tracking=True,
                                     string="Modelo de unidad", domain="[('unit_type', '=', unit_type)]")
-
     container_type_id = fields.Many2one(related='product_unit_id.container_type_id', string="Tipo de contenedor")
-
     unit_size_id = fields.Many2one(related='product_unit_id.unit_size_id', string="Tamaño")
-
     unit_lot_id = fields.Many2one(
         'stock.production.lot', 'Serial', tracking=True,
         domain="[('product_id','=', product_unit_id), ('company_id', '=', company_id)]", check_company=True,
         help="Número de parte / Serie de esta unidad")
-
     unit_image_128 = fields.Image(related='unit_model_id.image_128', string="Logo unidad", readonly=True)
-
     hourmeter_count = fields.Integer(compute="_compute_count_all", string='Horómetro')
     hourmeter = fields.Float(compute='_get_hourmeter', inverse='_set_hourmeter', string='Último horómetro',
                              help='Medida del horómetro al momento de este registro')
     hourmeter_unit = fields.Selection([
         ('hours', 'Hr')
     ], 'Medida horómetro', default='hours', help='Medida de horometro ', required=True)
-
     odometer_km_cost = fields.Float(compute='compute_use_cost', string="Costo por kilometro", store=True)
     hourmeter_hr_cost = fields.Float(compute='compute_use_cost', string="Costo por hora", store=True)
-
     tires_count = fields.Integer(compute="_compute_count_all", string='Neumaticos')
-
     # endregion
-
     # region Nuevas funciones
 
     def button_restart_measurer(self):
@@ -179,7 +162,8 @@ class FleetVehicle(models.Model):
                  'unit_model_id.name', 'unit_model_id.brand_id.name', 'unit_lot_id.name')
     def _compute_vehicle_name(self):
         for record in self:
-            if record.unit_type == 'vehicle':
+            # agregando utility al bloque para que tenga serial
+            if record.unit_type == 'vehicle' or record.unit_type == 'utility':
                 record.name = (record.model_id.brand_id.name or '') + '/' + (record.model_id.name or '') + '/' + (
                         record.license_plate or _('No Plate'))
             else:
@@ -293,6 +277,9 @@ class FleetVehicleLogTires(models.Model):
         help="Cuando el registro es creado, el estado es 'Borrador'.\n"
              "Si el registro es confimado, el estado será 'En uso' y estara registrando los cambios en las lineas de neumaticos.\n"
              "'Cerrado' Puede colocarse manualmente en cerrado siempre y cuando todos los neumaticos hayan sido retirados.")
+    # agregando conduce
+    # picking_ids = fields.One2many(comodel_name='stock.picking', inverse_name='tire_log_id', string="Conduces")
+    # agregando conduce
 
     @api.depends('vehicle_id', 'date')
     def _compute_vehicle_log_tire_name(self):
@@ -306,67 +293,69 @@ class FleetVehicleLogTires(models.Model):
 
     def button_validate(self):
         self._action_validate()
-        self._get_picking_type_id()
-        self.action_stock_move()
+        # self.action_stock_move()
 
-    def _get_picking_type_id(self):
-        picking_type_id = self.env['stock.picking.type'].search([
-            ('code', '=', 'outgoing')
-        ], limit=1, order='id')
-
-        return picking_type_id or False
-
-    def action_stock_move(self):
-        picking_type_id = self._get_picking_type_id()
-        if not picking_type_id:
-            raise ValidationError("No se ha encontrado un tipo de conduce para realizar esta operación.")
-        if not picking_type_id.default_location_dest_id:
-            raise ValidationError(
-                "El tipo de operación ({}) no tiene configurada la ubicación destino por defecto.".format(
-                    picking_type_id.name))
-
-        # Una lista para almacenar los stock_move
-        # move_lines = []
-        for tires in self.tires_set_ids:
-            if not tires.log_service_product_ids:
-                raise ValidationError('Debe agregar por lo menos un neumatico!')
-            # if not tire_line.stock_move_line_id:
-            if not tires.picking_id:
-                # Aqui debes colocar lo necesario para crear un objecto de stock.move
-                # stock_move_vals en vez de picking_vals
-                picking_vals = {
-                    'picking_type_id': picking_type_id.id,
-                    'vehicle_id': self.vehicle_id,
-                    'product_id': tires.product_id,
-                    'product_lot_id': tires.product_lot_id,
-                    'location_id': picking_type_id.default_location_src_id.id,
-                    'location_dest_id': picking_type_id.default_location_dest_id.tires_equiport_stock_location,
-                    'move_type': 'direct',
-                    'company_id': tires.company_id.id
-                }
-                # move_id = self.env['stock.move'].create(stock_move_vals)
-                picking_id = self.env['stock.picking'].create(picking_vals)
-
-                # move_lines.append(move_id)
-
-                # TODO Evaluar mejor las variables que tienes creadas
-                # tires.picking_id = picking_id.id
-                # tires.service_picking_count = len(picking_id)
-                # moves = tires.log_service_product_ids._create_stock_moves(picking_id)
-                # move_ids = moves._action_confirm()
-                # move_ids._action_assign()
-        # DEberia de estar aqui la creacion del picking
-        # picking_vals = {
-        #     'picking_type_id': picking_type_id.id,
-        #     'vehicle_id': self.vehicle_id,
-        #     'product_id': tires.product_id,
-        #     'product_lot_id': tires.product_lot_id,
-        #     'move_lines': move_lines,
-        #     'location_id': picking_type_id.default_location_src_id.id,
-        #     'location_dest_id': picking_type_id.default_location_dest_id.tires_equiport_stock_location,
-        #     'move_type': 'direct',
-        #     'company_id': tires.company_id.id
-        # }
+        # agregando conduce
+    # def _get_picking_type_id(self):
+    #     picking_type_id = self.env['stock.picking.type'].search([
+    #         ('is_tire_operation', '=', True)
+    #     ], limit=1, order='id')
+    #
+    #     return picking_type_id or False
+    #
+    # def action_stock_move(self):
+    #     picking_type_id = self._get_picking_type_id()
+    #     if not picking_type_id:
+    #         raise ValidationError("No se ha encontrado un tipo de conduce para realizar esta operación.")
+    #
+    #     move_lines = []
+    #     location_dest_id = self.env.ref('equiport_custom.tires_equiport_stock_location')
+    #     location_id = False
+    #     for line in self.tires_set_ids:
+    #         quants = line.product_lot_id.quant_ids.filtered(lambda q: q.location_id.usage == 'internal' or (
+    #                     q.location_id.usage == 'transit' and q.location_id.company_id))
+    #         location_id = quants[0] if quants else self.env['stock.location'].search([], limit=1)
+    #         move_lines.append((0, 0, {
+    #             'name': self.name,
+    #             'date': self.create_date,
+    #             'product_id': line.product_id.id,
+    #             'product_uom_qty': 1,
+    #             'product_uom': line.product_id.uom_id.id,
+    #             'location_dest_id': location_dest_id.id,
+    #             'location_id': location_id.id,
+    #             'warehouse_id': location_dest_id.get_warehouse().id,
+    #             'company_id': self.env.company.id,
+    #             'tire_set_line_id': line.id
+    #         }))
+    #
+    #     picking_vals = {
+    #         'partner_id': self.env.company.partner_id.id,
+    #         'picking_type_id': picking_type_id.id,
+    #         'location_id': picking_type_id.default_location_src_id.id,
+    #         'location_dest_id': location_dest_id.id,
+    #         'tire_log_id': self.id,
+    #         'company_id': self.env.company.id
+    #     }
+    #     self.env['stock.picking'].create(picking_vals)
+        # agregando conduce
+        # agregando conduce jose
+            # if not tires.product_id:
+            #     raise ValidationError('Debe agregar por lo menos un neumatico!')
+            # if not tires.picking_id:
+            #     stock_move_vals = {
+            #         'picking_type_id': picking_type_id.id,
+            #         'product_id': tires.product_id,
+            #         'location_id': picking_type_id.default_location_src_id.id,
+            #         'location_dest_id': picking_type_id.default_location_dest_id.id,
+            #         'move_type': 'direct',
+            #     }
+            #     picking_id = self.env['stock.picking'].create(stock_move_vals)
+            #     tires.picking_id = picking_id.id
+            #     tires.service_picking_count = len(picking_id)
+            #     moves = tires.product_id._create_stock_moves(picking_id)
+            #     move_ids = moves._action_confirm()
+            #     move_ids._action_assign()
+    # agregando conduce jose
 
     def _action_validate(self):
         # Validate no empty line
@@ -447,6 +436,9 @@ class FleetTireSet(models.Model):
     product_id = fields.Many2one(comodel_name='product.product', string='Neumatico')
     product_lot_id = fields.Many2one(comodel_name='stock.production.lot', string='Referencia de neumatico',
                                      domain="[('product_id', '=', product_id),('positive_qty', '=', True), ('assigned_tire', '=', False), ('in_scrap', '=', False)]")
+    # agregando conduce
+    # move_ids = fields.One2many(comodel_name="stock.move", inverse_name="tire_set_line_id", string="Movimientos de stock")
+    # agregando conduce
 
     @api.onchange('sequence')
     def keep_sequence_order(self):
