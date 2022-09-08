@@ -90,7 +90,7 @@
                                 <field name="unit_type" required="1"/>
                             </group>
                         </div>
-<!--campo unidad (product_id) invisible para los usuarios-->
+                        <!--campo unidad (product_id) invisible para los usuarios-->
                         <div class="oe_title" attrs="{'invisible': [('unit_type', 'in', ['vehicle', 'utility'])]}">
                             <label for="unit_model_id" class="oe_edit_only"/>
                             <h1>
@@ -191,24 +191,33 @@
                                 <field name="fuel_type"/>
                                 <label for="performance"/>
                                 <div class="o_row" name="performance">
-                                    <field name="performance"/><span
-                                        attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    km/g</span><span
-                                        attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
-                                    g/Hr</span>
+                                    <field name="performance"/>
+                                    <span
+                                            attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                                        km/g
+                                    </span>
+                                    <span
+                                            attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                                        g/Hr
+                                    </span>
                                 </div>
                                 <label for="co2"/>
                                 <div class="o_row" name="co2">
-                                    <field name="co2"/><span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
-                                    g/km</span><span
-                                        attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
-                                    g/Hr</span>
+                                    <field name="co2"/>
+                                    <span attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                                        g/km
+                                    </span>
+                                    <span
+                                            attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                                        g/Hr
+                                    </span>
                                 </div>
                                 <field name="horsepower"/>
                                 <field name="horsepower_tax" widget="monetary"/>
                                 <label for="power"/>
                                 <div class="o_row">
-                                    <field name="power"/><span>kW</span>
+                                    <field name="power"/>
+                                    <span>kW</span>
                                 </div>
                             </group>
                             <group string="Descripción">
@@ -248,14 +257,18 @@
                 <xpath expr="//strong[hasclass('o_kanban_record_title')]" position="replace">
                     <t t-if="record.unit_type.raw_value == 'vehicle' or record.unit_type.raw_value == 'utility'">
                         <strong class="o_kanban_record_title">
-                            <t t-if="record.license_plate.raw_value"><field name="license_plate"/>:</t> <field
-                                name="model_id"/>
+                            <t t-if="record.license_plate.raw_value"><field name="license_plate"/>:
+                            </t>
+                            <field
+                                    name="model_id"/>
                         </strong>
                     </t>
                     <t t-else="">
                         <field name="unit_type"/>:
                         <strong class="o_kanban_record_title">
-                            <t t-if="record.unit_lot_id.raw_value"><field name="unit_lot_id"/></t>
+                            <t t-if="record.unit_lot_id.raw_value">
+                                <field name="unit_lot_id"/>
+                            </t>
                             <field name="unit_model_id"/>
                         </strong>
                     </t>
@@ -340,6 +353,9 @@
                             class="oe_highlight btn-primary"
                             attrs="{'invisible': ['|', ('category', 'not in', ['repair', 'maintenance']), ('state', '!=', 'running')]}"/>
                 </xpath>
+                <xpath expr="//field[@name='description']" position="replace">
+                    <field name="description" attrs="{'required':True}"/>
+                </xpath>
                 <xpath expr="//field[@name='service_type_id']" position="after">
                     <field name="category" invisible="1"/>
                     <field name="unit_type" invisible="1"/>
@@ -358,7 +374,9 @@
                                attrs="{'readonly': [('repair_id', '!=', False)], 'invisible': [('category', 'not in', ['repair', 'maintenance', 'service'])]}"/>
                     </div>
                 </xpath>
-
+                <xpath expr="//field[@name='amount']" position="replace">
+                    <field name="amount" string="Coste de reparación" attrs="{'readonly':True}" widget="monetary"/>
+                </xpath>
                 <!--                <xpath expr="//field[@name='service_type_id']" position="attributes">-->
                 <!--                    <attribute name="domain">[('category', 'in', ['service', 'repair', 'maintenance'])]</attribute>-->
                 <!--                </xpath>-->
@@ -382,11 +400,15 @@
                     </div>
                     <label for="performance" attrs="{'invisible': [('fuel_product_qty', '&lt;=', 0)]}"/>
                     <div class="o_row" name="performance" attrs="{'invisible': [('fuel_product_qty', '&lt;=', 0)]}">
-                        <field name="performance"/><span
-                            attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
-                        km/g</span><span
-                            attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
-                        g/Hr</span>
+                        <field name="performance"/>
+                        <span
+                                attrs="{'invisible': [('unit_type', '!=', 'vehicle')]}">
+                            km/g
+                        </span>
+                        <span
+                                attrs="{'invisible': [('unit_type', 'not in', ['gen_set', 'utility'])]}">
+                            g/Hr
+                        </span>
                     </div>
                 </xpath>
             </field>
@@ -440,7 +462,8 @@
             <field name="search_view_id" ref="stock.search_product_lot_filter"/>
             <field name="domain">[('is_tire_lot', '=', True)]</field>
             <field name="context">{'search_default_group_by_product': 1, 'display_complete': True, 'fleet_menu': True,
-                                   'default_company_id': allowed_company_ids[0]}</field>
+                'default_company_id': allowed_company_ids[0]}
+            </field>
         </record>
 
         <menuitem action="action_fleet_production_lot_form" id="menu_fleet_production_lot_form"
