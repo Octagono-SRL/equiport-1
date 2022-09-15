@@ -76,7 +76,7 @@
                         attrs="{'invisible': ['|', ('state', '!=', '2binvoiced'), ('invoice_id', '!=', False)]}"
                         position="attributes">
                     <attribute name="groups">
-                        equiport_custom.group_inventory_stock_manager,equiport_custom.group_account_user,equiport_custom.group_general_manager
+                        equiport_custom.group_account_user,equiport_custom.group_general_manager
                     </attribute>
                 </button>
 
