@@ -7,10 +7,9 @@
             <field name="usage">internal</field>
             <field name="is_gate_location">1</field>
         </record>
-
         <record id="tires_equiport_stock_location" model="stock.location">
             <field name="name">Neumaticos en uso</field>
-            <field name="usage">internal</field>
+            <field name="usage">transit</field>
         </record>
 
     </data>

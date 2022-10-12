@@ -11,9 +11,55 @@
         <field name="doall" eval="False"/>
         <field name="model_id" ref="equiport_custom.model_fleet_vehicle_log_services"/>
         <field name="code">
-vehicle_service_model_data = model.search([('active', '=',True), ('company_id', '=', env.company.id)])
-vehicle_service_model_data.fleet_alerts_send_mail()
+            vehicle_service_model_data = model.search([('active', '=',True), ('company_id', '=', env.company.id)])
+            vehicle_service_model_data.fleet_alerts_send_mail()
         </field>
     </record>
 
+    <!--    envio de estados de cuentas-->
+    <record id="ir_cron_send_mail_account_state" model="ir.cron">
+        <field name="name">Envio automatico: estado de cuentas</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+        <field name="state">code</field>
+        <field name="nextcall" eval="(datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d 23:59:59')" />
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="partner_account_state.model_report_partner_account"/>
+        <field name="code">
+form_view_id = env.ref('partner_account_state.report_partner_account_from_view').id
+partners = env['res.partner'].search([('email', 'not in', [False, '', '.']),
+('invoice_ids.move_type', '=', 'out_invoice')])
+partners = partners.filtered(lambda p: p.credit > 0.0)
+
+currencies = env['res.currency'].search([('active', '=', True)])
+
+for partner in partners:
+  partner_invoices_currencies = list(set(partner.invoice_ids.filtered(lambda inv: inv.move_type in ['out_invoice'] and
+  inv.amount_residual).mapped('currency_id')))
+  for currency in partner_invoices_currencies:
+    wizard = env['wizard.generate.account.state'].create({
+      'partner_id': partner.id,
+      'currency_id': currency.id,
+    })
+
+    account_state = env['report.partner.account'].create(wizard.get_wizard_values())
+    ctx = account_state.get_email_context()
+    ctx['model_description'] = 'Envio de Estado de Cuenta {}'.format(currency.name)
+
+    wizard_values = {
+      'template_id': ctx['default_template_id'],
+      'partner_ids': [(6, 0, [partner.id])],
+      'model': 'res.partner',
+      'res_id': partner.id,
+      'composition_mode': 'comment',
+      'attachment_ids': ctx['attachment_ids'],
+    }
+
+    mail_compose_wizard = env['mail.compose.message'].with_context(context=ctx).create(wizard_values)
+    mail_compose_wizard.onchange_template_id_wrapper()
+    mail_compose_wizard.send_mail()
+        </field>
+    </record>
 </odoo>

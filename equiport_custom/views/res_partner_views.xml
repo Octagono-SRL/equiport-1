@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <!--        region HIDE ELEMENTS-->
         <record id="view_partner_form_form_hide_equiport_inherit" model="ir.ui.view">
             <field name="name">res.partner.form.hide.equiport.inherit</field>
@@ -12,7 +11,6 @@
                     <field name="is_readonly_user" attrs="{'invisible':True}"/>
                     <field name="x_css" nolabel="1" invisible="0"/>
                 </xpath>
-
             </field>
         </record>
         <record id="res_partner_tree_hide_equiport_inherit" model="ir.ui.view">
@@ -27,7 +25,6 @@
                     <attribute name="edit">0</attribute>
                     <attribute name="multi_edit">0</attribute>
                 </xpath>
-
             </field>
         </record>
 
@@ -43,7 +40,6 @@
                     <attribute name="edit">0</attribute>
                     <attribute name="multi_edit">0</attribute>
                 </xpath>
-
             </field>
         </record>
 
@@ -54,36 +50,33 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-
                 <field name="vat" position="attributes">
                     <attribute name="string">
                         Número de documento
                     </attribute>
-
                     <attribute name="attrs">
                         {'required': True}
                     </attribute>
                 </field>
-
                 <xpath expr="//field[@name='l10n_do_dgii_tax_payer_type']" position="attributes">
                     <attribute name="help">
                         Contribuyente:
                         (B) Crédito Fiscal (Tipo 01)
 
                         Cliente de Consumo:
-                            Cliente:
-                                (B) Consumo (Tipo 02)
-                                (B) Único Ingreso (Tipo 12)
-                            Proveedor:
-                                (B) Comprobante de Compra (Tipo 11)
-                                (B) Gasto Menor (Tipo 13)
+                        Cliente:
+                        (B) Consumo (Tipo 02)
+                        (B) Único Ingreso (Tipo 12)
+                        Proveedor:
+                        (B) Comprobante de Compra (Tipo 11)
+                        (B) Gasto Menor (Tipo 13)
 
                         Sin fines de lucro:
-                            Cliente:
-                                (B) Crédito Fiscal (Tipo 01)
-                            Proveedor:
-                                (E) Régimen Especial Electrónica
-                                (E) Factura Gubernamental Electrónica
+                        Cliente:
+                        (B) Crédito Fiscal (Tipo 01)
+                        Proveedor:
+                        (E) Régimen Especial Electrónica
+                        (E) Factura Gubernamental Electrónica
 
                         Exento:
                         (B) Régimen Especial (Tipo 14)
@@ -115,13 +108,13 @@
                            attrs="{'required':[('allowed_credit', '=', True)]}"/>
                     <field name="over_credit"/>
                     <field name="date_last_credit" force_save="1" attrs="{'readonly':[('allowed_credit', '=', True)]}"/>
-<!--                    Como estaba por defecto-->
-<!--                    <field name="credit_limit"-->
-<!--                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>-->
-<!--                    <field name="credit_warning"-->
-<!--                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>-->
-<!--                    <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>-->
-<!--                    <field name="date_last_credit" force_save="1" attrs="{'invisible':[('allowed_credit', '=', False)], 'readonly':[('allowed_credit', '=', True)]}"/>-->
+                    <!--                    Como estaba por defecto-->
+                    <!--                    <field name="credit_limit"-->
+                    <!--                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>-->
+                    <!--                    <field name="credit_warning"-->
+                    <!--                           attrs="{'required':[('allowed_credit', '=', True)], 'invisible':[('allowed_credit', '=', False)]}"/>-->
+                    <!--                    <field name="over_credit" attrs="{'invisible':[('allowed_credit', '=', False)]}"/>-->
+                    <!--                    <field name="date_last_credit" force_save="1" attrs="{'invisible':[('allowed_credit', '=', False)], 'readonly':[('allowed_credit', '=', True)]}"/>-->
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[@name='container_row_2']" position="inside">
@@ -159,9 +152,7 @@
                           attrs="{'invisible':[('lot_unit_count', '&lt;', 1)]}">
                         <field name="lot_unit_ids" readonly="1"/>
                     </page>
-
                 </xpath>
-
             </field>
         </record>
 
@@ -170,13 +161,10 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="sale_subscription.res_partner_view_inherit_sale_subscription"/>
             <field name="arch" type="xml">
-
                 <field name="subscription_count" position="attributes">
                     <attribute name="string">Renta</attribute>
                 </field>
-
             </field>
         </record>
-
     </data>
 </odoo>

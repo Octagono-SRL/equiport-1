@@ -10,7 +10,6 @@ from odoo.tools.config import config
 
 # import string
 
-
 class ReportPartnerAccount(models.TransientModel):
     _name = 'report.partner.account'
     _description = _("Modelo para visualizar el estado de cuentas de los clientes")
@@ -55,7 +54,7 @@ class ReportPartnerAccount(models.TransientModel):
         pdf = base64.b64encode(pdf)
         return pdf
 
-    def action_send_mail(self):
+    def get_email_context(self):
         report_binary = self.generate_report_file(self.id)
         attachment_name = "EC_" + self.name
         attachments = self.env['ir.attachment']
@@ -78,14 +77,8 @@ class ReportPartnerAccount(models.TransientModel):
             'mimetype': 'application/pdf'
         })
         attachments += attachment_xlsx
-
-
-
-        '''
-        This function opens a window to compose an email, with the edi purchase template message loaded by default
-        '''
-        self.ensure_one()
         ir_model_data = self.env['ir.model.data']
+
         try:
             template_id = \
                 ir_model_data.get_object_reference('partner_account_state',
@@ -93,10 +86,7 @@ class ReportPartnerAccount(models.TransientModel):
                     1]
         except ValueError:
             template_id = False
-        try:
-            compose_form_id = ir_model_data.get_object_reference('mail', 'email_compose_message_wizard_form')[1]
-        except ValueError:
-            compose_form_id = False
+
         ctx = dict(self.env.context or {})
 
         if template_id:
@@ -115,9 +105,21 @@ class ReportPartnerAccount(models.TransientModel):
             'attachment_ids': attachments.ids,
             'force_email': True,
         })
+        return ctx
 
+    def action_send_mail(self):
+        ir_model_data = self.env['ir.model.data']
+        '''
+        This function opens a window to compose an email, with the edi purchase template message loaded by default
+        '''
+        self.ensure_one()
+
+        ctx = self.get_email_context()
         ctx['model_description'] = 'Envio de Estado de Cuenta'
-
+        try:
+            compose_form_id = ir_model_data.get_object_reference('mail', 'email_compose_message_wizard_form')[1]
+        except ValueError:
+            compose_form_id = False
         return {
             'name': _('Compose Email'),
             'type': 'ir.actions.act_window',
