@@ -1,5 +1,4 @@
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
 
 
 class WizardGenerateAccountState(models.TransientModel):
@@ -11,23 +10,19 @@ class WizardGenerateAccountState(models.TransientModel):
     date_to = fields.Date(string="To", default=fields.Date.today())
     partner_id = fields.Many2one(comodel_name='res.partner', default=lambda s: s._context.get('active_id'))
 
-    def generate_account_state(self):
-        self.ensure_one()
-
+    def get_wizard_values(self):
         # Busqueda de las vistas del modelo
-        form_view_id = self.env.ref('partner_account_state.report_partner_account_from_view').id
 
         # Definicion de variables de entorno para el modelo
-        model_report_view = self.env['report.partner.account']
 
         # Limpiando registros existentes en la tabla visual
-        rec_search = model_report_view.search([])
-        if len(rec_search) > 0:
-            rec_search.unlink()
+        # rec_search = model_report_view.search([])
+        # if len(rec_search) > 0:
+        #     rec_search.unlink()
 
         values = {}
-        if not self.partner_id.invoice_ids and not self.partner_id.unpaid_invoices:
-            raise ValidationError(_("El reporte no puede ser generado. No existen ordenes de compras confirmadas."))
+        # if not self.partner_id.invoice_ids and not self.partner_id.unpaid_invoices:
+        #     raise ValidationError(_("El reporte no puede ser generado. No existen ordenes de compras confirmadas."))
         if self.partner_id.unpaid_invoices:
             report_lines = []
             if self.date_from:
@@ -69,6 +64,7 @@ class WizardGenerateAccountState(models.TransientModel):
                                 'move_id': aml.move_id.id,
                                 'move_line_id': aml.id,
                             }))
+
             values.update({
                 'partner_id': self.partner_id.id,
                 'currency_id': self.currency_id.id,
@@ -82,8 +78,14 @@ class WizardGenerateAccountState(models.TransientModel):
                     fields.Date.context_today(self)),
                 'line_ids': report_lines
             })
+            return values
 
-        account_state = model_report_view.create(values)
+    def generate_account_state(self):
+        self.ensure_one()
+        form_view_id = self.env.ref('partner_account_state.report_partner_account_from_view').id
+        model_report_view = self.env['report.partner.account']
+
+        account_state = model_report_view.create(self.get_wizard_values())
 
         action = {'type': 'ir.actions.act_window',
                   'views': [(form_view_id, 'form')],

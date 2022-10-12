@@ -87,10 +87,10 @@
                                    options="{'color_field': 'color', 'no_create_edit': True, 'no_create': 1, 'no_edit': 1}"/>
 
                             <group>
-                                <field name="unit_type" required="1"/>
+                                <field name="unit_type" required="1" attrs="{'readonly': [('state_id', '!=', 1)]}"/>
                             </group>
                         </div>
-                        <!--campo unidad (product_id) invisible para los usuarios-->
+                        <!--campo unidad (trae valor product_id) invisible para los usuarios-->
                         <div class="oe_title" attrs="{'invisible': [('unit_type', 'in', ['vehicle', 'utility'])]}">
                             <label for="unit_model_id" class="oe_edit_only"/>
                             <h1>

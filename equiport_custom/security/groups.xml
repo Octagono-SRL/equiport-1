@@ -51,6 +51,21 @@
             <field name="name">Manejo de crédito en los contactos.</field>
         </record>
 
+        <!--   probar     -->
+<!--        <record id="group_l10n_do_fiscal_credit_note" model="res.groups">-->
+<!--            <field name="name">Can create Fiscal Credit Notes</field>-->
+<!--        </record>-->
+<!--        <record id="group_l10n_do_fiscal_invoice_cancel" model="res.groups">-->
+<!--            <field name="name">Puede cancelar Facturas Fiscales	</field>-->
+<!--        </record>-->
+<!--        <record id="group_l10n_do_edit_fiscal_partner" model="res.groups">-->
+<!--            <field name="name">Can modify partner fiscal fields</field>-->
+<!--        </record>-->
+<!--        <record id="group_l10n_do_debit_note" model="res.groups">-->
+<!--            <field name="name">Can create Debit Notes</field>-->
+<!--        </record>-->
+        <!--        -->
+
         <!--        OTHERS-->
         <!--        region OTHERS CATEGORY-->
 
@@ -472,7 +487,6 @@
                        (4, ref('equiport_custom.reports_sale_subscription_account_user')),
                    ]"/>
         </record>
-
         <record id="group_commercial_manager" model="res.groups">
             <field name="name">Gerente Comercial</field>
             <field name="category_id" ref="module_category_commercial_equiport"/>
@@ -514,8 +528,6 @@
                     (4, ref('equiport_custom.crm_account_user')),
                    ]"/>
         </record>
-
-
         <!--        CONTABILIDAD-->
 
         <record id="group_account_user" model="res.groups">
@@ -571,7 +583,6 @@
 
            ]"/>
         </record>
-
         <record id="group_account_manager" model="res.groups">
             <field name="name">Gerente Contabilidad</field>
             <field name="category_id" ref="module_category_accounting_equiport"/>
@@ -627,6 +638,7 @@
                     (3, ref('group_inventory_user')),
                     (3, ref('equiport_custom.group_inventory_supervisor')),
                       ]"/>
+<!--          'probar                      (4, ref('equiport_custom.group_l10n_do_fiscal_invoice_cancel'))-->
         </record>
 
         <!--        ADMINISTRACION-->
@@ -646,7 +658,6 @@
                 (4, ref('equiport_custom.inventory_account_user_lot_readonly')),
             ]"/>
         </record>
-
         <record id="group_admin_manager" model="res.groups">
             <field name="name">Gerente Admnistrativo</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
@@ -723,7 +734,6 @@
             (4, ref('equiport_custom.settings_account_in_user')),
             ]"/>
         </record>
-
         <record id="group_general_manager" model="res.groups">
             <field name="name">Gerente General</field>
             <field name="category_id" ref="module_category_admin_equiport"/>
@@ -953,8 +963,7 @@
             (3, ref('equiport_custom.purchase_account_user_readonly')),
             ]"/>
         </record>
-
-            <record id="group_inventory_supervisor" model="res.groups">
+        <record id="group_inventory_supervisor" model="res.groups">
             <field name="name">Supervisor Inventario</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids"
@@ -1003,7 +1012,6 @@
                     (4, ref('equiport_custom.allowed_scrap')),
                    ]"/>
         </record>
-
         <record id="group_inventory_stock_manager" model="res.groups">
             <field name="name">Encargado Almacen</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
@@ -1059,20 +1067,17 @@
             <field name="name">Encargado Inventario</field>
             <field name="category_id" ref="module_category_inventory_equiport"/>
             <field name="implied_ids" eval="[
-
                 (4, ref('group_inventory_supervisor')),
                 (4, ref('stock.group_stock_manager')),
                 (4, ref('purchase.group_purchase_user')),
                 (4, ref('fleet.fleet_group_manager')),
                 (4, ref('documents.group_documents_user')),
-
                 (4, ref('sale_subscription.group_sale_subscription_view')),
                 (4, ref('sales_team.group_sale_salesman_all_leads')),
                 (4, ref('sign.group_sign_employee')),
                 (4, ref('industry_fsm.group_fsm_manager')),
                 (4, ref('project.group_project_user')),
                 (4, ref('hr_timesheet.group_hr_timesheet_user')),
-
                 (4, ref('equiport_custom.rental_account_user')),
                 (4, ref('equiport_custom.purchase_account_user')),
                 (4, ref('equiport_custom.crm_account_user')),
@@ -1081,20 +1086,16 @@
                 (4, ref('equiport_custom.rescue_account_user')),
                 (4, ref('equiport_custom.repair_account_user')),
                 (4, ref('equiport_custom.sale_account_user')),
-
                 (4, ref('equiport_custom.reports_rental_account_user')),
                 (4, ref('equiport_custom.reports_fleet_account_user')),
                 (4, ref('equiport_custom.reports_repair_account_user')),
                 (4, ref('equiport_custom.reports_inventory_account_user')),
                 (4, ref('equiport_custom.reports_rescue_account_user')),
-
                 (4, ref('equiport_custom.settings_account_in_user')),
-
                 (4, ref('equiport_custom.sales_account_user_readonly')),
                 (4, ref('equiport_custom.rescue_account_user_readonly')),
                 (4, ref('equiport_custom.rental_account_user_readonly')),
                 (4, ref('equiport_custom.purchase_account_user_readonly')),
-
                 (4, ref('equiport_custom.grand_picking_access')),
                 (4, ref('equiport_custom.supervisor_stock_order_point')),
                 (4, ref('equiport_custom.allowed_adjust_inventory')),
@@ -1104,7 +1105,6 @@
 
             ]"/>
         </record>
-
 
         <!--        endregion-->
 

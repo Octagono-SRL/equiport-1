@@ -25,11 +25,8 @@
                     </p>
                 </div>
             </field>
-
             <field name="lang">${object.lang}</field>
             <field name="auto_delete" eval="False"/>
         </record>
-
-
     </data>
 </odoo>
