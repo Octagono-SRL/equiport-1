@@ -93,6 +93,7 @@
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="vat_type" attrs="{'required':True}"/>
                     <field name="partner_type"/>
+                    <field name="is_send" attrs="{'invisible':True}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='category_id']" position="after">

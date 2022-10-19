@@ -13,6 +13,7 @@ class ResPartner(models.Model):
                                 default='vat_nif',
                                 string="Tipo de Documento")
 
+    is_send = fields.Boolean()
     is_readonly_user = fields.Boolean(compute='_compute_readonly_flag', store=False)
     x_css = fields.Html(
         string='CSS/JS',
