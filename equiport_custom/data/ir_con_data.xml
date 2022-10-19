@@ -29,7 +29,7 @@
         <field name="code">
 form_view_id = env.ref('partner_account_state.report_partner_account_from_view').id
 partners = env['res.partner'].search([('email', 'not in', [False, '', '.']),
-('invoice_ids.move_type', '=', 'out_invoice'),('is_send', '=', False)])
+('invoice_ids.move_type', '=', 'out_invoice')])
 partners = partners.filtered(lambda p: p.credit > 0.0)
 # raise Warning(partners.mapped('name'))
 currencies = env['res.currency'].search([('active', '=', True)])
@@ -59,7 +59,7 @@ for partner in partners:
     mail_compose_wizard = env['mail.compose.message'].with_context(context=ctx).create(wizard_values)
     mail_compose_wizard.onchange_template_id_wrapper()
     mail_compose_wizard.send_mail()
-partners.write({'is_send': True})
+#partners.write({'is_send': True})
         </field>
     </record>
         <!-- Enviar todos los correos de estado de cuentas-->
@@ -74,9 +74,9 @@ partners.write({'is_send': True})
         <field name="doall" eval="False"/>
         <field name="model_id" ref="equiport_custom.model_res_partner"/>
         <field name="code">
-contacts = model.search([])
-for c in contacts:
-  c.write({'is_send': False})
+# contacts = model.search([])
+# for c in contacts:
+ # c.write({'is_send': False})
         </field>
     </record>
 </odoo>
