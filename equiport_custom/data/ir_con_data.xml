@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo noupdate="1">
-
     <record id="ir_cron_fleet_alerts_send_mail" model="ir.cron">
         <field name="name">[Fleet] Sent Mail Service Alerts</field>
         <field name="interval_number">1</field>
@@ -19,11 +18,11 @@
     <!--    envio de estados de cuentas-->
     <record id="ir_cron_send_mail_account_state" model="ir.cron">
         <field name="name">Envio automatico: estado de cuentas</field>
-        <field name="interval_number">15</field>
+        <field name="interval_number">7</field>
         <field name="interval_type">days</field>
         <field name="active" eval="True"/>
         <field name="state">code</field>
-        <field name="nextcall" eval="(datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d 23:59:59')" />
+        <field name="nextcall" eval="(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d 04:59:59')" />
         <field name="numbercall">-1</field>
         <field name="doall" eval="False"/>
         <field name="model_id" ref="partner_account_state.model_report_partner_account"/>
@@ -32,7 +31,7 @@ form_view_id = env.ref('partner_account_state.report_partner_account_from_view')
 partners = env['res.partner'].search([('email', 'not in', [False, '', '.']),
 ('invoice_ids.move_type', '=', 'out_invoice')])
 partners = partners.filtered(lambda p: p.credit > 0.0)
-
+# raise Warning(partners.mapped('name'))
 currencies = env['res.currency'].search([('active', '=', True)])
 
 for partner in partners:
@@ -60,6 +59,7 @@ for partner in partners:
     mail_compose_wizard = env['mail.compose.message'].with_context(context=ctx).create(wizard_values)
     mail_compose_wizard.onchange_template_id_wrapper()
     mail_compose_wizard.send_mail()
+#partners.write({'is_send': True})
         </field>
     </record>
 </odoo>

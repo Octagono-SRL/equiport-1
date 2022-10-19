@@ -267,6 +267,8 @@ class FleetVehicleLogTires(models.Model):
     date = fields.Date(string="Fecha de registro", default=fields.Date.context_today)
     tires_number = fields.Integer(string='Numero de neumaticos', default=4, required=True)
     #                                   states={'open': [('readonly', True)], 'close': [('readonly', True)]}
+    # tires_location_pick = fields.Many2one('stock.picking.type', domain="[('is_tire_operation','=',True)]", string='Almacen y conduce',
+    #                                       required=True, help='seleccion del tipo de conduce y ubicacion del neumatico')
     tires_set_ids = fields.One2many(comodel_name='fleet.vehicle.tires.set', inverse_name='vehicle_log_tires_id',
                                     string='Grupo de neumaticos', tracking=True)
     vehicle_id = fields.Many2one('fleet.vehicle', 'Vehiculo', required=True)
@@ -277,9 +279,7 @@ class FleetVehicleLogTires(models.Model):
         help="Cuando el registro es creado, el estado es 'Borrador'.\n"
              "Si el registro es confimado, el estado será 'En uso' y estara registrando los cambios en las lineas de neumaticos.\n"
              "'Cerrado' Puede colocarse manualmente en cerrado siempre y cuando todos los neumaticos hayan sido retirados.")
-    # agregando conduce
     # picking_ids = fields.One2many(comodel_name='stock.picking', inverse_name='tire_log_id', string="Conduces")
-    # agregando conduce
 
     @api.depends('vehicle_id', 'date')
     def _compute_vehicle_log_tire_name(self):
@@ -293,13 +293,10 @@ class FleetVehicleLogTires(models.Model):
 
     def button_validate(self):
         self._action_validate()
-        # self.action_stock_move()
-
-        # agregando conduce
+    #     self.action_stock_move()
+    #
     # def _get_picking_type_id(self):
-    #     picking_type_id = self.env['stock.picking.type'].search([
-    #         ('is_tire_operation', '=', True)
-    #     ], limit=1, order='id')
+    #     picking_type_id = self.tires_location_pick
     #
     #     return picking_type_id or False
     #
@@ -321,41 +318,24 @@ class FleetVehicleLogTires(models.Model):
     #             'product_id': line.product_id.id,
     #             'product_uom_qty': 1,
     #             'product_uom': line.product_id.uom_id.id,
+    #             'lot_ids': line.product_lot_id,
     #             'location_dest_id': location_dest_id.id,
     #             'location_id': location_id.id,
     #             'warehouse_id': location_dest_id.get_warehouse().id,
     #             'company_id': self.env.company.id,
     #             'tire_set_line_id': line.id
     #         }))
-    #
+    #         # Aviso: si el create se ubica dentro del for se creara un conduce por cada linea
     #     picking_vals = {
     #         'partner_id': self.env.company.partner_id.id,
     #         'picking_type_id': picking_type_id.id,
     #         'location_id': picking_type_id.default_location_src_id.id,
     #         'location_dest_id': location_dest_id.id,
     #         'tire_log_id': self.id,
-    #         'company_id': self.env.company.id
+    #         'company_id': self.env.company.id,
+    #         'move_ids_without_package': move_lines
     #     }
     #     self.env['stock.picking'].create(picking_vals)
-        # agregando conduce
-        # agregando conduce jose
-            # if not tires.product_id:
-            #     raise ValidationError('Debe agregar por lo menos un neumatico!')
-            # if not tires.picking_id:
-            #     stock_move_vals = {
-            #         'picking_type_id': picking_type_id.id,
-            #         'product_id': tires.product_id,
-            #         'location_id': picking_type_id.default_location_src_id.id,
-            #         'location_dest_id': picking_type_id.default_location_dest_id.id,
-            #         'move_type': 'direct',
-            #     }
-            #     picking_id = self.env['stock.picking'].create(stock_move_vals)
-            #     tires.picking_id = picking_id.id
-            #     tires.service_picking_count = len(picking_id)
-            #     moves = tires.product_id._create_stock_moves(picking_id)
-            #     move_ids = moves._action_confirm()
-            #     move_ids._action_assign()
-    # agregando conduce jose
 
     def _action_validate(self):
         # Validate no empty line
@@ -372,8 +352,8 @@ class FleetVehicleLogTires(models.Model):
             'state': 'open'
         })
         for line in self.tires_set_ids:
+            # line.product_lot_id.assigned_tire = False dejar en false
             line.product_lot_id.assigned_tire = True
-
     def write(self, values):
         # Add code here
         print(values)
@@ -435,10 +415,8 @@ class FleetTireSet(models.Model):
                                            string='Registro de cambio de neumatico')
     product_id = fields.Many2one(comodel_name='product.product', string='Neumatico')
     product_lot_id = fields.Many2one(comodel_name='stock.production.lot', string='Referencia de neumatico',
-                                     domain="[('product_id', '=', product_id),('positive_qty', '=', True), ('assigned_tire', '=', False), ('in_scrap', '=', False)]")
-    # agregando conduce
+                                     domain="[('product_id', '=', product_id),('positive_qty', '=', True), ('rent_state', '!=', 'sold'),('assigned_tire', '=', False), ('in_scrap', '=', False)]")
     # move_ids = fields.One2many(comodel_name="stock.move", inverse_name="tire_set_line_id", string="Movimientos de stock")
-    # agregando conduce
 
     @api.onchange('sequence')
     def keep_sequence_order(self):
@@ -572,11 +550,11 @@ class FleetVehicleLogServices(models.Model):
                 uom = list(set(fuel_lines.mapped('product_uom')))
                 if len(uom) == 1:
                     fuel_uom = uom[0]
-
-                rec.write({
-                    'fuel_product_qty': fuel_qty,
-                    'fuel_product_unit': fuel_uom.id if fuel_uom is not None else False
-                })
+                    # como estaba originalmente = quitar 2
+                    rec.write({
+                        'fuel_product_qty': fuel_qty,
+                        'fuel_product_unit': fuel_uom.id if fuel_uom is not None else False
+                    })
 
     def _inverse_fuel_product_data(self):
         for rec in self:
