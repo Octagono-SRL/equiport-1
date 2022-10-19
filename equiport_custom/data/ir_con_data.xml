@@ -64,7 +64,7 @@ partners.write({'is_send': True})
         </field>
     </record>
         <!-- Enviar todos los correos de estado de cuentas-->
-    <record id="ir_cron_send_mail_account_state" model="ir.cron">
+    <record id="ir_cron_restart_contacts_to_send" model="ir.cron">
         <field name="name">Reiniciar seleccion de estados de cuentas</field>
         <field name="interval_number">6</field>
         <field name="interval_type">days</field>
@@ -73,7 +73,7 @@ partners.write({'is_send': True})
         <field name="nextcall" eval="(datetime.now() + timedelta(days=6)).strftime('%Y-%m-%d 04:59:59')" />
         <field name="numbercall">-1</field>
         <field name="doall" eval="False"/>
-        <field name="model_id" ref="partner_account_state.model_res_partner"/>
+        <field name="model_id" ref="equiport_custom.model_res_partner"/>
         <field name="code">
 contacts = model.search([])
 for c in contacts:
