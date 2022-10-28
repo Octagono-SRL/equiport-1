@@ -11,10 +11,10 @@
     'data': [
         'security/ir.model.access.csv',
         'data/mail_template_data.xml',
-        'views/res_partner_views.xml',
         'report/report_partner_account_views.xml',
         'report/report_partner_account_state.xml',
-        'wizard/wizard_generate_account_state_views.xml'
+        'wizard/wizard_generate_account_state_views.xml',
+        'views/res_partner_views.xml',
     ],
     'installable': True,
     'auto_install': False

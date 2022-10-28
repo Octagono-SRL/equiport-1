@@ -48,7 +48,6 @@
 
         <!--        endregion-->
 
-
         <record id="rental_order_form_equiport_inherit" model="ir.ui.view">
             <field name="name">rental.order.form.equiport.inherit</field>
             <field name="model">sale.order</field>
@@ -113,11 +112,10 @@
                     <attribute name="groups">equiport_custom.group_operations_manager,equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </button>
 
-
                 <div class="oe_button_box" name="button_box" position="inside">
                     <button name="action_view_deposits" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
                             attrs="{'invisible': [('deposit_status', 'not in', ['added', 'returned'])]}"
-                            groups="equiport_custom.group_account_user">
+                            groups="equiport_custom.group_account_user, equiport_custom.group_account_manager, equiport_custom.group_admin_manager">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_text">Depositos</span>
                             <!--                                <span class="o_stat_text">Preview</span>-->
@@ -138,7 +136,6 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale_renting.rental_order_form_view"/>
             <field name="arch" type="xml">
-
                 <xpath expr="//button[@name='open_return']" position="attributes">
                     <attribute name="groups">equiport_custom.group_operations_manager,equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
@@ -146,11 +143,7 @@
                 <xpath expr="//button[@name='open_pickup']" position="attributes">
                     <attribute name="groups">equiport_custom.group_operations_manager,equiport_custom.group_operations_user,equiport_custom.group_operations_h_user,equiport_custom.group_inventory_user,equiport_custom.group_general_manager</attribute>
                 </xpath>
-
-
             </field>
         </record>
-
-
     </data>
 </odoo>
